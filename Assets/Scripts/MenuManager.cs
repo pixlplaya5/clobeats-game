@@ -112,7 +112,7 @@ public class MenuManager : MonoBehaviour
         {
             if (IsMenuOpen(QuickPlayMenuId))
             {
-                await PlaySelectedSongAsync();
+                PlaySelectedSong();
                 return;
             }
             else
@@ -210,7 +210,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public async Task PlaySelectedSongAsync()
+    public void PlaySelectedSong()
     {
         if (!IsMenuOpen(QuickPlayMenuId))
         {
@@ -400,7 +400,7 @@ public class MenuManager : MonoBehaviour
                     ShowMenu(MainMenuId);
                     break;
                 case MenuAction.PlaySelectedSong:
-                    await PlaySelectedSongAsync();
+                    PlaySelectedSong();
                     break;
                 case MenuAction.PlayCachedSong:
                     GameManager gameManager = FindAnyObjectByType<GameManager>();
