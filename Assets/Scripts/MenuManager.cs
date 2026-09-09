@@ -22,6 +22,7 @@ public class MenuManager : MonoBehaviour
         ShowMenu,
         StartGame,
         PlaySelectedSong,
+        PlayCachedSong,
         Back,
         ConfirmExit,
         QuitGame
@@ -266,7 +267,8 @@ public class MenuManager : MonoBehaviour
             Debug.Log("[MenuManager] Loading selected song. (Include loading visual)");
             StopPreviewAudio();
             ShowMenu("songentry");
-            await gameManager.PlaySongGlobal(currentPreviewingSongPath);
+
+            //await gameManager.PlaySongGlobal(currentPreviewingSongPath);
             //ShowMenu("null");
         }
         finally
@@ -399,6 +401,10 @@ public class MenuManager : MonoBehaviour
                     break;
                 case MenuAction.PlaySelectedSong:
                     await PlaySelectedSongAsync();
+                    break;
+                case MenuAction.PlayCachedSong:
+                    GameManager gameManager = FindAnyObjectByType<GameManager>();
+                    await gameManager.PlaySongGlobal(currentPreviewingSongPath);
                     break;
                 case MenuAction.Back:
                     Exit();
