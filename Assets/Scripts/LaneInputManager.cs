@@ -261,11 +261,13 @@ public class LaneInputManager : MonoBehaviour
         }
         else
         {
+            int chordLane = -1;
             foreach (var lane in lanes)
             {
-                TryHitLane(lane, false, NoteVisualChanger.NoteType.Forced, true);
+                chordLane = lane;
             }
-            return true;
+            if (chordLane < 0) return false;
+            return TryHitLane(chordLane, false, NoteVisualChanger.NoteType.Forced, true);
         }
     }
 
