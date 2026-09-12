@@ -798,7 +798,7 @@ public class MusicPlayer : MonoBehaviour
             noteSpawner.songLengthInTicks = 0;
         }
         //stopAudio(false);
-        StopAllStems(false);
+        StopAllStems(true);
         if (videoPlayer != null)
         {
             videoPlayer.Stop();
