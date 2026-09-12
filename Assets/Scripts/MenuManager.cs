@@ -34,6 +34,7 @@ public class MenuManager : MonoBehaviour
         public string id;
         public GameObject panel;
         public bool showLogo = true;
+        public bool enableBG = true;
         public Selectable firstSelected;
     }
 
@@ -299,7 +300,7 @@ public class MenuManager : MonoBehaviour
         }*/
     }
 
-    private void AddScreenIfMissing(string id, GameObject panel, bool showLogo)
+    private void AddScreenIfMissing(string id, GameObject panel, bool showLogo, bool enableBG)
     {
         if (panel == null || string.IsNullOrWhiteSpace(id))
         {
@@ -324,6 +325,7 @@ public class MenuManager : MonoBehaviour
             id = id,
             panel = panel,
             showLogo = showLogo,
+            enableBG = enableBG,
             firstSelected = panel.GetComponentInChildren<Selectable>(true)
         });
     }
@@ -456,6 +458,12 @@ public class MenuManager : MonoBehaviour
         if (logoObject != null)
         {
             logoObject.SetActive(targetScreen.showLogo);
+        }
+        GameObject menuCameraGO = GameObject.Find("MainMenuCamera");
+        if (menuCameraGO)
+        {
+            Camera menuCamera = menuCameraGO.GetComponent<Camera>();
+            menuCamera.enabled = targetScreen.enableBG;
         }
 
         if (selectFirstControlOnOpen && EventSystem.current != null)
