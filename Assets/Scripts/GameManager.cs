@@ -111,6 +111,8 @@ public class GameManager : MonoBehaviour
     public async Task PlaySongGlobal(string path)
     {
         await EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
+        MenuManager menuManager = FindAnyObjectByType<MenuManager>();
+        menuManager.ShowMenu("null");
         SongFolderLoader songFolderLoader = FindAnyObjectByType<SongFolderLoader>();
         if (songFolderLoader != null)
         {
