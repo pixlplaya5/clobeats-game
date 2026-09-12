@@ -70,6 +70,8 @@ public class MusicPlayer : MonoBehaviour
         public string name;
         public int handle;
         public List<int> childHandles = new List<int>();
+        [NonSerialized] public Playback midiPlayback;
+        public bool isMidi;
         public bool isPlaying;
         public float volume = 1f;
         public bool reverbEnabled;
@@ -262,59 +264,72 @@ public class MusicPlayer : MonoBehaviour
 
         NSSonglength = noteSpawner != null ? noteSpawner.songLengthInTicks : NSSonglength;
 
+        await Task.Yield();
+        LoadMidiStemAudio("song", audioClipPath);
+    }
+
+    private OutputDevice GetMidiOutput()
+    {
+        if (midiOutput != null) return midiOutput;
+
         try
         {
-            await Task.Yield();
-
-            // Dispose previous MIDI playback if present
-            if (midiPlayback != null)
-            {
-                try { midiPlayback.Stop(); midiPlayback.Dispose(); } catch { }
-                midiPlayback = null;
-            }
-            if (midiOutput != null)
-            {
-                try { midiOutput.Dispose(); } catch { }
-                midiOutput = null;
-            }
-            currentMidiFile = null;
-
-            // Read MIDI file
-            MidiFile midiFile = MidiFile.Read(audioClipPath);
-            currentMidiFile = midiFile;
-
-            // Select output device (prefer Microsoft GS Wavetable Synth)
             try
             {
-                try
-                {
-                    midiOutput = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
-                }
-                catch
-                {
-                    int devCount = OutputDevice.GetDevicesCount();
-                    if (devCount > 0) midiOutput = OutputDevice.GetByIndex(0);
-                    else
-                    {
-                        Debug.LogError("No MIDI output devices available on system.");
-                        MessageBox.Instance.Show("No MIDI output devices available.", "Error", null);
-                        return;
-                    }
-                }
-
-                // Create playback that will send events to the selected output device
-                midiPlayback = midiFile.GetPlayback(midiOutput);
+                midiOutput = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
             }
-            catch (Exception ex)
+            catch
             {
-                Debug.LogError("Failed to create MIDI playback: " + ex.Message);
-                MessageBox.Instance.Show("Failed to create MIDI playback: " + ex.Message + "<br>Audio playback Failed.", "Error", null);
-                return;
+                int deviceCount = OutputDevice.GetDevicesCount();
+                if (deviceCount > 0) midiOutput = OutputDevice.GetByIndex(0);
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("Exception loading MIDI file: " + ex.Message);
+            Debug.LogError("Failed to select MIDI output device: " + ex.Message);
+        }
+
+        if (midiOutput == null)
+        {
+            Debug.LogError("No MIDI output devices available on system.");
+            MessageBox.Instance.Show("No MIDI output devices available.", "Error", null);
+        }
+
+        return midiOutput;
+    }
+
+    private AudioStem LoadMidiStemAudio(string stemName, string midiPath, float volume = 1f)
+    {
+        if (stemChannels.TryGetValue(stemName, out var existingStem))
+        {
+            StopStem(stemName, true);
+        }
+
+        try
+        {
+            OutputDevice output = GetMidiOutput();
+            if (output == null) return null;
+
+            MidiFile midiFile = MidiFile.Read(midiPath);
+            Playback playback = midiFile.GetPlayback(output);
+            var stem = new AudioStem
+            {
+                name = stemName,
+                midiPlayback = playback,
+                isMidi = true,
+                isPlaying = false,
+                volume = Mathf.Clamp01(volume),
+                reverbEnabled = false
+            };
+            stemChannels[stemName] = stem;
+            currentMidiFile = midiFile;
+            midiPlayback = playback;
+            return stem;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Failed to load MIDI stem '" + stemName + "': " + ex.Message);
+            return null;
         }
     }
     
@@ -365,13 +380,6 @@ public class MusicPlayer : MonoBehaviour
         // Schedule BASS playback: wait until the DSP time is reached then start BASS streams
         if (bassScheduledCoroutine != null) StopCoroutine(bassScheduledCoroutine);
         bassScheduledCoroutine = StartCoroutine(StartBASSAt(dspTime));
-        // Schedule MIDI playback if a MIDI playback was prepared
-        if (midiPlayback != null)
-        {
-            if (midiScheduledCoroutine != null) StopCoroutine(midiScheduledCoroutine);
-            midiScheduledCoroutine = StartCoroutine(StartMidiAt(dspTime));
-        }
-        
     }
 
     private System.Collections.IEnumerator StartBASSAt(double dspStart)
@@ -984,6 +992,18 @@ public class MusicPlayer : MonoBehaviour
         return new List<string>();
     }
 
+    private bool IsMidiPath(string audioClipPath)
+    {
+        string extension = Path.GetExtension(audioClipPath).TrimStart('.');
+        return string.Equals(extension, "mid", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, "midi", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsLoadedStem(AudioStem stem)
+    {
+        return stem != null && (stem.handle != 0 || stem.midiPlayback != null);
+    }
+
     public void LoadAvailableStemsInPath(string songFolderPath)
     {
         if (string.IsNullOrEmpty(songFolderPath) || !Directory.Exists(songFolderPath))
@@ -1028,7 +1048,7 @@ public class MusicPlayer : MonoBehaviour
             return null;
         }
 
-        if (stemChannels.TryGetValue(stemName, out var existingStem) && existingStem.handle != 0)
+        if (stemChannels.TryGetValue(stemName, out var existingStem) && IsLoadedStem(existingStem))
         {
             StopStem(stemName, true);
         }
@@ -1069,10 +1089,20 @@ public class MusicPlayer : MonoBehaviour
             return null;
         }
 
+        if (IsMidiPath(audioClipPath))
+        {
+            AudioStem midiStem = LoadMidiStemAudio(stemName, audioClipPath, volume);
+            if (midiStem != null && autoplay)
+            {
+                PlayStem(stemName);
+            }
+            return midiStem;
+        }
+
         if (!bassInitialized) InitBASS();
         if (!bassInitialized) return null;
 
-        if (stemChannels.TryGetValue(stemName, out var existingStem) && existingStem.handle != 0)
+        if (stemChannels.TryGetValue(stemName, out var existingStem) && IsLoadedStem(existingStem))
         {
             StopStem(stemName, true);
         }
@@ -1129,17 +1159,28 @@ public class MusicPlayer : MonoBehaviour
 
     public void PlayStem(string stemName)
     {
-        if (stemChannels.TryGetValue(stemName, out var stem) && stem.handle != 0)
+        if (stemChannels.TryGetValue(stemName, out var stem) && IsLoadedStem(stem))
         {
             try
             {
                 double resumeSeconds = isPaused ? Math.Max(0.0, pausedElapsedDsp) : -1.0;
-                ResumeStemChannel(stem.handle, resumeSeconds);
-                foreach (var childHandle in stem.childHandles)
+                if (stem.isMidi)
                 {
-                    if (childHandle != 0)
+                    if (resumeSeconds >= 0.0)
                     {
-                        ResumeStemChannel(childHandle, resumeSeconds);
+                        stem.midiPlayback.MoveToTime(new MetricTimeSpan(TimeSpan.FromSeconds(resumeSeconds)));
+                    }
+                    stem.midiPlayback.Start();
+                }
+                else
+                {
+                    ResumeStemChannel(stem.handle, resumeSeconds);
+                    foreach (var childHandle in stem.childHandles)
+                    {
+                        if (childHandle != 0)
+                        {
+                            ResumeStemChannel(childHandle, resumeSeconds);
+                        }
                     }
                 }
                 stem.isPlaying = true;
@@ -1154,18 +1195,25 @@ public class MusicPlayer : MonoBehaviour
 
     public void PauseStem(string stemName)
     {
-        if (stemChannels.TryGetValue(stemName, out var stem) && stem.handle != 0)
+        if (stemChannels.TryGetValue(stemName, out var stem) && IsLoadedStem(stem))
         {
             pausedElapsedDsp = GetElapsedTimeDsp();
             isPaused = true;
             try
             {
-                Bass.ChannelPause(stem.handle);
-                foreach (var childHandle in stem.childHandles)
+                if (stem.isMidi)
                 {
-                    if (childHandle != 0)
+                    stem.midiPlayback.Stop();
+                }
+                else
+                {
+                    Bass.ChannelPause(stem.handle);
+                    foreach (var childHandle in stem.childHandles)
                     {
-                        Bass.ChannelPause(childHandle);
+                        if (childHandle != 0)
+                        {
+                            Bass.ChannelPause(childHandle);
+                        }
                     }
                 }
                 stem.isPlaying = false;
@@ -1183,15 +1231,26 @@ public class MusicPlayer : MonoBehaviour
         isPaused = false;
         foreach (var pair in stemChannels)
         {
-            if (pair.Value == null || pair.Value.handle == 0) continue;
+            if (!IsLoadedStem(pair.Value)) continue;
             try
             {
-                ResumeStemChannel(pair.Value.handle, resumeSeconds);
-                foreach (var childHandle in pair.Value.childHandles)
+                if (pair.Value.isMidi)
                 {
-                    if (childHandle != 0)
+                    if (resumeSeconds >= 0.0)
                     {
-                        ResumeStemChannel(childHandle, resumeSeconds);
+                        pair.Value.midiPlayback.MoveToTime(new MetricTimeSpan(TimeSpan.FromSeconds(resumeSeconds)));
+                    }
+                    pair.Value.midiPlayback.Start();
+                }
+                else
+                {
+                    ResumeStemChannel(pair.Value.handle, resumeSeconds);
+                    foreach (var childHandle in pair.Value.childHandles)
+                    {
+                        if (childHandle != 0)
+                        {
+                            ResumeStemChannel(childHandle, resumeSeconds);
+                        }
                     }
                 }
                 pair.Value.isPlaying = true;
@@ -1210,15 +1269,22 @@ public class MusicPlayer : MonoBehaviour
 
         foreach (var pair in stemChannels)
         {
-            if (pair.Value == null || pair.Value.handle == 0) continue;
+            if (!IsLoadedStem(pair.Value)) continue;
             try
             {
-                Bass.ChannelPause(pair.Value.handle);
-                foreach (var childHandle in pair.Value.childHandles)
+                if (pair.Value.isMidi)
                 {
-                    if (childHandle != 0)
+                    pair.Value.midiPlayback.Stop();
+                }
+                else
+                {
+                    Bass.ChannelPause(pair.Value.handle);
+                    foreach (var childHandle in pair.Value.childHandles)
                     {
-                        Bass.ChannelPause(childHandle);
+                        if (childHandle != 0)
+                        {
+                            Bass.ChannelPause(childHandle);
+                        }
                     }
                 }
                 pair.Value.isPlaying = false;
@@ -1234,26 +1300,37 @@ public class MusicPlayer : MonoBehaviour
     {
         foreach (var pair in new List<KeyValuePair<string, AudioStem>>(stemChannels))
         {
-            if (pair.Value == null || pair.Value.handle == 0) continue;
+            if (!IsLoadedStem(pair.Value)) continue;
             try
             {
-                ToggleReverb(false, pair.Value.handle);
-                foreach (var childHandle in pair.Value.childHandles)
+                if (pair.Value.isMidi)
                 {
-                    if (childHandle != 0)
+                    pair.Value.midiPlayback.Stop();
+                    if (freeStems)
                     {
-                        ToggleReverb(false, childHandle);
-                        Bass.ChannelStop(childHandle);
-                        if (freeStems)
-                        {
-                            Bass.StreamFree(childHandle);
-                        }
+                        pair.Value.midiPlayback.Dispose();
                     }
                 }
-                Bass.ChannelStop(pair.Value.handle);
-                if (freeStems)
+                else
                 {
-                    Bass.StreamFree(pair.Value.handle);
+                    ToggleReverb(false, pair.Value.handle);
+                    foreach (var childHandle in pair.Value.childHandles)
+                    {
+                        if (childHandle != 0)
+                        {
+                            ToggleReverb(false, childHandle);
+                            Bass.ChannelStop(childHandle);
+                            if (freeStems)
+                            {
+                                Bass.StreamFree(childHandle);
+                            }
+                        }
+                    }
+                    Bass.ChannelStop(pair.Value.handle);
+                    if (freeStems)
+                    {
+                        Bass.StreamFree(pair.Value.handle);
+                    }
                 }
             }
             catch (Exception ex)
@@ -1267,34 +1344,58 @@ public class MusicPlayer : MonoBehaviour
                 if (freeStems)
                 {
                     pair.Value.handle = 0;
+                    pair.Value.midiPlayback = null;
+                    stemChannels.Remove(pair.Key);
                 }
+            }
+        }
+        if (freeStems)
+        {
+            midiPlayback = null;
+            currentMidiFile = null;
+            if (midiOutput != null)
+            {
+                try { midiOutput.Dispose(); } catch { }
+                midiOutput = null;
             }
         }
     }
 
     public void StopStem(string stemName, bool freeStem = true)
     {
-        if (stemChannels.TryGetValue(stemName, out var stem) && stem.handle != 0)
+        if (stemChannels.TryGetValue(stemName, out var stem) && IsLoadedStem(stem))
         {
+            Playback stoppedMidiPlayback = stem.midiPlayback;
             try
             {
-                ToggleReverb(false, stem.handle);
-                Bass.ChannelStop(stem.handle);
-                foreach (var childHandle in stem.childHandles)
+                if (stem.isMidi)
                 {
-                    if (childHandle != 0)
+                    stem.midiPlayback.Stop();
+                    if (freeStem)
                     {
-                        ToggleReverb(false, childHandle);
-                        Bass.ChannelStop(childHandle);
-                        if (freeStem)
-                        {
-                            Bass.StreamFree(childHandle);
-                        }
+                        stem.midiPlayback.Dispose();
                     }
                 }
-                if (freeStem)
+                else
                 {
-                    Bass.StreamFree(stem.handle);
+                    ToggleReverb(false, stem.handle);
+                    Bass.ChannelStop(stem.handle);
+                    foreach (var childHandle in stem.childHandles)
+                    {
+                        if (childHandle != 0)
+                        {
+                            ToggleReverb(false, childHandle);
+                            Bass.ChannelStop(childHandle);
+                            if (freeStem)
+                            {
+                                Bass.StreamFree(childHandle);
+                            }
+                        }
+                    }
+                    if (freeStem)
+                    {
+                        Bass.StreamFree(stem.handle);
+                    }
                 }
             }
             catch (Exception ex)
@@ -1306,17 +1407,26 @@ public class MusicPlayer : MonoBehaviour
                 stem.isPlaying = false;
                 stem.childHandles.Clear();
                 stem.handle = 0;
+                stem.midiPlayback = null;
                 stemChannels.Remove(stemName);
+                if (ReferenceEquals(midiPlayback, stoppedMidiPlayback)) midiPlayback = null;
             }
+        }
+        if (freeStem && midiOutput != null && !stemChannels.Values.Any(stem => stem != null && stem.isMidi))
+        {
+            try { midiOutput.Dispose(); } catch { }
+            midiOutput = null;
+            currentMidiFile = null;
         }
     }
 
     public void SetStemVolume(string stemName, float volume)
     {
-        if (stemChannels.TryGetValue(stemName, out var stem) && stem.handle != 0)
+        if (stemChannels.TryGetValue(stemName, out var stem) && IsLoadedStem(stem))
         {
             var clamped = Mathf.Clamp01(volume);
             stem.volume = clamped;
+            if (stem.isMidi) return;
             try { Bass.ChannelSetAttribute(stem.handle, ChannelAttribute.Volume, clamped); } catch { }
             foreach (var childHandle in stem.childHandles)
             {
@@ -1333,8 +1443,9 @@ public class MusicPlayer : MonoBehaviour
         var clamped = Mathf.Clamp01(volume);
         foreach (var pair in stemChannels)
         {
-            if (pair.Value == null || pair.Value.handle == 0) continue;
+            if (!IsLoadedStem(pair.Value)) continue;
             pair.Value.volume = clamped;
+            if (pair.Value.isMidi) continue;
             try { Bass.ChannelSetAttribute(pair.Value.handle, ChannelAttribute.Volume, clamped); } catch { }
             foreach (var childHandle in pair.Value.childHandles)
             {
@@ -1350,6 +1461,11 @@ public class MusicPlayer : MonoBehaviour
     {
         if (stemChannels.TryGetValue(stemName, out var stem))
         {
+            if (stem.isMidi)
+            {
+                stem.reverbEnabled = false;
+                return;
+            }
             ToggleReverb(on, stem.handle);
             foreach (var childHandle in stem.childHandles)
             {
