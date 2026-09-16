@@ -271,7 +271,8 @@ public class PlayerPrefsLoader : MonoBehaviour
             SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
             PlayerPrefs.SetInt("EnableVenue", 1);
             PlayerPrefs.SetInt("EnableAutoplay", 0);
-            PlayerPrefs.SetInt("EnableVSync", 0);
+            PlayerPrefs.SetInt("EnableVSync", 1);
+            QualitySettings.vSyncCount = 1;
             Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, true);
             RewiredStandaloneInputModule inputModule = FindFirstObjectByType<RewiredStandaloneInputModule>();
             inputModule.allowMouseInput = false;

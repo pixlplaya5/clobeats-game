@@ -442,7 +442,7 @@ public class UGUIMenuList : MonoBehaviour
         {
             string[] files = await Task.Run(() => Directory.GetFiles(songPath));
             return files.Any(path =>
-                string.Equals(Path.GetFileNameWithoutExtension(path), "song", StringComparison.OrdinalIgnoreCase)
+                string.Equals(Path.GetFileNameWithoutExtension(path), "song_mixed", StringComparison.OrdinalIgnoreCase)
                 && SupportedAudioFormats.Contains(Path.GetExtension(path).ToLowerInvariant()));
         }
         catch (Exception ex)

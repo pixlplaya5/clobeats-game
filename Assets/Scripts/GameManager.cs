@@ -93,10 +93,10 @@ public class GameManager : MonoBehaviour
     // note mappings (RBN2)
     Dictionary<string, Dictionary<int, int>> partGuitarDifficultyMappings = new Dictionary<string, Dictionary<int,int>>
     {
-        ["EasyRhythm"] = new Dictionary<int,int> { {94,8} },
-        ["Easy"] = new Dictionary<int,int> { {60,0}, {61,1}, {62,2}, {63,3}, {64,4}, {59,7}, {94,8} },
-        ["Medium"] = new Dictionary<int,int> { {72,0}, {73,1}, {74,2}, {75,3}, {76,4}, {71,7}, {94,8} },
-        ["Hard"] = new Dictionary<int,int> { {84,0}, {85,1}, {86,2}, {87,3}, {88,4}, {83,7}, {94,8} },
+        ["EasyRhythm"] = new Dictionary<int,int> { {57,8} },
+        ["Easy"] = new Dictionary<int,int> { {60,0}, {61,1}, {62,2}, {63,3}, {64,4}, {59,7}, {58,8} },
+        ["Medium"] = new Dictionary<int,int> { {72,0}, {73,1}, {74,2}, {75,3}, {76,4}, {71,7}, {70,8} },
+        ["Hard"] = new Dictionary<int,int> { {84,0}, {85,1}, {86,2}, {87,3}, {88,4}, {83,7}, {82,8} },
         ["Expert"] = new Dictionary<int,int> { {96,0}, {97,1}, {98,2}, {99,3}, {100,4}, {95,7}, {94,8} },
     };
 
