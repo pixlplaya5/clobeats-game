@@ -433,6 +433,8 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.RewiredRemap:
                     Rewired.UI.ControlMapper.ControlMapper mapper = FindFirstObjectByType<Rewired.UI.ControlMapper.ControlMapper>();
                     if (mapper) mapper.Open();
+                    Rewired.Integration.UnityUI.RewiredStandaloneInputModule inputModule = FindFirstObjectByType<Rewired.Integration.UnityUI.RewiredStandaloneInputModule>();
+                    inputModule.allowMouseInput = true;
                     break;
                 case MenuAction.Back:
                     Exit();
