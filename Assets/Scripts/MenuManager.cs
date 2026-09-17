@@ -25,7 +25,14 @@ public class MenuManager : MonoBehaviour
         PlayCachedSong,
         Back,
         ConfirmExit,
-        QuitGame
+        QuitGame,
+        QualityZero,
+        QualityOne,
+        QualityTwo,
+        QualityThree,
+        QualityFour,
+        RewiredRemap
+
     }
 
     [Serializable]
@@ -407,6 +414,25 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.PlayCachedSong:
                     GameManager gameManager = FindAnyObjectByType<GameManager>();
                     await gameManager.PlaySongGlobal(currentPreviewingSongPath);
+                    break;
+                case MenuAction.QualityZero:
+                    QualitySettings.SetQualityLevel(0);
+                    break;
+                case MenuAction.QualityOne:
+                    QualitySettings.SetQualityLevel(1);
+                    break;
+                case MenuAction.QualityTwo:
+                    QualitySettings.SetQualityLevel(2);
+                    break;
+                case MenuAction.QualityThree:
+                    QualitySettings.SetQualityLevel(3);
+                    break;
+                case MenuAction.QualityFour:
+                    QualitySettings.SetQualityLevel(4);
+                    break;
+                case MenuAction.RewiredRemap:
+                    Rewired.UI.ControlMapper.ControlMapper mapper = FindFirstObjectByType<Rewired.UI.ControlMapper.ControlMapper>();
+                    if (mapper) mapper.Open();
                     break;
                 case MenuAction.Back:
                     Exit();
