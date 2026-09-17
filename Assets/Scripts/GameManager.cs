@@ -256,6 +256,25 @@ public class GameManager : MonoBehaviour
             return string.Empty;
         }
     }
+
+    public string FindMixedSongInPath(string path)
+    {
+        SongFolderLoader songFolderLoader = FindAnyObjectByType<SongFolderLoader>();
+        // Find a file named "song" with a supported extension and set the audio path
+        string[] songFiles = Directory.GetFiles(path);
+        var songMatch = songFiles
+            .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
+            .FirstOrDefault(x => x.name == "song_mixed" && songFolderLoader.supportedFormats.Contains(x.ext));
+
+        if (songMatch != null)
+        {
+            return songMatch.path;
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
     public async Task ReadMidiFile(string path)
     {
         // Read MIDI, cache it by a stable hash of the full path, and copy into current song queues

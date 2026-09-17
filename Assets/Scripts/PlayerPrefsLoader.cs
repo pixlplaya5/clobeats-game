@@ -422,7 +422,7 @@ public class PlayerPrefsLoader : MonoBehaviour
                         gameManager.songFolders.Add(dir);
                         songItemNames.Add(dir);
                         gameManager.CacheSingleSong(dir, hash, ind);
-                        StartCoroutine(gameManager.CacheAudioFile(gameManager.FindSongInPath(dir), hash));
+                        StartCoroutine(gameManager.CacheAudioFile(gameManager.FindMixedSongInPath(dir), hash)); // use mixed-down version if available
                         Debug.Log($"Cached {ind} song dir \"" + dir + "\" with absolute hash code " + hash);
                         ind++;
                         //loadingText.text = "Loading songs: (" + ind + " songs)";
