@@ -1349,6 +1349,9 @@ public class GameManager : MonoBehaviour
         {
             uiUpdater.ScoreVisibility(true);
             sFXPlayer.PlayClip("ScoreShow");
+            ImprovedStrikeline strikeline = FindFirstObjectByType<ImprovedStrikeline>();
+            sFXPlayer.PlayClip("Notes_Ripple_Up_01");
+            StartCoroutine(strikeline.RippleAnim());
         }
         yield return null;
         

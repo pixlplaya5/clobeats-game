@@ -23,6 +23,7 @@ public class MenuManager : MonoBehaviour
         StartGame,
         PlaySelectedSong,
         PlayCachedSong,
+        PlaySongFromPath,
         Back,
         ConfirmExit,
         QuitGame,
@@ -415,6 +416,18 @@ public class MenuManager : MonoBehaviour
                     GameManager gameManager = FindAnyObjectByType<GameManager>();
                     await gameManager.PlaySongGlobal(currentPreviewingSongPath);
                     break;
+                case MenuAction.PlaySongFromPath:
+                    MouseInputCheck mouseInputCheck1 = FindAnyObjectByType<MouseInputCheck>();
+                    mouseInputCheck1.allowMouseInput = true;
+                    SimpleFileBrowser.FileBrowser.ShowLoadDialog( async ( paths ) => {
+                    MouseInputCheck mic = FindAnyObjectByType<MouseInputCheck>();
+                    mic.allowMouseInput = false;
+                    GameManager gameManager = FindAnyObjectByType<GameManager>();
+                    await gameManager.PlaySongGlobal(paths[0]);
+                    Debug.Log("Folder selected: '" + paths[0] + "'"); },
+			        	() => { Debug.Log( "Canceled" ); },
+			        	SimpleFileBrowser.FileBrowser.PickMode.Folders, false, null, null, "Select Folder", "Select" );
+                    break;
                 case MenuAction.QualityZero:
                     QualitySettings.SetQualityLevel(0);
                     break;
@@ -433,8 +446,8 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.RewiredRemap:
                     Rewired.UI.ControlMapper.ControlMapper mapper = FindFirstObjectByType<Rewired.UI.ControlMapper.ControlMapper>();
                     if (mapper) mapper.Open();
-                    Rewired.Integration.UnityUI.RewiredStandaloneInputModule inputModule = FindFirstObjectByType<Rewired.Integration.UnityUI.RewiredStandaloneInputModule>();
-                    inputModule.allowMouseInput = true;
+                    MouseInputCheck mouseInputCheck = FindAnyObjectByType<MouseInputCheck>();
+                    mouseInputCheck.allowMouseInput = true;
                     break;
                 case MenuAction.Back:
                     Exit();

@@ -69,10 +69,18 @@ public class ImprovedStrikeline : MonoBehaviour
         {
             if (greenFlamePrefab != null)
             {
-                Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
-                GameObject flame = Instantiate(greenFlamePrefab, fret, rotation);
+                if (!greenFlamePrefab.activeSelf)
+                {
+                    greenFlamePrefab.SetActive(true);
+                }
+                else
+                {
+                    greenFlamePrefab.SetActive(false);
+                    greenFlamePrefab.SetActive(true);
+                }
+                
                 yield return new WaitForSeconds(duration);
-                Destroy(flame);
+                greenFlamePrefab.SetActive(false);
             }
             else
             {
@@ -83,10 +91,17 @@ public class ImprovedStrikeline : MonoBehaviour
         {
             if (redFlamePrefab != null)
             {
-                Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
-                GameObject flame = Instantiate(redFlamePrefab, fret, rotation);
+                if (!redFlamePrefab.activeSelf)
+                {
+                    redFlamePrefab.SetActive(true);
+                }
+                else
+                {
+                    redFlamePrefab.SetActive(false);
+                }
+                
                 yield return new WaitForSeconds(duration);
-                Destroy(flame);
+                redFlamePrefab.SetActive(false);
             }
             else
             {
@@ -97,10 +112,18 @@ public class ImprovedStrikeline : MonoBehaviour
         {
             if (yellowFlamePrefab != null)
             {
-                Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
-                GameObject flame = Instantiate(yellowFlamePrefab, fret, rotation);
+                if (!yellowFlamePrefab.activeSelf)
+                {
+                    yellowFlamePrefab.SetActive(true);
+                }
+                else
+                {
+                    yellowFlamePrefab.SetActive(false);
+                    yellowFlamePrefab.SetActive(true);
+                }
+                
                 yield return new WaitForSeconds(duration);
-                Destroy(flame);
+                yellowFlamePrefab.SetActive(false);
             }
             else
             {
@@ -111,10 +134,18 @@ public class ImprovedStrikeline : MonoBehaviour
         {
             if (blueFlamePrefab != null)
             {
-                Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
-                GameObject flame = Instantiate(blueFlamePrefab, fret, rotation);
+                if (!blueFlamePrefab.activeSelf)
+                {
+                    blueFlamePrefab.SetActive(true);
+                }
+                else
+                {
+                    blueFlamePrefab.SetActive(false);
+                    blueFlamePrefab.SetActive(true);
+                }
+                
                 yield return new WaitForSeconds(duration);
-                Destroy(flame);
+                blueFlamePrefab.SetActive(false);
             }
             else
             {
@@ -125,10 +156,18 @@ public class ImprovedStrikeline : MonoBehaviour
         {
             if (orangeFlamePrefab != null)
             {
-                Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
-                GameObject flame = Instantiate(orangeFlamePrefab, fret, rotation);
+                if (!orangeFlamePrefab.activeSelf)
+                {
+                    orangeFlamePrefab.SetActive(true);
+                }
+                else
+                {
+                    orangeFlamePrefab.SetActive(false);
+                    orangeFlamePrefab.SetActive(true);
+                }
+
                 yield return new WaitForSeconds(duration);
-                Destroy(flame);
+                orangeFlamePrefab.SetActive(false);
             }
             else
             {
@@ -139,11 +178,18 @@ public class ImprovedStrikeline : MonoBehaviour
         {
             if (purpleFlamePrefab != null)
             {
-                Vector3 openPos = new Vector3(0, 0, 0);
-                Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
-                GameObject flame = Instantiate(purpleFlamePrefab, openPos, rotation);
+                if (!purpleFlamePrefab.activeSelf)
+                {
+                    purpleFlamePrefab.SetActive(true);
+                }
+                else
+                {
+                    purpleFlamePrefab.SetActive(false);
+                    purpleFlamePrefab.SetActive(true);
+                }
+                
                 yield return new WaitForSeconds(duration);
-                Destroy(flame);
+                purpleFlamePrefab.SetActive(false);
             }
             else
             {
