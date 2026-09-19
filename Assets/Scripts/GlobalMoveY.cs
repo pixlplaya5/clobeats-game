@@ -76,62 +76,70 @@ public class GlobalMoveY : MonoBehaviour
             currentSongSeconds = ns.GetTimeInSecondsAtTick(ns.currentTick);
         }
 
-        for (int i = objectsToMove.Count - 1; i >= 0; --i)
+        try
         {
-            var obj = objectsToMove[i];
-            if (obj == null)
+            for (int i = objectsToMove.Count - 1; i >= 0; --i)
             {
-                objectsToMove.RemoveAt(i);
-                continue;
-            }
-
-            var t = obj.transform;
-            float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
-            // If the object has a ScheduledTime component, compute its world Y directly
-            // from its scheduled song time and the currentSongSeconds using NoteSpawner's
-            // layout parameters so tempo changes are respected.
-            var sched = obj.GetComponent<ScheduledTime>();
-            if (sched != null && ns != null)
-            {
-                spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", ns != null ? ns.desiredHyperspeedSingleThreaded : speed);
-                float strikeY = ns != null ? ns.GetStrikeLineY() : 0f;
-                float targetY = strikeY + ns.startingYPosition + ns.startingYOffset + ((sched.scheduledSeconds - currentSongSeconds) + ns.spawnLeadSeconds) * spacingFactor;
-                // preserve x,z
-                t.position = new Vector3(t.position.x, targetY, t.position.z);
-            }
-            else
-            {
-                t.Translate(0f, -speed * Time.deltaTime, 0f, Space.World);
-            }
-            
-            float twend = lim.hitWindowSeconds * spacingFactor;
-            if (obj.name.ToLower().Contains("sustainvisual"))
-            {
-                continue;
-            }
-            else
-            {
-                if (obj.transform.position.y < -twend)
+                var obj = objectsToMove[i];
+                if (obj == null)
                 {
-                    if (PlayerPrefs.GetInt("EnableLite", 0) == 0)
-                    {
-                        NotePoolManager.Instance.Return(obj);
-                    }
-                    else
-                    {
-                        Destroy(obj);
-                    }
-                    
-                    LaneManager.Instance.UnregisterNote(obj);
                     objectsToMove.RemoveAt(i);
-                    var note = obj.GetComponent<PooledNote>();
-                    if (note != null)
-                    {
-                        sl.MissNote();
-                    }
                     continue;
+                }
+
+                var t = obj.transform;
+                float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+                // If the object has a ScheduledTime component, compute its world Y directly
+                // from its scheduled song time and the currentSongSeconds using NoteSpawner's
+                // layout parameters so tempo changes are respected.
+                var sched = obj.GetComponent<ScheduledTime>();
+                if (sched != null && ns != null)
+                {
+                    spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", ns != null ? ns.desiredHyperspeedSingleThreaded : speed);
+                    float strikeY = ns != null ? ns.GetStrikeLineY() : 0f;
+                    float targetY = strikeY + ns.startingYPosition + ns.startingYOffset + ((sched.scheduledSeconds - currentSongSeconds) + ns.spawnLeadSeconds) * spacingFactor;
+                    // preserve x,z
+                    t.position = new Vector3(t.position.x, targetY, t.position.z);
+                }
+                else
+                {
+                    t.Translate(0f, -speed * Time.deltaTime, 0f, Space.World);
+                }
+
+                float twend = lim.hitWindowSeconds * spacingFactor;
+                if (obj.name.ToLower().Contains("sustainvisual"))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (obj.transform.position.y < -twend)
+                    {
+                        if (PlayerPrefs.GetInt("EnableLite", 0) == 0)
+                        {
+                            NotePoolManager.Instance.Return(obj);
+                        }
+                        else
+                        {
+                            Destroy(obj);
+                        }
+                    
+                        LaneManager.Instance.UnregisterNote(obj);
+                        objectsToMove.RemoveAt(i);
+                        var note = obj.GetComponent<PooledNote>();
+                        if (note != null)
+                        {
+                            sl.MissNote();
+                        }
+                        continue;
+                    }
                 }
             }
         }
+        catch
+        {
+            
+        }
+        
     }
 }

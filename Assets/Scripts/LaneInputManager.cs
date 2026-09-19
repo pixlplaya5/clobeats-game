@@ -217,10 +217,11 @@ public class LaneInputManager : MonoBehaviour
         {
             if (Mathf.Abs(noteTimes[i] - noteTimes[0]) <= hitWindowSeconds)
             {
+                Debug.Log(Mathf.Abs(noteTimes[i] - noteTimes[0]) + " is less than or equal to " + hitWindowSeconds);
                 return true;
             }
         }
-
+        Debug.Log("not a chord");
         return false;
     }
 
@@ -261,13 +262,11 @@ public class LaneInputManager : MonoBehaviour
         }
         else
         {
-            int chordLane = -1;
             foreach (var lane in lanes)
             {
-                chordLane = lane;
+                TryHitLane(lane, false, NoteVisualChanger.NoteType.Forced, true);
             }
-            if (chordLane < 0) return false;
-            return TryHitLane(chordLane, false, NoteVisualChanger.NoteType.Forced, true);
+            return true;
         }
     }
 
@@ -313,7 +312,7 @@ public class LaneInputManager : MonoBehaviour
         float autoHitWindowSeconds = Mathf.Min(0, hitWindowSeconds);
         if (Mathf.Abs(secondsUntil) <= hitWindowSeconds && !autoHit)
         {
-            //Debug.Log("PlayerHit lane " + laneIndex + " note with " + secondsUntil + " seconds until strike line.");
+            Debug.Log("PlayerHit lane " + laneIndex + " note with " + secondsUntil + " seconds until strike line. (threshold: " + hitWindowSeconds + ")");
             var sustainComp = note.GetComponent<SustainedNote>();
             if (visual != null)
             {
@@ -390,7 +389,7 @@ public class LaneInputManager : MonoBehaviour
         }
         else if (secondsUntil <= autoHitWindowSeconds && autoHit)
         {
-            //Debug.Log("AutoHit lane " + laneIndex + " note with " + secondsUntil + " seconds until strike line.");
+            Debug.Log("AutoHit lane " + laneIndex + " note with " + secondsUntil + " seconds until strike line. (threshold: " + autoHitWindowSeconds + ")");
 
             var sustainComp = note.GetComponent<SustainedNote>();
             LaneManager.Instance.UnregisterNote(note);

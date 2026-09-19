@@ -472,7 +472,7 @@ public class PlayerPrefsLoader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GameManager gm = FindAnyObjectByType<GameManager>();
+        /*GameManager gm = FindAnyObjectByType<GameManager>();
         if (playButton != null)
         {
             if (!string.IsNullOrEmpty(pathInputField.text) && System.IO.Directory.Exists(pathInputField.text))
@@ -561,6 +561,6 @@ public class PlayerPrefsLoader : MonoBehaviour
             {
                 UnityEngine.Application.targetFrameRate = -1;
             }
-        }
+        }*/
     }
 }
