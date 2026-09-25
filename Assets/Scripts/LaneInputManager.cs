@@ -262,9 +262,9 @@ public class LaneInputManager : MonoBehaviour
         }
         else
         {
-            foreach (var lane in lanes)
+            for (int i = 1; i <= lanes.Count; i++)
             {
-                TryHitLane(lane, false, NoteVisualChanger.NoteType.Forced, true);
+                TryHitLane(i, false, NoteVisualChanger.NoteType.Forced, true);
             }
             return true;
         }
