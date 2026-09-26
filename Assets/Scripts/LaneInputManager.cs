@@ -193,7 +193,7 @@ public class LaneInputManager : MonoBehaviour
         if (spawner == null || heldLanes.Count < 2) return false;
 
         List<float> noteTimes = new List<float>();
-        foreach (var lane in heldLanes)
+        for (int lane = 0; lane <= 4; lane++)
         {
             var note = LaneManager.Instance.GetNextNoteInLane(lane);
             if (note == null) continue;

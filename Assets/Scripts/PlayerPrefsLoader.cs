@@ -35,7 +35,7 @@ public class PlayerPrefsLoader : MonoBehaviour
     public List<string> songItemNames = new List<string>();
     bool isFullscreen = true;
 
-    void Awake()
+    async void Awake()
     {
         QualitySettings.SetQualityLevel(2); // force normal quality
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow); // force fullscreen
@@ -259,7 +259,7 @@ public class PlayerPrefsLoader : MonoBehaviour
         {
             Debug.Log("Auto Load enabled.");
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Additive);
-            //await Task.Delay(1000);
+            await Task.Delay(100);
             if (indefiniteLoadingScreen != null)
             {
                 indefiniteLoadingScreen.SetActive(false);

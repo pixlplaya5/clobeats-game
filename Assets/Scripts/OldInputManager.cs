@@ -57,6 +57,22 @@ public class OldInputManager : MonoBehaviour
             await Task.Yield();
         }
     }
+
+    private async Task InputNote(int value, bool held)
+    {
+        if (laneInputManager != null)
+        {
+            if (held)
+            {
+                laneInputManager.OnFretPressed(value);
+            }
+            else
+            {
+                laneInputManager.OnFretReleased(value);
+            }
+            await Task.Yield();
+        }
+    }
     private async Task InputStrum()
     {
         if (laneInputManager != null)
@@ -201,16 +217,11 @@ public class OldInputManager : MonoBehaviour
         {
             if (!gamepadMode)
             {
-                if (player.GetButtonDown("Green")) await InputNoteDown(0);
-                if (player.GetButtonUp("Green")) await InputNoteUp(0);
-                if (player.GetButtonDown("Red")) await InputNoteDown(1);
-                if (player.GetButtonUp("Red")) await InputNoteUp(1);
-                if (player.GetButtonDown("Yellow")) await InputNoteDown(2);
-                if (player.GetButtonUp("Yellow")) await InputNoteUp(2);
-                if (player.GetButtonDown("Blue")) await InputNoteDown(3);
-                if (player.GetButtonUp("Blue")) await InputNoteUp(3);
-                if (player.GetButtonDown("Orange")) await InputNoteDown(4);
-                if (player.GetButtonUp("Orange")) await InputNoteUp(4);
+                await InputNote(0, player.GetButton("Green"));
+                await InputNote(1, player.GetButton("Red"));
+                await InputNote(2, player.GetButton("Yellow"));
+                await InputNote(3, player.GetButton("Blue"));
+                await InputNote(4, player.GetButton("Orange"));
 
                 if (player.GetButtonDown("StrumUp")) await InputStrum();
                 if (player.GetButtonDown("StrumDown")) await InputStrum();

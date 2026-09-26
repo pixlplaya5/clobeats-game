@@ -126,7 +126,7 @@ public class UIUpdater : MonoBehaviour
         {
             scoring.currentScore += 50 * savedcombo;
         }
-        scoreText.text = savesscore.ToString("F0");
+        scoreText.text = savesscore.ToString("N0");
     }
     public void UpdateScoreSustain(float amount)
     {
@@ -136,7 +136,7 @@ public class UIUpdater : MonoBehaviour
         {
             scoring.currentScore += (int)amount;
         }
-        scoreText.text = savesscore.ToString("F0");
+        scoreText.text = savesscore.ToString("N0");
     }
     public void UpdateCombo(UpdateType type = UpdateType.ScoreAdd)
     {
@@ -219,10 +219,6 @@ public class UIUpdater : MonoBehaviour
         if (scoring != null)
         {
             scoring.currentNotesMissed += 1;
-        }
-        if (savedcombo == 1)
-        {
-            return;
         }
         if (savednotesHit == 0)
         {
