@@ -35,7 +35,7 @@ public class PlayerPrefsLoader : MonoBehaviour
     public List<string> songItemNames = new List<string>();
     bool isFullscreen = true;
 
-    async void Awake()
+    void Awake()
     {
         QualitySettings.SetQualityLevel(2); // force normal quality
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow); // force fullscreen
@@ -276,7 +276,7 @@ public class PlayerPrefsLoader : MonoBehaviour
             Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, true);
             RewiredStandaloneInputModule inputModule = FindFirstObjectByType<RewiredStandaloneInputModule>();
             inputModule.allowMouseInput = false;
-            MessageBox.Instance.Show($"Welcome to {Application.productName} !<br>Loading custom songs takes a <b>VERY</b> long time, "
+            if (SceneManager.GetSceneByName("MainMenu").isLoaded) MessageBox.Instance.Show($"Welcome to {Application.productName} !<br>Loading custom songs takes a <b>VERY</b> long time, "
             + "so if you don't want to wait, please exit the game and move your custom songs somewhere else to access the online song catalog, "
             + "or simply wait.<br>Press OK to continue.", "Message", async () => await LoadGame());
         }

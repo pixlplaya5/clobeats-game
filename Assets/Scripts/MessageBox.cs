@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class MessageBox : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class MessageBox : MonoBehaviour
     {
         if (mbPrefab != null)
         {
+            if (!SceneManager.GetSceneByName("MainMenu").isLoaded) return;
             MenuManager menuManager = FindAnyObjectByType<MenuManager>();
             GameObject instance = menuManager.ReturnMenuGO("message");
             TMPro.TextMeshProUGUI title = instance.transform.Find("Canvas/MessageBox/Title").gameObject.GetComponent<TMPro.TextMeshProUGUI>();
