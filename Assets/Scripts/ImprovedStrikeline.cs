@@ -272,19 +272,19 @@ public class ImprovedStrikeline : MonoBehaviour
         }    
     }
 
-    public IEnumerator RippleAnim()
+    public IEnumerator RippleAnim(float distTime = 0.2f)
     {
         
         SLTopHit(0);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(distTime);
         SLTopHit(1);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(distTime);
         SLTopHit(2);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(distTime);
         SLTopHit(3);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(distTime);
         SLTopHit(4);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(distTime);
         
         //ResetAnims();
     }

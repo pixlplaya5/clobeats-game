@@ -259,7 +259,7 @@ public class PlayerPrefsLoader : MonoBehaviour
         {
             Debug.Log("Auto Load enabled.");
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Additive);
-            await Task.Delay(1000);
+            //await Task.Delay(1000);
             if (indefiniteLoadingScreen != null)
             {
                 indefiniteLoadingScreen.SetActive(false);
@@ -268,7 +268,7 @@ public class PlayerPrefsLoader : MonoBehaviour
             {
                 child.gameObject.SetActive(false);
             }
-            SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+            
             PlayerPrefs.SetInt("EnableVenue", 1);
             PlayerPrefs.SetInt("EnableAutoplay", 0);
             PlayerPrefs.SetInt("EnableVSync", 1);
@@ -378,6 +378,7 @@ public class PlayerPrefsLoader : MonoBehaviour
                 loader.LoadScene("HS_Screen", LoadSceneMode.Additive);
                 await Task.Delay(6000);
                 SceneManager.UnloadSceneAsync("HS_Screen");
+                SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
                 manager.ShowMenu("start");
                 return true;
             }

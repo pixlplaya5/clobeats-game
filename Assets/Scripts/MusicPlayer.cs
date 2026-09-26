@@ -150,7 +150,7 @@ public class MusicPlayer : MonoBehaviour
     {
         AudioClip testClip = LoadUnityAudioFile(audioPath);
         GameObject go = new GameObject("TestClip");
-        go.transform.SetParent(this.transform, false);
+        //go.transform.SetParent(this.transform, false);
         var src = go.AddComponent<AudioSource>();
         src.playOnAwake = false;
         src.spatialBlend = 0f;
