@@ -1,3 +1,4 @@
+// this script is unused! this has been replaced by LaneInputManager.
 using UnityEngine;
 using System;
 
@@ -53,7 +54,7 @@ public class NoteDeletor : MonoBehaviour
         else
         {
             //Debug.Log("Note missed!");
-            if (noteSpawner != null) noteSpawner.ReturnObjectToPool(other.gameObject); else Destroy(other.gameObject);
+            if (noteSpawner != null) noteSpawner.HandleMissedNote(other.gameObject); else Destroy(other.gameObject);
             //uiUpdater.DecreaseRockMeter();
             //uiUpdater.ResetCombo();
         }
@@ -90,7 +91,7 @@ public class NoteDeletor : MonoBehaviour
         else
         {
             //Debug.Log("Note missed!");
-            if (noteSpawner != null) noteSpawner.ReturnObjectToPool(other.gameObject); else Destroy(other.gameObject);
+            if (noteSpawner != null) noteSpawner.HandleMissedNote(other.gameObject); else Destroy(other.gameObject);
             //uiUpdater.DecreaseRockMeter();
             //uiUpdater.ResetCombo();
         }

@@ -750,6 +750,33 @@ public class NoteSpawner : MonoBehaviour
         }
     }
 
+    public void HandleMissedNote(GameObject note)
+    {
+        if (note == null) return;
+
+        var sustainedNote = note.GetComponent<SustainedNote>();
+        var sustain = note.GetComponentInChildren<Sustain>(true);
+        if (sustainedNote != null && sustainedNote.durationSeconds > 0f && sustain != null)
+        {
+            var noteSchedule = note.GetComponent<ScheduledTime>();
+            float startTime = noteSchedule != null
+                ? noteSchedule.scheduledSeconds
+                : (musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f);
+
+            sustain.color = Color.gray;
+            sustain.transform.SetParent(null, true);
+            var sustainSchedule = sustain.GetComponent<ScheduledTime>();
+            if (sustainSchedule == null) sustainSchedule = sustain.gameObject.AddComponent<ScheduledTime>();
+            sustainSchedule.scheduledSeconds = startTime + sustainedNote.durationSeconds * 0.5f;
+            sustain.gameObject.name = "MissedSustainVisual";
+            sustain.gameObject.SetActive(true);
+            AddObjectToGlobalMoveY(sustain.gameObject);
+            StartCoroutine(RemoveDummyAfterTime(sustain.gameObject, startTime + sustainedNote.durationSeconds + recycleGraceSeconds));
+        }
+
+        ReturnObjectToPool(note);
+    }
+
     private IEnumerator RemoveDummyAfterTime(GameObject go, float destroyAtSeconds)
     {
         if (go == null) yield break;
@@ -1129,7 +1156,7 @@ public class NoteSpawner : MonoBehaviour
             var sust = inst.GetComponent<SustainedNote>();
             if (sust == null) sust = inst.AddComponent<SustainedNote>();
             sust.durationSeconds = GetTimeInSecondsAtTick(n.spawnTime + n.length) - GetTimeInSecondsAtTick(n.spawnTime);
-            var sustainObj = inst.GetComponentInChildren<Sustain>()?.gameObject;
+            var sustainObj = inst.GetComponentInChildren<Sustain>(true)?.gameObject;
             if (sustainObj != null)
             {
                 var scr = sustainObj.GetComponent<Sustain>();
@@ -1251,7 +1278,7 @@ public class NoteSpawner : MonoBehaviour
             var sust = inst.GetComponent<SustainedNote>();
             if (sust == null) sust = inst.AddComponent<SustainedNote>();
             sust.durationSeconds = GetTimeInSecondsAtTick(noteEntry.spawnTime + noteEntry.length) - GetTimeInSecondsAtTick(noteEntry.spawnTime);
-            var sustainObj = inst.GetComponentInChildren<Sustain>()?.gameObject;
+            var sustainObj = inst.GetComponentInChildren<Sustain>(true)?.gameObject;
             if (sustainObj != null)
             {
                 var scr = sustainObj.GetComponent<Sustain>();

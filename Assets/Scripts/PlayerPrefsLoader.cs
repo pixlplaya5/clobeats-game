@@ -130,7 +130,7 @@ public class PlayerPrefsLoader : MonoBehaviour
             vSyncToggle.isOn = PlayerPrefs.GetInt("EnableVSync", 0) == 1;
             if (vSyncToggle.isOn)
             {
-                QualitySettings.vSyncCount = 1;
+                QualitySettings.vSyncCount = 0;
             }
             else
             {

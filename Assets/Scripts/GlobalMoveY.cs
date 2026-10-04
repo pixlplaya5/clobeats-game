@@ -107,7 +107,7 @@ public class GlobalMoveY : MonoBehaviour
                 }
 
                 float twend = lim.hitWindowSeconds * spacingFactor;
-                if (obj.name.ToLower().Contains("sustainvisual"))
+                if (obj.name.ToLower().Contains("sustainvisual") || obj.GetComponent<Sustain>() != null)
                 {
                     continue;
                 }
