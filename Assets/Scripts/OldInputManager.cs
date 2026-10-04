@@ -109,7 +109,11 @@ public class OldInputManager : MonoBehaviour
         }
         Time.timeScale = currentTimeScale;
         
-        if (denyInput) return;
+        if (denyInput)
+        {
+            ReleaseSP();
+        }
+            
         if (updateType == InputUpdateType.PerFrame)
         {
             await GetInput();

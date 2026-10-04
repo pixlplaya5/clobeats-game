@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour
     {
         allowFail = yes;
         NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("No Fail toggled to " + yes.ToString(), 5f));
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Allow Fail toggled to " + yes.ToString(), 5f));
     }
 
     public void ToggleVenue(bool yes)
