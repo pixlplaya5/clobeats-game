@@ -35,6 +35,8 @@ public class NotificationHandler : MonoBehaviour
     }
     public void ShowNotif()
     {
+        SFXPlayer sFX = FindAnyObjectByType<SFXPlayer>();
+        sFX.PlayClip("Acquire");
         StartCoroutine(RiseNotif(RiseDirection.Up));
     }
     public void HideNotif()

@@ -11173,7 +11173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuButtons.Array.size
-      value: 18
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuScreens.Array.size
@@ -11368,6 +11368,30 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 371494213}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[18].action
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[18].button
+      value: 
+      objectReference: {fileID: 249631138}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[19].action
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[19].button
+      value: 
+      objectReference: {fileID: 1100631419}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[20].action
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[20].button
+      value: 
+      objectReference: {fileID: 1823682300}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuScreens.Array.data[9].enableBG
       value: 0
       objectReference: {fileID: 0}
@@ -11445,6 +11469,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuButtons.Array.data[17].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[18].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[19].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[20].legacySubmitIndex
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5975742816656037155, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
