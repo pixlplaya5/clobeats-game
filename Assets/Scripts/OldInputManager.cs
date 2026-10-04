@@ -41,6 +41,13 @@ public class OldInputManager : MonoBehaviour
         laneInputManager = FindFirstObjectByType<LaneInputManager>();
     }
 
+    public void ToggleGamepadMode(bool yes)
+    {
+        gamepadMode = yes;
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Gamepad Mode toggled to " + yes.ToString(), 5f));
+    }
+
     private async Task InputNoteDown(int value)
     {
         if (laneInputManager != null)
@@ -154,7 +161,7 @@ public class OldInputManager : MonoBehaviour
                 
                 if (player.GetButtonDown("Green"))
                 {
-                    Debug.Log("Green button pressed");
+                    //Debug.Log("Green button pressed");
                     SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
                     sFXPlayer.PlayClip("MenuOpenLong");
                     if (menuManager.IsMenuOpen(MenuManager.StartMenuId))
@@ -173,7 +180,7 @@ public class OldInputManager : MonoBehaviour
                 }
                 if (player.GetButtonDown("Red"))
                 {
-                    Debug.Log("Red button pressed");
+                    //Debug.Log("Red button pressed");
                     SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
                     sFXPlayer.PlayClip("MenuClose");
                     menuManager.Exit();
@@ -237,16 +244,12 @@ public class OldInputManager : MonoBehaviour
             }
             else
             {
-                if (player.GetButtonDown("Green")) await InputNoteDown(0);
-                if (player.GetButtonUp("Green")) await InputNoteUp(0);
-                if (player.GetButtonDown("Red")) await InputNoteDown(1);
-                if (player.GetButtonUp("Red")) await InputNoteUp(1);
-                if (player.GetButtonDown("Yellow")) await InputNoteDown(2);
-                if (player.GetButtonUp("Yellow")) await InputNoteUp(2);
-                if (player.GetButtonDown("Blue")) await InputNoteDown(3);
-                if (player.GetButtonUp("Blue")) await InputNoteUp(3);
-                if (player.GetButtonDown("Orange")) await InputNoteDown(4);
-                if (player.GetButtonUp("Orange")) await InputNoteUp(4);
+                await InputNote(0, player.GetButton("Green"));
+                await InputNote(1, player.GetButton("Red"));
+                await InputNote(2, player.GetButton("Yellow"));
+                await InputNote(3, player.GetButton("Blue"));
+                await InputNote(4, player.GetButton("Orange"));
+
                 if (player.GetButtonUp("Start")) PauseGame();
                 if (player.GetButtonUp("Select")) ReleaseSP();
             }

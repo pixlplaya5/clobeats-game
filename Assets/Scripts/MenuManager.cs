@@ -32,7 +32,10 @@ public class MenuManager : MonoBehaviour
         QualityTwo,
         QualityThree,
         QualityFour,
-        RewiredRemap
+        RewiredRemap,
+        ToggleAutoPlayMod,
+        ToggleGamepadMod,
+        ToggleNoFailMod
 
     }
 
@@ -419,11 +422,12 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.PlaySongFromPath:
                     MouseInputCheck mouseInputCheck1 = FindAnyObjectByType<MouseInputCheck>();
                     mouseInputCheck1.allowMouseInput = true;
-                    SimpleFileBrowser.FileBrowser.ShowLoadDialog( async ( paths ) => {
+                    SimpleFileBrowser.FileBrowser.ShowLoadDialog( (paths) => {
                     MouseInputCheck mic = FindAnyObjectByType<MouseInputCheck>();
                     mic.allowMouseInput = false;
                     GameManager gameManager = FindAnyObjectByType<GameManager>();
-                    await gameManager.PlaySongGlobal(paths[0]);
+                    currentPreviewingSongPath = paths[0];
+                    ShowMenu("songentry");
                     Debug.Log("Folder selected: '" + paths[0] + "'"); },
 			        	() => { Debug.Log( "Canceled" ); },
 			        	SimpleFileBrowser.FileBrowser.PickMode.Folders, false, null, null, "Select Folder", "Select" );
@@ -457,6 +461,18 @@ public class MenuManager : MonoBehaviour
                     break;
                 case MenuAction.QuitGame:
                     QuitGame();
+                    break;
+                case MenuAction.ToggleAutoPlayMod:
+                    LaneInputManager lim = FindAnyObjectByType<LaneInputManager>();
+                    lim.ToggleAutoplay(!lim.autoPlayEnabled ? true : false);
+                    break;
+                case MenuAction.ToggleGamepadMod:
+                    OldInputManager oim = FindAnyObjectByType<OldInputManager>();
+                    oim.ToggleGamepadMode(!oim.gamepadMode ? true : false);
+                    break;
+                case MenuAction.ToggleNoFailMod:
+                    GameManager gm = FindAnyObjectByType<GameManager>();
+                    gm.ToggleNoFail(gm.allowFail ? false : true);
                     break;
             }
         }

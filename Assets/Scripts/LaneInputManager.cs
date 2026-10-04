@@ -66,6 +66,8 @@ public class LaneInputManager : MonoBehaviour
     public void ToggleAutoplay(bool toggle)
     {
         autoPlayEnabled = toggle;
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Autoplay toggled to " + toggle.ToString(), 5f));
     }
 
     void Update()

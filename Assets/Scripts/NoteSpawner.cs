@@ -388,7 +388,7 @@ public class NoteSpawner : MonoBehaviour
         }
         else
         {
-            await PrewarmNotePoolsNonChart(64);
+            //await PrewarmNotePoolsNonChart(64);
         }
         parser.Close();
         VenueAnimationPlayer.Instance.TryToggleCamera(true);
@@ -1013,7 +1013,7 @@ public class NoteSpawner : MonoBehaviour
             return;
         }
 
-        //Debug.Log($"Spawning note [spawnTime={n.spawnTime}, spawnTimeMs={n.spawnTimeMs}, fret={n.fret}, length={n.length}, lengthMs={n.lengthMs}] at index " + noteIndex + " at timeSeconds " + timeSeconds + " with hyperspeed " + spacingFactor);
+        Debug.Log($"Spawning note [spawnTime={n.spawnTime}, spawnTimeMs={n.spawnTimeMs}, fret={n.fret}, length={n.length}, lengthMs={n.lengthMs}, belongingPart={n.belongingPart}] at index " + noteIndex + " at timeSeconds " + timeSeconds + " with hyperspeed " + spacingFactor);
         int fret = n.fret;
         float strikeY = GetStrikeLineY();
         float currentSongSeconds = musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f;
@@ -1116,6 +1116,7 @@ public class NoteSpawner : MonoBehaviour
                 lengthMs = 0,
                 fret = n.fret,
                 isfretRelease = true,
+                belongingPart = gameManager.currentPart
             }, GetTimeInSecondsAtTick(n.spawnTime + n.length), spacingFactor);
         }
     }
@@ -1235,7 +1236,8 @@ public class NoteSpawner : MonoBehaviour
                 length = 0,
                 lengthMs = 0,
                 fret = noteEntry.fret,
-                isfretRelease = true
+                isfretRelease = true,
+                belongingPart = gameManager.currentPart
             }, GetTimeInSecondsAtTick(noteEntry.spawnTime + noteEntry.length), spacingFactor);
         }
     }

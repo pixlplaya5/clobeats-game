@@ -108,6 +108,13 @@ public class GameManager : MonoBehaviour
         ["Expert"] = new Dictionary<int,int> { {97,0}, {98,1}, {99,2}, {100,3}, {101,4}, {96,7}, {95,7} },
     };
 
+    public void ToggleNoFail(bool yes)
+    {
+        allowFail = yes;
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("No Fail toggled to " + yes.ToString(), 5f));
+    }
+
     public async Task PlaySongGlobal(string path)
     {
         await EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
@@ -792,7 +799,7 @@ public class GameManager : MonoBehaviour
             {
                 if (info.beatEvents == null) info.beatEvents = new List<NoteSpawner.GlobalEventInfo>();
 
-                var generated = GenerateBeatEventsFromSync(info, includeEighthNotes: false);
+                var generated = GenerateBeatEventsFromSync(info, includeEighthNotes: true);
                 if (generated != null && generated.Count > 0)
                 {
                     foreach (var be in generated)
