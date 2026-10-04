@@ -14,7 +14,7 @@ public class VenueLoader : MonoBehaviour
     {
         if (PlayerPrefs.GetInt("EnableVenue") == 1)
         {
-            SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+            //SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
         }
         else
         {

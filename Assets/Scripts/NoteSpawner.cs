@@ -625,7 +625,12 @@ public class NoteSpawner : MonoBehaviour
             // remove from movement and scheduling before pooling
             RemoveObjectFromGlobalMoveY(go);
             if (scheduledTimeByObject.ContainsKey(go)) scheduledTimeByObject.Remove(go);
-            try {if (PlayerPrefs.GetInt("EnableLite", 0) == 1) { Destroy(go); } else { NotePoolManager.Instance.Return(go);} } catch (Exception) { go.SetActive(false); }
+            try
+            {
+                if (PlayerPrefs.GetInt("EnableLite", 0) == 1 || !allowNotePooling) Destroy(go);
+                else NotePoolManager.Instance.Return(go);
+            }
+            catch (Exception) { go.SetActive(false); }
             return;
         }
 
@@ -946,7 +951,30 @@ public class NoteSpawner : MonoBehaviour
         Destroy(go, (float)secondsUntilEnd);
     }
 
-    // Spawn a single note (pooled) with sustain handling and lane registration
+    private GameObject GetNoteInstance(GameObject prefab)
+    {
+        if (prefab == null) return null;
+
+        if (allowNotePooling) return NotePoolManager.Instance.Get(prefab);
+
+        var instance = Instantiate(prefab, highwayTransform);
+        var pooledNote = instance.GetComponent<PooledNote>();
+        if (pooledNote == null) pooledNote = instance.AddComponent<PooledNote>();
+        pooledNote.prefab = prefab;
+        instance.SetActive(false);
+        return instance;
+    }
+
+    private void ResetSustainState(GameObject note)
+    {
+        var sustainedNote = note.GetComponent<SustainedNote>();
+        if (sustainedNote != null) sustainedNote.durationSeconds = 0f;
+
+        var sustainObject = note.GetComponentInChildren<Sustain>(true)?.gameObject;
+        if (sustainObject != null) sustainObject.SetActive(false);
+    }
+
+    // Spawn a single note with sustain handling and lane registration
     private void SpawnNoteInstance(int noteIndex, float timeSeconds, float spacingFactor)
     {
         if (noteIndex < 0 || noteIndex >= gameManager.currentSongNotes.Count) return;
@@ -962,7 +990,7 @@ public class NoteSpawner : MonoBehaviour
             GameObject dummy = null;
             if (freestyleDummyPrefab != null)
             {
-                try { dummy = NotePoolManager.Instance.Get(freestyleDummyPrefab); } catch { dummy = Instantiate(freestyleDummyPrefab); }
+                try { dummy = GetNoteInstance(freestyleDummyPrefab); } catch { dummy = Instantiate(freestyleDummyPrefab); }
             }
             else
             {
@@ -1028,18 +1056,18 @@ public class NoteSpawner : MonoBehaviour
 
         if (fret == 7)
         {
-            if (openNotePrefab != null) try { inst = NotePoolManager.Instance.Get(openNotePrefab); gemColor = Color.magenta; } catch { inst = null; }
+            if (openNotePrefab != null) try { inst = GetNoteInstance(openNotePrefab); gemColor = Color.magenta; } catch { inst = null; }
         }
         else
         {
             switch (fret)
             {
-                case 0: if (greenNotePrefab != null) try { inst = NotePoolManager.Instance.Get(greenNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
-                case 1: if (redNotePrefab != null) try { inst = NotePoolManager.Instance.Get(redNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
-                case 2: if (yellowNotePrefab != null) try { inst = NotePoolManager.Instance.Get(yellowNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
-                case 3: if (blueNotePrefab != null) try { inst = NotePoolManager.Instance.Get(blueNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
-                case 4: if (orangeNotePrefab != null) try { inst = NotePoolManager.Instance.Get(orangeNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
-                case 8: if (beginnerNotePrefab != null) try { inst = NotePoolManager.Instance.Get(beginnerNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
+                case 0: if (greenNotePrefab != null) try { inst = GetNoteInstance(greenNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
+                case 1: if (redNotePrefab != null) try { inst = GetNoteInstance(redNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
+                case 2: if (yellowNotePrefab != null) try { inst = GetNoteInstance(yellowNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
+                case 3: if (blueNotePrefab != null) try { inst = GetNoteInstance(blueNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
+                case 4: if (orangeNotePrefab != null) try { inst = GetNoteInstance(orangeNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
+                case 8: if (beginnerNotePrefab != null) try { inst = GetNoteInstance(beginnerNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
                 default: break;
             }
         }
@@ -1047,6 +1075,7 @@ public class NoteSpawner : MonoBehaviour
         
 
         if (inst == null) return;
+        ResetSustainState(inst);
         if (fret == 7 || fret == 8)
         {
             inst.transform.position = openpos;
@@ -1163,18 +1192,18 @@ public class NoteSpawner : MonoBehaviour
 
         if (fret == 7)
         {
-            if (openNotePrefab != null) try { inst = NotePoolManager.Instance.Get(openNotePrefab); gemColor = Color.magenta; } catch { inst = null; }
+            if (openNotePrefab != null) try { inst = GetNoteInstance(openNotePrefab); gemColor = Color.magenta; } catch { inst = null; }
         }
         else
         {
             switch (fret)
             {
-                case 0: if (greenNotePrefab != null) try { inst = NotePoolManager.Instance.Get(greenNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
-                case 1: if (redNotePrefab != null) try { inst = NotePoolManager.Instance.Get(redNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
-                case 2: if (yellowNotePrefab != null) try { inst = NotePoolManager.Instance.Get(yellowNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
-                case 3: if (blueNotePrefab != null) try { inst = NotePoolManager.Instance.Get(blueNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
-                case 4: if (orangeNotePrefab != null) try { inst = NotePoolManager.Instance.Get(orangeNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
-                case 8: if (beginnerNotePrefab != null) try { inst = NotePoolManager.Instance.Get(beginnerNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
+                case 0: if (greenNotePrefab != null) try { inst = GetNoteInstance(greenNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
+                case 1: if (redNotePrefab != null) try { inst = GetNoteInstance(redNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
+                case 2: if (yellowNotePrefab != null) try { inst = GetNoteInstance(yellowNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
+                case 3: if (blueNotePrefab != null) try { inst = GetNoteInstance(blueNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
+                case 4: if (orangeNotePrefab != null) try { inst = GetNoteInstance(orangeNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
+                case 8: if (beginnerNotePrefab != null) try { inst = GetNoteInstance(beginnerNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
                 default: break;
             }
         }
@@ -1182,6 +1211,7 @@ public class NoteSpawner : MonoBehaviour
         
 
         if (inst == null) return;
+        ResetSustainState(inst);
         if (fret == 7 || fret == 8)
         {
             inst.transform.position = openpos;

@@ -35,7 +35,8 @@ public class MenuManager : MonoBehaviour
         RewiredRemap,
         ToggleAutoPlayMod,
         ToggleGamepadMod,
-        ToggleNoFailMod
+        ToggleNoFailMod,
+        ToggleVenueMod
 
     }
 
@@ -473,6 +474,10 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.ToggleNoFailMod:
                     GameManager gm = FindAnyObjectByType<GameManager>();
                     gm.ToggleNoFail(gm.allowFail ? false : true);
+                    break;
+                case MenuAction.ToggleVenueMod:
+                    GameManager gm2 = FindAnyObjectByType<GameManager>();
+                    gm2.ToggleVenue(gm2.venueLoaded ? false : true);
                     break;
             }
         }

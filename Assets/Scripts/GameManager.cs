@@ -89,6 +89,7 @@ public class GameManager : MonoBehaviour
     public string savePath = null;
 
     public GameObject unDestructibleLoadingPhraseScreen;
+    public bool venueLoaded = false;
 
     // note mappings (RBN2)
     Dictionary<string, Dictionary<int, int>> partGuitarDifficultyMappings = new Dictionary<string, Dictionary<int,int>>
@@ -113,6 +114,38 @@ public class GameManager : MonoBehaviour
         allowFail = yes;
         NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
         StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("No Fail toggled to " + yes.ToString(), 5f));
+    }
+
+    public void ToggleVenue(bool yes)
+    {
+        if (yes)
+        {
+            if (!SceneManager.GetSceneByBuildIndex(2).isLoaded)
+            {
+                SceneManager.LoadScene(2, LoadSceneMode.Additive);
+                venueLoaded = true;
+                NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+                StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Venue loaded.", 5f));
+            }
+            else
+            {
+                Debug.Log("[GameManager.ToggleVenue] Venue is already loaded.");
+            }
+        }
+        else
+        {
+            if (SceneManager.GetSceneByBuildIndex(2).isLoaded)
+            {
+                SceneManager.UnloadSceneAsync(2);
+                venueLoaded = false;
+                NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+                StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Venue unloaded.", 5f));
+            }
+            else
+            {
+                Debug.Log("[GameManager.ToggleVenue] Venue is already unloaded.");
+            }
+        }
     }
 
     public async Task PlaySongGlobal(string path)

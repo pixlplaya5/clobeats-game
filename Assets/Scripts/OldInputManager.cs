@@ -108,6 +108,7 @@ public class OldInputManager : MonoBehaviour
             player = ReInput.players.GetPlayer(rewiredPlayerId);
         }
         Time.timeScale = currentTimeScale;
+        
         if (denyInput) return;
         if (updateType == InputUpdateType.PerFrame)
         {

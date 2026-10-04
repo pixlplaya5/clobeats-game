@@ -760,6 +760,17 @@ public class MusicPlayer : MonoBehaviour
             {
                 StartCoroutine(EndSong());
             }
+            LaneInputManager laneInput = FindAnyObjectByType<LaneInputManager>();
+            if (gameManager.inSong && laneInput.autoPlayEnabled)
+            {
+                OldInputManager inputManager = FindAnyObjectByType<OldInputManager>();
+                inputManager.denyInput = true;
+            }
+            else if (!gameManager.inSong)
+            {
+                OldInputManager inputManager = FindAnyObjectByType<OldInputManager>();
+                inputManager.denyInput = false;
+            }
         }
 
         videoPlayer = FindFirstObjectByType<VideoPlayer>();

@@ -378,7 +378,7 @@ public class PlayerPrefsLoader : MonoBehaviour
                 loader.LoadScene("HS_Screen", LoadSceneMode.Additive);
                 await Task.Delay(6000);
                 SceneManager.UnloadSceneAsync("HS_Screen");
-                SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+                
                 manager.ShowMenu("start");
                 return true;
             }
