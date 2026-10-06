@@ -90,6 +90,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject unDestructibleLoadingPhraseScreen;
     public bool venueLoaded = false;
+    public bool liteMode = false;
 
     // note mappings (RBN2)
     Dictionary<string, Dictionary<int, int>> partGuitarDifficultyMappings = new Dictionary<string, Dictionary<int,int>>
@@ -146,6 +147,21 @@ public class GameManager : MonoBehaviour
                 Debug.Log("[GameManager.ToggleVenue] Venue is already unloaded.");
             }
         }
+    }
+
+    public void ToggleLiteMode(bool yes)
+    {
+        liteMode = yes;
+        if (yes)
+        {
+            Application.targetFrameRate = 30;
+        }
+        else
+        {
+            Application.targetFrameRate = -1;
+        }
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Lite Mode toggled to " + yes.ToString(), 5f));
     }
 
     public async Task PlaySongGlobal(string path)

@@ -11,6 +11,7 @@ public class NotificationHandler : MonoBehaviour
     public float showSpeed = 5f;
     public string currentNotifText = "";
     public TMPro.TextMeshProUGUI textMesh;
+    public bool notifShowing = false;
     public enum RiseDirection
     {
         Up,
@@ -33,15 +34,23 @@ public class NotificationHandler : MonoBehaviour
     {
         currentNotifText = text;
     }
+    // shows notification indefinitely until HideNotif is called.
+    public void ShowNotif(string text)
+    {
+        SetNotifText(text);
+        ShowNotif();
+    }
     public void ShowNotif()
     {
         SFXPlayer sFX = FindAnyObjectByType<SFXPlayer>();
         sFX.PlayClip("Acquire");
         StartCoroutine(RiseNotif(RiseDirection.Up));
+        notifShowing = true;
     }
     public void HideNotif()
     {
         StartCoroutine(RiseNotif(RiseDirection.Down));
+        notifShowing = false;
     }
     public IEnumerator ShowNotifImmediatelyWithTimeout(string text, float timeout)
     {

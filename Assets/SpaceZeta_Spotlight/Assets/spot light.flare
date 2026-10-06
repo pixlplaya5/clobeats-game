@@ -7,7 +7,7 @@ Flare:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: spot light
-  m_FlareTexture: {fileID: 2800000, guid: a4949af6361c47942902cebcc0089340, type: 3}
+  m_FlareTexture: {fileID: 2800000, guid: 59a2e943514cfd4498d49b2446f98a06, type: 3}
   m_TextureLayout: 0
   m_Elements:
   - m_ImageIndex: 0

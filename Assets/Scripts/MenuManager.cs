@@ -36,7 +36,8 @@ public class MenuManager : MonoBehaviour
         ToggleAutoPlayMod,
         ToggleGamepadMod,
         ToggleNoFailMod,
-        ToggleVenueMod
+        ToggleVenueMod,
+        ToggleLiteMode
 
     }
 
@@ -478,6 +479,10 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.ToggleVenueMod:
                     GameManager gm2 = FindAnyObjectByType<GameManager>();
                     gm2.ToggleVenue(gm2.venueLoaded ? false : true);
+                    break;
+                case MenuAction.ToggleLiteMode:
+                    GameManager gm3 = FindAnyObjectByType<GameManager>();
+                    gm3.ToggleLiteMode(!gm3.liteMode ? true : false);
                     break;
             }
         }
