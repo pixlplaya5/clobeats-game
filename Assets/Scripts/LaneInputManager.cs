@@ -204,9 +204,9 @@ public class LaneInputManager : MonoBehaviour
             if (sched == null) continue;
 
             float scheduledSeconds = sched.scheduledSeconds;
-            int noteTick = Mathf.RoundToInt(spawner.GetTickAtTimeSeconds(scheduledSeconds, true));
-            int currentTick = spawner.currentTick;
-            if (Mathf.Abs(noteTick - currentTick) <= 1)
+            float noteTick = spawner.GetTickAtTimeSeconds(scheduledSeconds, true);
+            float currentTick = spawner.currentTick;
+            if (Mathf.Abs(noteTick - currentTick) <= 1f)
             {
                 noteTimes.Add(scheduledSeconds);
             }

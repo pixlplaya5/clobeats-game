@@ -221,8 +221,8 @@ public class NoteSpawner : MonoBehaviour
     }
     private int resolution = 192; // Default resolution
     float currentBpm = 120f; // Default BPM
-    public int songLengthInTicks = 0;
-    public int currentTick = 0;
+    public float songLengthInTicks = 0;
+    public float currentTick = 0;
     private UIUpdater uiUpdater;
     public float startingYPosition = 16f; // Configurable starting Y position for notes and bars/beats
     public float spawnLeadSeconds = 2f; // Extra seconds added to spacing so notes spawn further away from the strikeline
@@ -686,7 +686,7 @@ public class NoteSpawner : MonoBehaviour
         go.SetActive(false);
     }
 
-    public string GetEventInfoStringOnTick(int tick)
+    public string GetEventInfoStringOnTick(float tick)
     {
         try
         {
@@ -1668,7 +1668,7 @@ public class NoteSpawner : MonoBehaviour
     }
 
     // Find the most recent SyncInfo at or before tick
-    public SyncInfo FindSyncForTick(int tick)
+    public SyncInfo FindSyncForTick(float tick)
     {
         SyncInfo last = null;
         try
@@ -1686,20 +1686,20 @@ public class NoteSpawner : MonoBehaviour
         
     }
 
-    public int GetTicksPerQuarterNoteAtTick(int tick)
+    public float GetTicksPerQuarterNoteAtTick(float tick)
     {
         SyncInfo sync = FindSyncForTick(tick);
-        int denominator = 4;
+        float denominator = 4;
         if (sync != null && !string.IsNullOrEmpty(sync.timeSignature))
         {
             string[] signatureParts = sync.timeSignature.Split('/');
-            if (signatureParts.Length > 1 && int.TryParse(signatureParts[1], out int parsedDenominator))
+            if (signatureParts.Length > 1 && float.TryParse(signatureParts[1], out float parsedDenominator))
             {
-                denominator = Mathf.Max(1, parsedDenominator);
+                denominator = Mathf.Max(1f, parsedDenominator);
             }
         }
 
-        return Mathf.Max(1, resolution * 4 / denominator);
+        return Mathf.Max(1f, resolution * 4 / denominator);
     }
 
     // Ensure there is only one currentTick variable
@@ -1714,11 +1714,11 @@ public class NoteSpawner : MonoBehaviour
         {
             // Use the tempo-aware conversion helper to map seconds -> ticks
             float tickF = GetTickAtTimeSeconds(songTimeSeconds, false);
-            currentTick = (int)tickF; // Don't use songLengthInTicks anymore
+            currentTick = tickF; // Don't use songLengthInTicks anymore
         }
         catch (Exception)
         {
-            currentTick = 0;
+            currentTick = 0f;
         }
     }
 

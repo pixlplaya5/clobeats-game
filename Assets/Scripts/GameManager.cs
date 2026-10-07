@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
         public int resolution = 480;
         public Queue<NoteSpawner.SyncInfo> syncInfos = new Queue<NoteSpawner.SyncInfo>();
         public Queue<NoteSpawner.NoteInfo> noteInfos = new Queue<NoteSpawner.NoteInfo>();
-        public Dictionary<int, NoteSpawner.GlobalEventInfo> globalEvents = new Dictionary<int, NoteSpawner.GlobalEventInfo>();
+        public Dictionary<float, NoteSpawner.GlobalEventInfo> globalEvents = new Dictionary<float, NoteSpawner.GlobalEventInfo>();
         public List<NoteSpawner.GlobalEventInfo> beatEvents = new List<NoteSpawner.GlobalEventInfo>();
         public int songLengthInTicks = 0;
         public List<NoteSpawner.GlobalEventInfo> forcedNoteEvents = new List<NoteSpawner.GlobalEventInfo>();
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
     public int currentSongResolution = 480;
     public Queue<NoteSpawner.NoteInfo> currentSongNotes = new Queue<NoteSpawner.NoteInfo>();
     public Queue<NoteSpawner.SyncInfo> currentSongSyncTrack = new Queue<NoteSpawner.SyncInfo>();
-    public Dictionary<int, NoteSpawner.GlobalEventInfo> currentSongEvents = new Dictionary<int, NoteSpawner.GlobalEventInfo>();
+    public Dictionary<float, NoteSpawner.GlobalEventInfo> currentSongEvents = new Dictionary<float, NoteSpawner.GlobalEventInfo>();
     public List<NoteSpawner.GlobalEventInfo> currentSongBeatEvents = new List<NoteSpawner.GlobalEventInfo>();
     public List<NoteSpawner.GlobalEventInfo> currentSongForcedNoteEvents = new List<NoteSpawner.GlobalEventInfo>();
     public List<NoteSpawner.GlobalEventInfo> currentSongVenueCueEvents = new List<NoteSpawner.GlobalEventInfo>();
@@ -346,7 +346,7 @@ public class GameManager : MonoBehaviour
                 currentSongResolution = si.resolution;
                 currentSongSyncTrack = new Queue<NoteSpawner.SyncInfo>(si.syncInfos);
                 currentSongNotes = new Queue<NoteSpawner.NoteInfo>(si.noteInfos);
-                currentSongEvents = new Dictionary<int, NoteSpawner.GlobalEventInfo>(si.globalEvents);
+                currentSongEvents = new Dictionary<float, NoteSpawner.GlobalEventInfo>(si.globalEvents);
                 currentSongBeatEvents = new List<NoteSpawner.GlobalEventInfo>(si.beatEvents);
                 currentSongVenueCueEvents = new List<NoteSpawner.GlobalEventInfo>(si.venueAnimCueEvents);
                 currentSongLyrics = new List<NoteSpawner.LyricEventInfo>(si.lyricEvents);
@@ -361,7 +361,7 @@ public class GameManager : MonoBehaviour
                     currentSongResolution = ucsi.resolution;
                     currentSongSyncTrack = new Queue<NoteSpawner.SyncInfo>(ucsi.syncInfos);
                     currentSongNotes = new Queue<NoteSpawner.NoteInfo>(ucsi.noteInfos);
-                    currentSongEvents = new Dictionary<int, NoteSpawner.GlobalEventInfo>(ucsi.globalEvents);
+                    currentSongEvents = new Dictionary<float, NoteSpawner.GlobalEventInfo>(ucsi.globalEvents);
                     currentSongBeatEvents = new List<NoteSpawner.GlobalEventInfo>(ucsi.beatEvents);
                     currentSongVenueCueEvents = new List<NoteSpawner.GlobalEventInfo>(ucsi.venueAnimCueEvents);
                     currentSongLyrics = new List<NoteSpawner.LyricEventInfo>(ucsi.lyricEvents);
@@ -397,7 +397,7 @@ public class GameManager : MonoBehaviour
                 currentSongResolution = si.resolution;
                 currentSongSyncTrack = new Queue<NoteSpawner.SyncInfo>(si.syncInfos);
                 currentSongNotes = new Queue<NoteSpawner.NoteInfo>(si.noteInfos);
-                currentSongEvents = new Dictionary<int, NoteSpawner.GlobalEventInfo>(si.globalEvents);
+                currentSongEvents = new Dictionary<float, NoteSpawner.GlobalEventInfo>(si.globalEvents);
                 currentSongBeatEvents = new List<NoteSpawner.GlobalEventInfo>(si.beatEvents);
                 currentSongForcedNoteEvents = new List<NoteSpawner.GlobalEventInfo>(si.forcedNoteEvents);
                 currentSongLengthInTicks = si.songLengthInTicks;
@@ -411,7 +411,7 @@ public class GameManager : MonoBehaviour
                     currentSongResolution = ucsi.resolution;
                     currentSongSyncTrack = new Queue<NoteSpawner.SyncInfo>(ucsi.syncInfos);
                     currentSongNotes = new Queue<NoteSpawner.NoteInfo>(ucsi.noteInfos);
-                    currentSongEvents = new Dictionary<int, NoteSpawner.GlobalEventInfo>(ucsi.globalEvents);
+                    currentSongEvents = new Dictionary<float, NoteSpawner.GlobalEventInfo>(ucsi.globalEvents);
                     currentSongBeatEvents = new List<NoteSpawner.GlobalEventInfo>(ucsi.beatEvents);
                     currentSongVenueCueEvents = new List<NoteSpawner.GlobalEventInfo>(ucsi.venueAnimCueEvents);
                     currentSongLyrics = new List<NoteSpawner.LyricEventInfo>(ucsi.lyricEvents);
@@ -466,7 +466,7 @@ public class GameManager : MonoBehaviour
         var globalEvents = GetTextEventsFromTrackByName(midi, "EVENTS", scale);
         foreach (var evt in globalEvents)
         {
-            int key = (int)evt.spawnTime;
+            float key = evt.spawnTime;
             if (!info.globalEvents.TryGetValue(key, out var existing))
             {
                 info.globalEvents.Add(key, evt);
@@ -747,7 +747,7 @@ public class GameManager : MonoBehaviour
             var evRe = new Regex("^\\s*(\\d+)\\s*=\\s*E\\s+\"([^\"]*)\"", RegexOptions.Multiline);
             foreach (Match em in evRe.Matches(eventsBody))
             {
-                int tick = int.Parse(em.Groups[1].Value);
+                float tick = float.Parse(em.Groups[1].Value);
                 string txt = em.Groups[2].Value;
                 if (!info.globalEvents.ContainsKey(tick))
                 {

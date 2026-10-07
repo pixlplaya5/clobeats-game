@@ -83,7 +83,7 @@ public class VenueAnimationPlayer : MonoBehaviour
 
     IEnumerator HapticPulseRoutine()
     {
-        int nextFourthNoteTick = -1;
+        float nextFourthNoteTick = -1f;
 
         while (true)
         {
@@ -94,9 +94,9 @@ public class VenueAnimationPlayer : MonoBehaviour
                 continue;
             }
 
-            int current = Mathf.Max(0, ns.currentTick);
-            int quarterTicks = ns.GetTicksPerQuarterNoteAtTick(current);
-            int fourthNoteLength = Mathf.Max(1, quarterTicks * hapticPulseDivision);
+            float current = Mathf.Max(0f, ns.currentTick);
+            float quarterTicks = ns.GetTicksPerQuarterNoteAtTick(current);
+            float fourthNoteLength = Mathf.Max(1, quarterTicks * hapticPulseDivision);
 
             if (nextFourthNoteTick <= current)
             {
@@ -111,7 +111,7 @@ public class VenueAnimationPlayer : MonoBehaviour
             quarterTicks = ns.GetTicksPerQuarterNoteAtTick(nextFourthNoteTick);
             float attackTicks = Mathf.Max(1f, quarterTicks * hapticAttack);
             float releaseTicks = Mathf.Max(1f, quarterTicks * hapticRelease);
-            int impactStartTick = ns.currentTick;
+            float impactStartTick = ns.currentTick;
 
             while (ns.currentTick < impactStartTick + attackTicks)
             {
@@ -121,7 +121,7 @@ public class VenueAnimationPlayer : MonoBehaviour
                 yield return null;
             }
 
-            int releaseStartTick = ns.currentTick;
+            float releaseStartTick = ns.currentTick;
             while (ns.currentTick < releaseStartTick + releaseTicks)
             {
                 float t = Mathf.Clamp01((ns.currentTick - releaseStartTick) / releaseTicks);
@@ -257,8 +257,8 @@ public class VenueAnimationPlayer : MonoBehaviour
                 continue;
             }
 
-            int beatTicks = ns.GetTicksPerQuarterNoteAtTick(Mathf.Max(0, ns.currentTick));
-            int nextBeatTick = (ns.currentTick / beatTicks + 1) * beatTicks;
+            float beatTicks = ns.GetTicksPerQuarterNoteAtTick(Mathf.Max(0, ns.currentTick));
+            float nextBeatTick = (ns.currentTick / beatTicks + 1) * beatTicks;
 
             while (ns.currentTick < nextBeatTick)
             {
@@ -270,7 +270,7 @@ public class VenueAnimationPlayer : MonoBehaviour
             float releaseTicks = Mathf.Max(1f, beatTicks * chromaticAberrationRelease);
 
             SetChromaticAberration(0f, true);
-            int impactStartTick = ns.currentTick;
+            float impactStartTick = ns.currentTick;
             while (ns.currentTick < impactStartTick + attackTicks)
             {
                 float t = Mathf.Clamp01((ns.currentTick - impactStartTick) / attackTicks);
@@ -278,7 +278,7 @@ public class VenueAnimationPlayer : MonoBehaviour
                 yield return null;
             }
 
-            int releaseStartTick = ns.currentTick;
+            float releaseStartTick = ns.currentTick;
             while (ns.currentTick < releaseStartTick + releaseTicks)
             {
                 float t = Mathf.Clamp01((ns.currentTick - releaseStartTick) / releaseTicks);

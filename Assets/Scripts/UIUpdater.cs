@@ -262,7 +262,7 @@ public class UIUpdater : MonoBehaviour
     {
         currentBPMText.text = "BPM: " + bpm.ToString("F1");
     }
-    public void UpdateCurrentTick(int tick)
+    public void UpdateCurrentTick(float tick)
     {
         currentTickText.text = $"Tick: {tick}"; // Append the current tick to the BPM text
     }
