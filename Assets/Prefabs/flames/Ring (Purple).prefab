@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1851761016999511039}
   - component: {fileID: 9192926568793071773}
   - component: {fileID: 2027332605879931843}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flame (Purple) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4839,7 +4839,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1476342548105989344}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4872,7 +4872,7 @@ GameObject:
   - component: {fileID: 4534210428972973679}
   - component: {fileID: 6259448904431744788}
   - component: {fileID: 1074798608689465687}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flame (Purple) (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9702,7 +9702,7 @@ GameObject:
   - component: {fileID: 948601426280371072}
   - component: {fileID: 2798179001713540835}
   - component: {fileID: 6539103659847649830}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flame (Purple)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14532,7 +14532,7 @@ GameObject:
   - component: {fileID: 6519440267560463019}
   - component: {fileID: 6519440267579863019}
   - component: {fileID: 6519440267579758155}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring (Purple)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19344,7 +19344,7 @@ GameObject:
   - component: {fileID: 3951337128357798268}
   - component: {fileID: 4632185854764963714}
   - component: {fileID: 1105433596556609192}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flame (Purple) (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24174,7 +24174,7 @@ GameObject:
   - component: {fileID: 1458293285834918501}
   - component: {fileID: 1317740391075550675}
   - component: {fileID: 2252312831553513273}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flame (Purple) (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5180586645648317266}
   - component: {fileID: 1092369650479002232}
   - component: {fileID: -6582628239416689424}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bar3D
   m_TagString: Untagged
   m_Icon: {fileID: 0}

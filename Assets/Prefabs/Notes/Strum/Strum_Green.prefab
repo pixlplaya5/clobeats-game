@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1006249986739726798}
   - component: {fileID: 305261530651640484}
   - component: {fileID: 1189322234550962946}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8632270216138718784}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Note
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 2375248230477945672}
   - component: {fileID: 1523876035854466212}
   - component: {fileID: 4980964896064945155}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 5592187594909608551}
   - component: {fileID: 4895962091226618141}
   - component: {fileID: 1683745181166252044}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TopCylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 1288992732235704464}
   - component: {fileID: 6618583389174330575}
   - component: {fileID: 2198021969247467197}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406,7 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8904873936791376506}
   - component: {fileID: 3303766750290281998}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: NoteVisualChanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -440,12 +440,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4834d8cc7e7fb274db9357c9a722b0b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  isStrum: 1
-  isHOPO: 0
-  isTap: 0
+  currentNoteType: 0
   noteObject: {fileID: 1230967965298406047}
   hopoNoteObject: {fileID: 8582029725939680570}
   tapNoteObject: {fileID: 0}
+  fretReleaseNoteObject: {fileID: 0}
 --- !u!1 &5294911424450638864
 GameObject:
   m_ObjectHideFlags: 0
@@ -457,7 +456,7 @@ GameObject:
   - component: {fileID: 931958681057698173}
   - component: {fileID: 202225420284821391}
   - component: {fileID: 4607025478144191754}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: InCylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -540,7 +539,7 @@ GameObject:
   - component: {fileID: 347967597360369655}
   - component: {fileID: 346538962759065586}
   - component: {fileID: -1388709230197351268}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Strum_Green
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -602,7 +601,7 @@ GameObject:
   m_Component:
   - component: {fileID: 931399030726550566}
   - component: {fileID: 7982750303566669421}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HOPO
   m_TagString: Untagged
   m_Icon: {fileID: 0}

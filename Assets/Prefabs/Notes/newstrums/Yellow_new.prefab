@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7447032732845576188}
   - component: {fileID: 4798664765708867782}
   - component: {fileID: 4238741786678852091}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 6413312354267726515}
   - component: {fileID: 2060320232610353375}
   - component: {fileID: 4096711864815106318}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sustain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   - component: {fileID: 8283942956893961400}
   - component: {fileID: 6290615364501777286}
   - component: {fileID: 781567369527997502}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GH_Note:Mesh (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 8898487481674561013}
   - component: {fileID: 5356742577056233224}
   - component: {fileID: 1113672326874076242}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GH_Note:Mesh (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -380,7 +380,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4844564492065904681}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Release
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -414,7 +414,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7454616962393208626}
   - component: {fileID: 8526767953070897115}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Yellow_new
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -520,6 +520,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: note_reshape
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0342cf17b96488a4888bc15a326bbdbc, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1546869483224023405, guid: 0342cf17b96488a4888bc15a326bbdbc, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -528,6 +532,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: 85c64f2e5854e2046b9b988d8d2eb2c9, type: 2}
+    - target: {fileID: 8879753548206069458, guid: 0342cf17b96488a4888bc15a326bbdbc, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8879753548206069458, guid: 0342cf17b96488a4888bc15a326bbdbc, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -617,6 +625,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7505162328513285666, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: -2265091757204483617, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -624,6 +636,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
       propertyPath: m_Name
       value: 20255_Triangular_Prism_V1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -699,6 +715,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7505162328513285666, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: -2265091757204483617, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -706,6 +726,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
       propertyPath: m_Name
       value: 20255_Triangular_Prism_V1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1e948aebfbb934b46ac7c50cc4cfd9f4, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

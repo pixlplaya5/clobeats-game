@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6519440267560463019}
   - component: {fileID: 6519440267579863019}
   - component: {fileID: 6519440267579758155}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring (Orange)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4818,7 +4818,7 @@ GameObject:
   - component: {fileID: 8090668042604378989}
   - component: {fileID: 6838763560345348298}
   - component: {fileID: 4850808627562266922}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flame (Orange)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

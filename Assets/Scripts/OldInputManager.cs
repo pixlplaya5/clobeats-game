@@ -85,14 +85,9 @@ public class OldInputManager : MonoBehaviour
         if (laneInputManager != null)
         {
             GameManager gameManager = FindAnyObjectByType<GameManager>();
-            if (gameManager)
-            if (!laneInputManager.OnStrum() && gameManager.inSong)
-            {
-                var sfx = FindAnyObjectByType<SFXPlayer>();
-                sfx.PlayClip("Miss");
-                var ui = FindAnyObjectByType<UIUpdater>();
-                ui.UpdateForNoteMiss();
-            }
+            if (gameManager && gameManager.inSong)
+                laneInputManager.OnStrum();
+            
             await Task.Yield();
         }
     }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1006249986739726798}
   - component: {fileID: 305261530651640484}
   - component: {fileID: 1189322234550962946}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: 
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,11 +58,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -84,11 +79,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1997922614943936038
 GameObject:
@@ -101,7 +94,7 @@ GameObject:
   - component: {fileID: 8171324498204100758}
   - component: {fileID: 2375248230477945672}
   - component: {fileID: 1523876035854466212}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: 
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,11 +141,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -174,11 +162,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2668433811159762608
 GameObject:
@@ -191,7 +177,7 @@ GameObject:
   - component: {fileID: 5592187594909608551}
   - component: {fileID: 4895962091226618141}
   - component: {fileID: 1683745181166252044}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: 
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,11 +225,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -265,11 +246,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5294911424450638864
 GameObject:
@@ -282,7 +261,7 @@ GameObject:
   - component: {fileID: 931958681057698173}
   - component: {fileID: 202225420284821391}
   - component: {fileID: 4607025478144191754}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: 
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,11 +308,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -355,11 +329,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5870174100904184411
 GameObject:
@@ -372,7 +344,7 @@ GameObject:
   - component: {fileID: 347967597360369655}
   - component: {fileID: 9047751076580616507}
   - component: {fileID: 6138626344439849816}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Strum_Yellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -435,7 +407,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4213944731426993966}
   - component: {fileID: 5445307922937939617}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HOPO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -482,7 +454,7 @@ GameObject:
   - component: {fileID: 2717947906068730929}
   - component: {fileID: 147339031325413562}
   - component: {fileID: 1898066732578838788}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: 
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -506,7 +478,6 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &147339031325413562
 SpriteRenderer:
-  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -522,11 +493,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -548,11 +514,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_FlipX: 0
@@ -562,6 +526,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1898066732578838788
 MonoBehaviour:
@@ -578,6 +543,7 @@ MonoBehaviour:
   startSeconds: 0
   endSeconds: 0
   spacingFactor: 0
+  color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &8809706711135877426
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,7 +555,7 @@ GameObject:
   - component: {fileID: 3712018517055751923}
   - component: {fileID: 8935633404655542502}
   - component: {fileID: 2404665894732409954}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -613,7 +579,6 @@ Transform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!212 &8935633404655542502
 SpriteRenderer:
-  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -629,11 +594,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -655,11 +615,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -669,6 +627,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &2404665894732409954
 MonoBehaviour:

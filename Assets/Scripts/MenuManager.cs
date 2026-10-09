@@ -37,7 +37,10 @@ public class MenuManager : MonoBehaviour
         ToggleGamepadMod,
         ToggleNoFailMod,
         ToggleVenueMod,
-        ToggleLiteMode
+        ToggleLiteMode,
+        SwapInstrument,
+        ToggleAnyFretMod,
+        SwapDifficulty
 
     }
 
@@ -56,6 +59,7 @@ public class MenuManager : MonoBehaviour
     {
         public Button button;
         public MenuAction action = MenuAction.ShowMenu;
+        public string[] actionArgs;
         public string targetMenuId;
         public int legacySubmitIndex = -1;
     }
@@ -144,7 +148,7 @@ public class MenuManager : MonoBehaviour
 
         if (legacySubmitBindings.TryGetValue(menuIndex, out MenuButtonBinding binding))
         {
-            await RunMenuActionAsync(binding.action, binding.targetMenuId);
+            await RunMenuActionAsync(binding.action, binding.targetMenuId, binding.actionArgs);
             return;
         }
 
@@ -397,12 +401,12 @@ public class MenuManager : MonoBehaviour
             MenuButtonBinding capturedBinding = binding;
             binding.button.onClick.AddListener(async () =>
             {
-                await RunMenuActionAsync(capturedBinding.action, capturedBinding.targetMenuId);
+                await RunMenuActionAsync(capturedBinding.action, capturedBinding.targetMenuId, capturedBinding.actionArgs);
             });
         }
     }
 
-    private async Task RunMenuActionAsync(MenuAction action, string targetMenuId)
+    private async Task RunMenuActionAsync(MenuAction action, string targetMenuId, string[] actionArgs)
     {
         try
         {
@@ -483,6 +487,18 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.ToggleLiteMode:
                     GameManager gm3 = FindAnyObjectByType<GameManager>();
                     gm3.ToggleLiteMode(!gm3.liteMode ? true : false);
+                    break;
+                case MenuAction.SwapInstrument:
+                    GameManager gm4 = FindAnyObjectByType<GameManager>();
+                    gm4.SwapInstrument(actionArgs[0]);
+                    break;
+                case MenuAction.ToggleAnyFretMod:
+                    LaneInputManager lim2 = FindAnyObjectByType<LaneInputManager>();
+                    lim2.ToggleAnyFret(!lim2.anyFretMode ? true : false);
+                    break;
+                case MenuAction.SwapDifficulty:
+                    GameManager gm5 = FindAnyObjectByType<GameManager>();
+                    gm5.SwapDifficulty(actionArgs[0]);
                     break;
             }
         }

@@ -110,6 +110,20 @@ public class GameManager : MonoBehaviour
         ["Expert"] = new Dictionary<int,int> { {97,0}, {98,1}, {99,2}, {100,3}, {101,4}, {96,7}, {95,7} },
     };
 
+    public void SwapInstrument(string inst)
+    {
+        currentPart = inst;
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Instrument swapped to " + inst, 5f));
+    }
+
+    public void SwapDifficulty(string inst)
+    {
+        ddst = inst;
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Difficulty swapped to " + inst, 5f));
+    }
+
     public void ToggleNoFail(bool yes)
     {
         allowFail = yes;

@@ -32,6 +32,7 @@ TagManager:
   - Strikeline
   - DelayedStrikeline
   - PreLoaderCam
+  - Venue
   layers:
   - Default
   - TransparentFX
@@ -44,7 +45,7 @@ TagManager:
   - Highway Post Process
   - Main Menu Post Process
   - GuitarPlayer
-  - 
+  - Venue
   - 
   - 
   - 

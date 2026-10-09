@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9152987152049864199}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 4986332545466902702}
   - component: {fileID: 6450315608368028772}
   - component: {fileID: 7159548244915303}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 5459334739150126503}
   - component: {fileID: 375910275496301592}
   - component: {fileID: 3914586360623495141}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   - component: {fileID: 5486582855386787748}
   - component: {fileID: 1984768494156572630}
   - component: {fileID: -1383325901851476699}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Strum_Open
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8706480889626231771}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 2684850365033326553}
   - component: {fileID: 3445493638132379865}
   - component: {fileID: 5279631710045056655}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 3379908545041486237}
   - component: {fileID: 5409304540527078067}
   - component: {fileID: 8374054632002499827}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -474,7 +474,7 @@ GameObject:
   - component: {fileID: 2133685927067087097}
   - component: {fileID: 7364334027548768973}
   - component: {fileID: 5277946175189101427}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -557,7 +557,7 @@ GameObject:
   - component: {fileID: 8352702996205207863}
   - component: {fileID: 1080392429788287344}
   - component: {fileID: 8528280766324867945}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -640,7 +640,7 @@ GameObject:
   - component: {fileID: 3810328246569347078}
   - component: {fileID: 420922450137688530}
   - component: {fileID: 4802680636388584413}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -722,7 +722,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7956984977760144604}
   - component: {fileID: 3675590614467775184}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HOPO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -771,7 +771,7 @@ GameObject:
   - component: {fileID: 8222047245713493257}
   - component: {fileID: 5985871744468483398}
   - component: {fileID: 4505873386200515109}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -854,7 +854,7 @@ GameObject:
   - component: {fileID: 7985523672393371964}
   - component: {fileID: 3469128354152136082}
   - component: {fileID: 7056085921259036402}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -937,7 +937,7 @@ GameObject:
   - component: {fileID: 1695700306888345075}
   - component: {fileID: 4254057701226552348}
   - component: {fileID: 7093573209994070176}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sustain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1026,3 +1026,4 @@ MonoBehaviour:
   startSeconds: 0
   endSeconds: 0
   spacingFactor: 0
+  color: {r: 0, g: 0, b: 0, a: 0}

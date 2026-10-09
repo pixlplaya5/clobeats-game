@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7340787391000814789}
   - component: {fileID: 8937582973926296489}
   - component: {fileID: 2236848816075349517}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,11 +58,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -84,11 +79,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4364399134613612729
 GameObject:
@@ -102,7 +95,7 @@ GameObject:
   - component: {fileID: 8092211875415838211}
   - component: {fileID: 5520495687325378830}
   - component: {fileID: 3545186580451816346}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,11 +143,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -176,11 +164,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &3545186580451816346
 SphereCollider:
@@ -213,7 +199,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3737897327852895414}
   - component: {fileID: -9023385915486819608}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: robeatsflame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -244,12 +230,11 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5282078635711392982}
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Animation: {fileID: 7400000, guid: 54b341e0a40583746a15dea1940d6236, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 54b341e0a40583746a15dea1940d6236, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
-  m_UpdateMode: 0
   m_CullingType: 0

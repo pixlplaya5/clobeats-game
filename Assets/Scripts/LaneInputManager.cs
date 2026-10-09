@@ -44,6 +44,7 @@ public class LaneInputManager : MonoBehaviour
 
     public bool autoPlayEnabled = false;
     public bool showHitWindow = false;
+    public bool anyFretMode = false;
     GameObject note = null;
 
     MusicPlayer mp;
@@ -68,6 +69,12 @@ public class LaneInputManager : MonoBehaviour
         autoPlayEnabled = toggle;
         NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
         StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Autoplay toggled to " + toggle.ToString(), 5f));
+    }
+    public void ToggleAnyFret(bool toggle)
+    {
+        anyFretMode = toggle;
+        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
+        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Any Fret Hack toggled to " + toggle.ToString(), 5f));
     }
 
     void Update()
@@ -228,48 +235,99 @@ public class LaneInputManager : MonoBehaviour
     }
 
     // Called when the player strums; if the upcoming note is not a chord, only the highest held fret should be strummed.
-    public bool OnStrum()
+    public void OnStrum()
     {
-        if (heldLanes.Count == 0)
+        if (anyFretMode)
         {
-            if (TryHitLane(7, false, NoteVisualChanger.NoteType.Any, true) || TryHitLane(8, false, NoteVisualChanger.NoteType.Any, true))
+            // bypasses heldLanes
+            List<int> anyLanes = new List<int>(8);
+            foreach (int lane in anyLanes)
             {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        if (heldLanes.Contains(8))
-        {
-            return TryHitLane(8, false, NoteVisualChanger.NoteType.Any, true);
-        }
-
-        var lanes = new List<int>(heldLanes);
-        if (!IsChordAtCurrentTick())
-        {
-            int highestLane = -1;
-            foreach (var lane in lanes)
-            {
-                if (highestLane < lane)
+                if (TryHitLane(lane, false, NoteVisualChanger.NoteType.Any, true))
                 {
-                    highestLane = lane;
+                
+                }
+                else
+                {
+                    OnOverstrum();
                 }
             }
-
-            if (highestLane < 0) return false;
-            return TryHitLane(highestLane, false, NoteVisualChanger.NoteType.Forced, false);
+            
         }
         else
         {
-            for (int i = 1; i <= lanes.Count; i++)
+            if (heldLanes.Count == 0)
             {
-                TryHitLane(i, false, NoteVisualChanger.NoteType.Forced, true);
+                if (TryHitLane(7, false, NoteVisualChanger.NoteType.Any, true) ||
+                TryHitLane(8, false, NoteVisualChanger.NoteType.Any, true))
+                {
+                    
+                }
+                else
+                {
+                    OnOverstrum();
+                }
             }
-            return true;
+
+            if (heldLanes.Contains(8))
+            {
+                if (TryHitLane(8, false, NoteVisualChanger.NoteType.Any, true))
+                {
+                    
+                }
+                else
+                {
+                    OnOverstrum();
+                }
+            }
+
+            var lanes = new List<int>(heldLanes);
+            if (!IsChordAtCurrentTick())
+            {
+                int highestLane = -1;
+                foreach (var lane in lanes)
+                {
+                    if (highestLane < lane)
+                    {
+                        highestLane = lane;
+                    }
+                }
+
+                if (highestLane < 0) return;
+                if (TryHitLane(highestLane, false, NoteVisualChanger.NoteType.Forced, false))
+                {
+                    
+                }
+                else
+                {
+                    OnOverstrum();
+                }
+                
+            }
+            else
+            {
+                
+                foreach (int lane in heldLanes)
+                {
+                    if (TryHitLane(lane, false, NoteVisualChanger.NoteType.Forced, true))
+                    {
+                        
+                    }
+                    else
+                    {
+                        OnOverstrum();
+                    }
+                }
+            }
         }
+    }
+
+    public void OnOverstrum()
+    {
+        var sfx = FindAnyObjectByType<SFXPlayer>();
+        sfx.PlayClip("Miss");
+        var ui = FindAnyObjectByType<UIUpdater>();
+        ui.UpdateForNoteMiss();
     }
 
     // Backwards-compatible single-fret hit (e.g., mapping a single key without a strum action)

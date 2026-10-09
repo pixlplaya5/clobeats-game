@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5196703182629615035}
   - component: {fileID: 6853254859014486676}
   - component: {fileID: 5319451239986389588}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HOPOObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}

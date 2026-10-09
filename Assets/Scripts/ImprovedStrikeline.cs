@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class ImprovedStrikeline : MonoBehaviour
 {
+    public enum FlameReleaseMode
+    {
+        BoolToggle,
+        Instantiate
+    }
+    public FlameReleaseMode flameReleaseMode = FlameReleaseMode.Instantiate;
     public GameObject greenFlamePrefab;
     public GameObject redFlamePrefab;
     public GameObject yellowFlamePrefab;
@@ -65,142 +71,66 @@ public class ImprovedStrikeline : MonoBehaviour
     // co-routines
     public IEnumerator NoteFlame(Vector3 fret, float duration = 0.5f)
     {
+        GameObject flamePrefab = null;
+
         if (fret.x == -2)
         {
-            if (greenFlamePrefab != null)
-            {
-                if (!greenFlamePrefab.activeSelf)
-                {
-                    greenFlamePrefab.SetActive(true);
-                }
-                else
-                {
-                    greenFlamePrefab.SetActive(false);
-                    greenFlamePrefab.SetActive(true);
-                }
-                
-                yield return new WaitForSeconds(duration);
-                greenFlamePrefab.SetActive(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            flamePrefab = greenFlamePrefab;
         }
         else if (fret.x == -1)
         {
-            if (redFlamePrefab != null)
-            {
-                if (!redFlamePrefab.activeSelf)
-                {
-                    redFlamePrefab.SetActive(true);
-                }
-                else
-                {
-                    redFlamePrefab.SetActive(false);
-                }
-                
-                yield return new WaitForSeconds(duration);
-                redFlamePrefab.SetActive(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            flamePrefab = redFlamePrefab;
         }
         else if (fret.x == 0)
         {
-            if (yellowFlamePrefab != null)
-            {
-                if (!yellowFlamePrefab.activeSelf)
-                {
-                    yellowFlamePrefab.SetActive(true);
-                }
-                else
-                {
-                    yellowFlamePrefab.SetActive(false);
-                    yellowFlamePrefab.SetActive(true);
-                }
-                
-                yield return new WaitForSeconds(duration);
-                yellowFlamePrefab.SetActive(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            flamePrefab = yellowFlamePrefab;
         }
         else if (fret.x == 1)
         {
-            if (blueFlamePrefab != null)
-            {
-                if (!blueFlamePrefab.activeSelf)
-                {
-                    blueFlamePrefab.SetActive(true);
-                }
-                else
-                {
-                    blueFlamePrefab.SetActive(false);
-                    blueFlamePrefab.SetActive(true);
-                }
-                
-                yield return new WaitForSeconds(duration);
-                blueFlamePrefab.SetActive(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            flamePrefab = blueFlamePrefab;
         }
         else if (fret.x == 2)
         {
-            if (orangeFlamePrefab != null)
-            {
-                if (!orangeFlamePrefab.activeSelf)
-                {
-                    orangeFlamePrefab.SetActive(true);
-                }
-                else
-                {
-                    orangeFlamePrefab.SetActive(false);
-                    orangeFlamePrefab.SetActive(true);
-                }
-
-                yield return new WaitForSeconds(duration);
-                orangeFlamePrefab.SetActive(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            flamePrefab = orangeFlamePrefab;
         }
         else if (fret.x == 7)
         {
-            if (purpleFlamePrefab != null)
-            {
-                if (!purpleFlamePrefab.activeSelf)
-                {
-                    purpleFlamePrefab.SetActive(true);
-                }
-                else
-                {
-                    purpleFlamePrefab.SetActive(false);
-                    purpleFlamePrefab.SetActive(true);
-                }
-                
-                yield return new WaitForSeconds(duration);
-                purpleFlamePrefab.SetActive(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            flamePrefab = purpleFlamePrefab;
         }
         else
         {
             Debug.LogWarning("invalid fret index: " + fret.x);
+            yield break;
         }
-        
+
+        if (flamePrefab == null)
+        {
+            yield return null;
+            yield break;
+        }
+
+        if (flameReleaseMode == FlameReleaseMode.BoolToggle)
+        {
+            if (!flamePrefab.activeSelf)
+            {
+                flamePrefab.SetActive(true);
+            }
+            else
+            {
+                flamePrefab.SetActive(false);
+                flamePrefab.SetActive(true);
+            }
+
+            yield return new WaitForSeconds(duration);
+            flamePrefab.SetActive(false);
+        }
+        else if (flameReleaseMode == FlameReleaseMode.Instantiate)
+        {
+            Quaternion rotation = Quaternion.Euler(-90f, 0f, 0f);
+            GameObject flame = Instantiate(flamePrefab, fret, rotation);
+            yield return new WaitForSeconds(duration);
+            Destroy(flame);
+        }
     }
     public IEnumerator SustainFlame(Vector3 fret, float duration = 0.5f)
     {
