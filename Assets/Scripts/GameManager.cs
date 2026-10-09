@@ -229,13 +229,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlayerRocksAnim()
     {
-        TMPInstanceMaker.Instance.CreateTextObject("Song Cleared",
-            SceneManager.GetSceneByName("Gameplay").isLoaded ?
-            GameObject.Find("UI").transform :
-            transform,
-            new Vector2(960,540),
-            new Vector3(0,0,0),
-            24);
+        Debug.Log("[GameManager.PlayerRocksAnim] TMPInstanceMaker code removed to prevent crashing upon next song.");
         yield return new WaitForSeconds(6);
         MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         SceneManager.UnloadSceneAsync("Gameplay");
