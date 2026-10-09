@@ -37,8 +37,8 @@ public class PlayerPrefsLoader : MonoBehaviour
 
     async void Awake()
     {
-        QualitySettings.SetQualityLevel(2); // force normal quality
-        Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow); // force fullscreen
+        //QualitySettings.SetQualityLevel(2); // force normal quality
+        //Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow); // force fullscreen
         
         pathInputField = gameObject.transform.Find("SongFolderPathField").GetComponent<TMPro.TMP_InputField>();
         if (pathInputField != null)
