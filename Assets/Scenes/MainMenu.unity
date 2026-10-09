@@ -17813,7 +17813,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuButtons.Array.size
-      value: 31
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuScreens.Array.size
@@ -18128,6 +18128,46 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 365893344}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[31].action
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[31].button
+      value: 
+      objectReference: {fileID: 200452197}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[32].action
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[32].button
+      value: 
+      objectReference: {fileID: 1540032557}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[33].action
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[33].button
+      value: 
+      objectReference: {fileID: 1468806670}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[34].action
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[34].button
+      value: 
+      objectReference: {fileID: 775220907}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[35].action
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[35].button
+      value: 
+      objectReference: {fileID: 1753516413}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuScreens.Array.data[9].enableBG
       value: 0
       objectReference: {fileID: 0}
@@ -18292,6 +18332,26 @@ PrefabInstance:
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[31].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[32].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[33].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[34].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[35].legacySubmitIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuButtons.Array.data[25].actionArgs.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -18316,6 +18376,26 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[31].actionArgs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[32].actionArgs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[33].actionArgs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[34].actionArgs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[35].actionArgs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuButtons.Array.data[25].actionArgs.Array.data[0]
       value: Guitar
       objectReference: {fileID: 0}
@@ -18338,6 +18418,26 @@ PrefabInstance:
     - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: menuButtons.Array.data[30].actionArgs.Array.data[0]
       value: Motion
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[31].actionArgs.Array.data[0]
+      value: EasyRhythm
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[32].actionArgs.Array.data[0]
+      value: Easy
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[33].actionArgs.Array.data[0]
+      value: Medium
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[34].actionArgs.Array.data[0]
+      value: Hard
+      objectReference: {fileID: 0}
+    - target: {fileID: 263298099105794211, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
+      propertyPath: menuButtons.Array.data[35].actionArgs.Array.data[0]
+      value: Expert
       objectReference: {fileID: 0}
     - target: {fileID: 5975742816656037155, guid: ed5e73386c59f7d4c970e9e958ac4d75, type: 3}
       propertyPath: m_LocalPosition.x
