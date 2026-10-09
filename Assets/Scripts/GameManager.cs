@@ -1547,8 +1547,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ddst = PlayerPrefs.GetString("SelectedDifficulty");
-        currentPart = PlayerPrefs.GetString("SelectedPart");
+        //ddst = PlayerPrefs.GetString("SelectedDifficulty");
+        //currentPart = PlayerPrefs.GetString("SelectedPart");
     }
     
 }
