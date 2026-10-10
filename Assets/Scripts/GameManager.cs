@@ -1340,7 +1340,19 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                string serverLoad = await GetStringFromAddr($"http://{serverIPAddr}/clobeats/getRandLdgPhr.php");
+                string preLoadedServerString = await GetStringFromAddr($"http://{serverIPAddr}/clobeats/getRandLdgPhr.php");
+                string serverLoad = string.Empty;
+                if (preLoadedServerString == string.Empty)
+                {
+                    string ldgphrPath = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "loadingphrases.txt";
+                    System.Random random = new System.Random();
+                    serverLoad = GetValueFromTxt(ldgphrPath, random.Next(1, GetLineAmountFromTxt(ldgphrPath)));
+                }
+                else
+                {
+                    serverLoad = preLoadedServerString;
+                }
+                
                 string serverLoadReplaced = serverLoad.Replace("%SERVERNAME%", serverIPAddr, StringComparison.OrdinalIgnoreCase);
                 textObj.text = serverLoadReplaced;
             }
@@ -1466,6 +1478,15 @@ public class GameManager : MonoBehaviour
         currentSongLengthInTicks = 0;
     }
 
+    public static string GetValueFromTxt(string filePath, int lineNumber)
+    {
+        return File.ReadLines(filePath).ElementAtOrDefault(lineNumber - 1);
+    }
+    public static int GetLineAmountFromTxt(string filePath)
+    {
+        return File.ReadLines(filePath).Count();
+    }
+
     public static async Task<string> GetStringFromAddr(string addr)
     {
         using (HttpClient client = new HttpClient())
@@ -1475,9 +1496,9 @@ public class GameManager : MonoBehaviour
             {
                 return await client.GetStringAsync(addr);
             }
-            catch (Exception ex)
+            catch
             {
-                return "Server error occoured: " + ex.Message;
+                return string.Empty;
             }
         }
     }
