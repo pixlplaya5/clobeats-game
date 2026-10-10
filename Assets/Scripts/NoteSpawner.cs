@@ -1128,19 +1128,23 @@ public class NoteSpawner : MonoBehaviour
         // hopo handling
         //lastNoteSpawnTime = lastN?.spawnTime ?? n.spawnTime;
         int calcThreshold = (resolution / 3) + 1; // 192 = 64 ticks, 480 = 160 ticks
-        if (lastN != null && Mathf.Abs(lastN.spawnTime - n.spawnTime) != 0 && Mathf.Abs(lastN.spawnTime - n.spawnTime) < calcThreshold && lastN.fret != n.fret && lastN.spawnTime != n.spawnTime)
+        if (lastN != null)
         {
-            inst.AddComponent<HopoIndicator>();
-            var visual = inst.GetComponent<NoteVisualChanger>();
-            if (visual != null)
-                visual.currentNoteType = NoteVisualChanger.NoteType.HOPO;
+            if (lastN != null && Mathf.Abs(lastN.spawnTime - n.spawnTime) < calcThreshold && lastN.fret != n.fret)
+            {
+                inst.AddComponent<HopoIndicator>();
+                var visual = inst.GetComponent<NoteVisualChanger>();
+                if (visual != null)
+                    visual.currentNoteType = NoteVisualChanger.NoteType.HOPO;
+            }
+            else if (Mathf.Abs(lastN.spawnTime - n.spawnTime) == 0 || Mathf.Abs(lastN.spawnTimeMs - n.spawnTimeMs) == 0)
+            {
+                var visual = inst.GetComponent<NoteVisualChanger>();
+                if (visual != null)
+                    visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
+            }
         }
-        else
-        {
-            var visual = inst.GetComponent<NoteVisualChanger>();
-            if (visual != null)
-                visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
-        }
+        
 
         // fret-release handling
         if (n.isfretRelease && allowReleaseNotes)

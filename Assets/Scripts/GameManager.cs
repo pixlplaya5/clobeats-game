@@ -227,10 +227,11 @@ public class GameManager : MonoBehaviour
             UnityEngine.Application.Quit();
     }
 
-    public IEnumerator PlayerRocksAnim()
+    public IEnumerator PlayerRocksAnim(string clearText = "Song Cleared!")
     {
-        Debug.Log("[GameManager.PlayerRocksAnim] TMPInstanceMaker code removed to prevent crashing upon next song.");
+        TMPInstanceMaker.Instance.CreateTextObject(clearText, Vector2.zero, Vector3.zero, 72f);
         yield return new WaitForSeconds(6);
+        TMPInstanceMaker.Instance.DeleteAllTextObjects();
         MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         SceneManager.UnloadSceneAsync("Gameplay");
         menuManager.ShowMenu("main");
@@ -239,7 +240,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ddst = PlayerPrefs.GetString("SelectedDifficulty");
+        
     }
     void Awake()
     {
@@ -642,7 +643,7 @@ public class GameManager : MonoBehaviour
             {
                 if (info.beatEvents == null) info.beatEvents = new List<NoteSpawner.GlobalEventInfo>();
 
-                var generated = GenerateBeatEventsFromSync(info, includeEighthNotes: false);
+                var generated = GenerateBeatEventsFromSync(info, includeEighthNotes: true);
                 if (generated != null && generated.Count > 0)
                 {
                     foreach (var be in generated)

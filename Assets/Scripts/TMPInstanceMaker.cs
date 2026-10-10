@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq.Expressions;
 using TMPro;
 using UnityEngine;
 
@@ -28,53 +29,63 @@ public class TMPInstanceMaker : MonoBehaviour
             return _instance;
         }
     }
-    public Dictionary<int, GameObject> textObjects = new Dictionary<int, GameObject>();
+    public List<GameObject> textObjects = new List<GameObject>();
+    List<GameObject> canvases = new List<GameObject>();
 
-    public int CreateTextObject(string text, Transform parent, Vector2 position, Vector3 rotation, float size)
+    public void CreateTextObject(string text, Vector2 position, Vector3 rotation, float size)
     {
-        int hashCode = Mathf.Abs(text.GetHashCode());
-        GameObject textObject = new GameObject(hashCode.ToString());
-        textObject.transform.SetParent(parent);
-        textObject.transform.position = position;
-        textObject.transform.rotation = Quaternion.Euler(rotation);
+        GameObject canvasObject = new GameObject("Canvas (\"" + text + "\")", typeof(RectTransform), typeof(Canvas));
+        
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        GameObject textObject = new GameObject("Text (TMP) \"" + text + "\"");
+        textObject.transform.SetParent(canvas.transform, false);
+        RectTransform textTransform = textObject.GetComponent<RectTransform>();
+        textTransform.anchoredPosition = position;
+        textTransform.localRotation = Quaternion.Euler(rotation);
         var tmpComp = textObject.AddComponent<TextMeshProUGUI>();
         tmpComp.text = text;
         tmpComp.fontSize = size;
         tmpComp.alignment = TextAlignmentOptions.Center;
         
-        textObjects.Add(hashCode, textObject);
-        Debug.Log("[TMPInstanceMaker.CreateTextObject] TMP Text created with text \"" + text + "\" and hash code " + hashCode);
-        return hashCode;
+        textObjects.Add(textObject);
+        canvases.Add(canvasObject);
+        Debug.Log("[TMPInstanceMaker.CreateTextObject] TMP Text created with text \"" + text + "\"");
     }
 
-    public IEnumerator CreateTextObjectAtGameTime(float gameTime, string text, Transform parent, Vector2 position, Vector3 rotation, float size)
+    public IEnumerator CreateTextObjectAtGameTime(float gameTime, string text, Vector2 position, Vector3 rotation, float size)
     {
         while (Time.time < gameTime)
         {
             yield return null;
         }
-        CreateTextObject(text, parent, position, rotation, size);
+        CreateTextObject(text, position, rotation, size);
     }
 
-    public IEnumerator CreateTextObjectAtDSPTime(double dspTime, string text, Transform parent, Vector2 position, Vector3 rotation, float size)
+    public IEnumerator CreateTextObjectAtDSPTime(double dspTime, string text, Vector2 position, Vector3 rotation, float size)
     {
         while (AudioSettings.dspTime < dspTime)
         {
             yield return null;
         }
-        CreateTextObject(text, parent, position, rotation, size);
+        CreateTextObject(text, position, rotation, size);
     }
 
-    public void DeleteTextObject(int hash)
+    public void DeleteAllTextObjects()
     {
-        if (textObjects.TryGetValue(hash, out var textObject))
+        try
         {
-            Destroy(textObject);
-            textObjects.Remove(hash);
+            foreach (GameObject canvasObject in canvases)
+            {
+                Destroy(canvasObject);
+            }
+            textObjects.Clear();
+            canvases.Clear();
         }
-        else
+        catch 
         {
-            Debug.LogWarning("[TMPInstanceMaker.DeleteTextObject] Text object not found at hash code: " + hash);
+            Debug.LogWarning("[TMPInstanceMaker.DeleteTextObject] Unable to destroy all text objects.");
         }
     }
 }

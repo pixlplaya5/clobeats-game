@@ -72,6 +72,7 @@ public class SustainManager : MonoBehaviour
         }
 
         var go = GetFromPool();
+        if (go == null) go = Instantiate(sustainPrefab);
         go.transform.SetParent(container, false);
 
         var v = go.GetComponent<SustainVisual>();
