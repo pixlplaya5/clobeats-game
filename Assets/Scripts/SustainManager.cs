@@ -100,6 +100,11 @@ public class SustainManager : MonoBehaviour
             active.Remove(laneIndex);
             ReturnToPool(v.gameObject);
         }
+        if (strikeline)
+        {
+            strikeline.DisableSustainSparks(laneIndex - 2);
+            strikeline.SLTopHit(laneIndex);
+        }
     }
 
     // Called by SustainVisual when it naturally finishes (duration elapsed)

@@ -174,18 +174,6 @@ public class VenueAnimationPlayer : MonoBehaviour
 
     [System.Serializable]
     public class ScriptBundle { public ScriptDef[] scripts; public ScriptEvent[] scriptEvents; }
-    [Header("VRM Testing")]
-    // VRM testing
-    public string vocalistVRMPath = "";
-    public string guitaristVRMPath = "";
-    public string bassistVRMPath = "";
-    public string drumsistVRMPath = "";
-
-    public string currentVowel;
-    
-    [Range(0f, 1f)] public float lipsyncLerpImpact = 1f;
-    [Range(0.01f, 0.5f)] public float lipsyncLerpAttack = 0.08f;
-    [Range(0.01f, 1f)] public float lipsyncLerpRelease = 0.35f;
 
 
     void Start()
@@ -798,85 +786,12 @@ public class VenueAnimationPlayer : MonoBehaviour
             gameManager.ExitGame(false);
         };
 
-        // RBN2 scripting
-
-        // full band
-        fnRegistry["[coop_all_behind]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Band behind shot");
-        };
-        fnRegistry["[coop_all_far]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Band far shot");
-        };
-        fnRegistry["[coop_all_near]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Band near shot");
-        };
-        // guitarist, vocals, bassist
-        fnRegistry["[coop_front_behind]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Band Front behind shot");
-        };
-        fnRegistry["[coop_front_near]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Band Front near shot");
-        };
-        // 2-character cut
-        fnRegistry["[coop_gv_behind]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Guitar/Vocals behind shot");
-        };
-        fnRegistry["[coop_gv_near]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Guitar/Vocals near shot");
-        };
-
-        fnRegistry["[coop_gk_behind]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Guitar/Keys behind shot");
-        };
-        fnRegistry["[coop_gk_near]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Guitar/Keys near shot");
-        };
-
-        fnRegistry["[coop_bg_behind]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Guitar/Bass behind shot");
-        };
-        fnRegistry["[coop_bg_near]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Guitar/Bass near shot");
-        };
-        fnRegistry["[coop_bd_near]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            Debug.Log("[VenueAnimationPlayer] Parsed Camera cut: Bass/Drums near shot");
-        };
-        fnRegistry["[lighting ()]"] = (args) =>
-        {
-            if (args.Count > 0) return;
-            LightingManager lighting = FindAnyObjectByType<LightingManager>();
-            StartCoroutine(lighting.PlayCue("default"));
-        };
         fnRegistry["lighting"] = (args) =>
         {
             LightingManager lighting = FindAnyObjectByType<LightingManager>();
             StartCoroutine(lighting.PlayCue(args[0]));
         };
-        // other scripting cues
+        
         fnRegistry["chrabr4thnote_on"] = (args) =>
         {
             chrabrToggle = true;
