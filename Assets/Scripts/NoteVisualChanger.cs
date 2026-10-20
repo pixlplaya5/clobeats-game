@@ -35,6 +35,7 @@ public class NoteVisualChanger : MonoBehaviour
     } // used for single-colored notes
 
     public Color oldColor;
+    public Color feverColor = Color.cyan;
 
     public GameObject gemColorRenderer;
     public int rendererIndex = 0;
@@ -60,6 +61,18 @@ public class NoteVisualChanger : MonoBehaviour
     void Update()
     {
         gemColorRenderer.GetComponent<Renderer>().materials[rendererIndex].color = gemColor;
+        UIUpdater uIUpdater = FindAnyObjectByType<UIUpdater>();
+        if (uIUpdater)
+        {
+            if (uIUpdater.inStar)
+            {
+                gemColor = feverColor;
+            }
+            else
+            {
+                gemColor = oldColor;
+            }
+        }
         if (currentNoteType == NoteType.Forced)
         {
             if (noteObject != null)

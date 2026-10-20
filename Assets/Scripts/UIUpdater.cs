@@ -81,12 +81,14 @@ public class UIUpdater : MonoBehaviour
     {
         SFXPlayer sFX = FindAnyObjectByType<SFXPlayer>();
         MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
+        HighwayTextureChanger highway = FindAnyObjectByType<HighwayTextureChanger>();
         inStar = toggle;
 
         if (toggle)
         {
             combolimit = 8;
             savedcombo = savedcombo * 2;
+            highway.TrySetSpriteColor(0, 1, 1);
             sFX.PlayClip("Woosh");
             //sFX.PlayClip("FeverCheer1");
             musicPlayer.ToggleStemReverb(part, true);
@@ -94,6 +96,7 @@ public class UIUpdater : MonoBehaviour
         else
         {
             combolimit = 4;
+            highway.TrySetSpriteColor(1, 1, 1);
             sFX.PlayClip("Star_Release");
             musicPlayer.ToggleStemReverb(part, false);
         }
