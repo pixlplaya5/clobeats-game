@@ -15,18 +15,51 @@ public class NoteVisualChanger : MonoBehaviour
 
     public GameObject noteObject;
     public GameObject hopoNoteObject;
-    public GameObject tapNoteObject;
     public GameObject fretReleaseNoteObject;
+
+
+
+    Color _gemColor;
+    [SerializeField]
+    public Color gemColor
+    {
+        get => _gemColor;
+        set
+        {
+            if (_gemColor != value)
+            {
+                _gemColor = value;
+                OnGemColorChanged(value);
+            }
+        }
+    } // used for single-colored notes
+
+    public Color oldColor;
+
+    public GameObject gemColorRenderer;
+    public int rendererIndex = 0;
+
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
     }
+    void Awake()
+    {
+        
+    }
+
+    void OnGemColorChanged(Color value)
+    {
+        oldColor = value;
+    }
 
     // Update is called once per frame
     void Update()
     {
+        gemColorRenderer.GetComponent<Renderer>().materials[rendererIndex].color = gemColor;
         if (currentNoteType == NoteType.Forced)
         {
             if (noteObject != null)
@@ -37,10 +70,6 @@ public class NoteVisualChanger : MonoBehaviour
             {
                 hopoNoteObject.SetActive(false);
             }
-            if (tapNoteObject != null)
-            {
-                tapNoteObject.SetActive(false);
-            }
             if (fretReleaseNoteObject != null)
             {
                 fretReleaseNoteObject.SetActive(false);
@@ -50,16 +79,13 @@ public class NoteVisualChanger : MonoBehaviour
         {
             if (noteObject != null)
             {
-                noteObject.SetActive(false);
+                noteObject.SetActive(true);
             }
             if (hopoNoteObject != null)
             {
                 hopoNoteObject.SetActive(true);
             }
-            if (tapNoteObject != null)
-            {
-                tapNoteObject.SetActive(false);
-            }
+            
             if (fretReleaseNoteObject != null)
             {
                 fretReleaseNoteObject.SetActive(false);
@@ -69,15 +95,11 @@ public class NoteVisualChanger : MonoBehaviour
         {
             if (noteObject != null)
             {
-                noteObject.SetActive(false);
+                noteObject.SetActive(true);
             }
             if (hopoNoteObject != null)
             {
                 hopoNoteObject.SetActive(false);
-            }
-            if (tapNoteObject != null)
-            {
-                tapNoteObject.SetActive(true);
             }
             if (fretReleaseNoteObject != null)
             {
@@ -94,10 +116,7 @@ public class NoteVisualChanger : MonoBehaviour
             {
                 hopoNoteObject.SetActive(false);
             }
-            if (tapNoteObject != null)
-            {
-                tapNoteObject.SetActive(false);
-            }
+
             if (fretReleaseNoteObject != null)
             {
                 fretReleaseNoteObject.SetActive(true);

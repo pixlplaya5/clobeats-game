@@ -1702,11 +1702,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c359f2c6817f74a91225b7f8a01ffa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NoteSpawner
-  greenNotePrefab: {fileID: 5515200103857537574, guid: bbb05ec2836a2fd4cbe37ebb495f3950, type: 3}
-  redNotePrefab: {fileID: 5515200103857537574, guid: cf20558c7b6052447b6722cbd4f42fa5, type: 3}
-  yellowNotePrefab: {fileID: 5515200103857537574, guid: c83857909108e134aa5cee75cf7a8da2, type: 3}
-  blueNotePrefab: {fileID: 5515200103857537574, guid: feae0eb7e5e17084c8a90a23522b023c, type: 3}
-  orangeNotePrefab: {fileID: 5515200103857537574, guid: 33db493db56121645a26773465e59b66, type: 3}
+  coloredNotePrefab: {fileID: 5515200103857537574, guid: bbb05ec2836a2fd4cbe37ebb495f3950, type: 3}
   openNotePrefab: {fileID: 5014210062068762395, guid: e9671d1f47577634cbdf01a36d969190, type: 3}
   beginnerNotePrefab: {fileID: 5014210062068762395, guid: cbc7752a6567b3243a31ae52e57d1eb1, type: 3}
   freestyleDummyPrefab: {fileID: 0}

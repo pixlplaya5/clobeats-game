@@ -17,11 +17,11 @@ public class NoteSpawner : MonoBehaviour
 
     [Header("Note Objects")]
     // strum
-    public GameObject greenNotePrefab;
-    public GameObject redNotePrefab;
-    public GameObject yellowNotePrefab;
-    public GameObject blueNotePrefab;
-    public GameObject orangeNotePrefab;
+    public GameObject coloredNotePrefab;
+    //public GameObject redNotePrefab;
+    //public GameObject yellowNotePrefab;
+    //public GameObject blueNotePrefab;
+    //public GameObject orangeNotePrefab;
     // open
     public GameObject openNotePrefab; 
     // beginner open
@@ -83,8 +83,8 @@ public class NoteSpawner : MonoBehaviour
         try
         {
             // count notes per fret and sustains
-            int green = 0, red = 0, yellow = 0, blue = 0, orange = 0, open = 0;
-            int logGreen = 0, logRed = 0, logYellow = 0, logBlue = 0, logOrange = 0, logOpen = 0;
+            int colored = 0, open = 0;
+            int logColored = 0, logOpen = 0;
 
             for (int i = 0; i < gameManager.currentSongNotes.ToArray().Length; i++)
             {
@@ -92,13 +92,9 @@ public class NoteSpawner : MonoBehaviour
                 if (n == null) continue;
                 switch (n.fret)
                 {
-                    case 0: green++; break;
-                    case 1: red++; break;
-                    case 2: yellow++; break;
-                    case 3: blue++; break;
-                    case 4: orange++; break;
+                    
                     case 7: open++; break;
-                    default: break;
+                    default: colored++; break;
                 }
             }
 
@@ -106,36 +102,13 @@ public class NoteSpawner : MonoBehaviour
             const float multiplier = 1.25f;
             const int minPool = 8;
      
-            if (greenNotePrefab != null)
+            if (coloredNotePrefab != null)
             {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(green * multiplier));
-                NotePoolManager.Instance.Prewarm(greenNotePrefab, cnt);
-                logGreen = cnt;
+                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(colored * multiplier));
+                NotePoolManager.Instance.Prewarm(coloredNotePrefab, cnt);
+                logColored = cnt;
             }
-            if (redNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(red * multiplier));
-                NotePoolManager.Instance.Prewarm(redNotePrefab, cnt);
-                logRed = cnt;
-            }
-            if (yellowNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(yellow * multiplier));
-                NotePoolManager.Instance.Prewarm(yellowNotePrefab, cnt);
-                logYellow = cnt;
-            }
-            if (blueNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(blue * multiplier));
-                NotePoolManager.Instance.Prewarm(blueNotePrefab, cnt);
-                logBlue = cnt;
-            }
-            if (orangeNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(orange * multiplier));
-                NotePoolManager.Instance.Prewarm(orangeNotePrefab, cnt);
-                logOrange = cnt;
-            }
+            
             if (openNotePrefab != null)
             {
                 int cnt = Mathf.Max(minPool, Mathf.CeilToInt(open * multiplier));
@@ -143,7 +116,7 @@ public class NoteSpawner : MonoBehaviour
                 logOpen = cnt;
             }
             await Task.Yield();
-            Debug.Log($"[PrewarmNotePools] Notes prewarmed: {{{logGreen}, {logRed}, {logYellow}, {logBlue}, {logOrange}, {logOpen}}}");
+            Debug.Log($"[PrewarmNotePools] Notes prewarmed: {{{logColored}, {logOpen}}}");
         }
         catch (System.Exception ex)
         {
@@ -157,42 +130,19 @@ public class NoteSpawner : MonoBehaviour
         Debug.Log($"[PrewarmNotePools] Prewarming note pools... (specified number)");
         try
         {
-            int logGreen = 0, logRed = 0, logYellow = 0, logBlue = 0, logOrange = 0, logOpen = 0, logFree = 0;
+            int logGreen = 0, logOpen = 0, logFree = 0;
 
             // multiplier and minimum to avoid too-small pools
             const float multiplier = 1.25f;
             const int minPool = 8;
      
-            if (greenNotePrefab != null)
+            if (coloredNotePrefab != null)
             {
                 int cnt = Mathf.Max(minPool, Mathf.CeilToInt(amount * multiplier));
-                NotePoolManager.Instance.Prewarm(greenNotePrefab, cnt);
+                NotePoolManager.Instance.Prewarm(coloredNotePrefab, cnt);
                 logGreen = cnt;
             }
-            if (redNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(amount * multiplier));
-                NotePoolManager.Instance.Prewarm(redNotePrefab, cnt);
-                logRed = cnt;
-            }
-            if (yellowNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(amount * multiplier));
-                NotePoolManager.Instance.Prewarm(yellowNotePrefab, cnt);
-                logYellow = cnt;
-            }
-            if (blueNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(amount * multiplier));
-                NotePoolManager.Instance.Prewarm(blueNotePrefab, cnt);
-                logBlue = cnt;
-            }
-            if (orangeNotePrefab != null)
-            {
-                int cnt = Mathf.Max(minPool, Mathf.CeilToInt(amount * multiplier));
-                NotePoolManager.Instance.Prewarm(orangeNotePrefab, cnt);
-                logOrange = cnt;
-            }
+            
             if (openNotePrefab != null)
             {
                 int cnt = Mathf.Max(minPool, Mathf.CeilToInt(amount * multiplier));
@@ -206,7 +156,7 @@ public class NoteSpawner : MonoBehaviour
                 logFree = cnt;
             }
             await Task.Yield();
-            Debug.Log($"[PrewarmNotePools] Specific notes prewarmed: {{{logGreen}, {logRed}, {logYellow}, {logBlue}, {logOrange}, {logOpen}, {logFree}}}");
+            Debug.Log($"[PrewarmNotePools] Specific notes prewarmed: {{{logGreen}, {logOpen}, {logFree}}}");
         }
         catch (System.Exception ex)
         {
@@ -1089,11 +1039,11 @@ public class NoteSpawner : MonoBehaviour
         {
             switch (fret)
             {
-                case 0: if (greenNotePrefab != null) try { inst = GetNoteInstance(greenNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
-                case 1: if (redNotePrefab != null) try { inst = GetNoteInstance(redNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
-                case 2: if (yellowNotePrefab != null) try { inst = GetNoteInstance(yellowNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
-                case 3: if (blueNotePrefab != null) try { inst = GetNoteInstance(blueNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
-                case 4: if (orangeNotePrefab != null) try { inst = GetNoteInstance(orangeNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
+                case 0: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
+                case 1: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
+                case 2: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
+                case 3: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
+                case 4: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
                 case 8: if (beginnerNotePrefab != null) try { inst = GetNoteInstance(beginnerNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
                 default: break;
             }
@@ -1122,6 +1072,9 @@ public class NoteSpawner : MonoBehaviour
         try { LaneManager.Instance.RegisterNote(inst, fret); } catch (Exception) { }
         inst.SetActive(true);
         AddObjectToGlobalMoveY(inst);
+        var visual = inst.GetComponent<NoteVisualChanger>();
+            if (visual != null)
+            visual.gemColor = gemColor;
 
         
 
@@ -1133,20 +1086,17 @@ public class NoteSpawner : MonoBehaviour
             if (lastN.belongingPart == "drums" || n.belongingPart == "drums")
             {
                 // force all notes for drums gamepad mode
-                var visual = inst.GetComponent<NoteVisualChanger>();
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
             }
             else if (Mathf.Abs(lastN.spawnTime - n.spawnTime) < calcThreshold && lastN.fret != n.fret)
             {
                 inst.AddComponent<HopoIndicator>();
-                var visual = inst.GetComponent<NoteVisualChanger>();
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.HOPO;
             }
             else if (Mathf.Abs(lastN.spawnTime - n.spawnTime) == 0 || Mathf.Abs(lastN.spawnTimeMs - n.spawnTimeMs) == 0)
             {
-                var visual = inst.GetComponent<NoteVisualChanger>();
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
             }
@@ -1156,7 +1106,6 @@ public class NoteSpawner : MonoBehaviour
         // fret-release handling
         if (n.isfretRelease && allowReleaseNotes)
         {
-            var visual = inst.GetComponent<NoteVisualChanger>();
             if (visual != null)
                 visual.currentNoteType = NoteVisualChanger.NoteType.FretRelease;
         }
@@ -1236,11 +1185,11 @@ public class NoteSpawner : MonoBehaviour
         {
             switch (fret)
             {
-                case 0: if (greenNotePrefab != null) try { inst = GetNoteInstance(greenNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
-                case 1: if (redNotePrefab != null) try { inst = GetNoteInstance(redNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
-                case 2: if (yellowNotePrefab != null) try { inst = GetNoteInstance(yellowNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
-                case 3: if (blueNotePrefab != null) try { inst = GetNoteInstance(blueNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
-                case 4: if (orangeNotePrefab != null) try { inst = GetNoteInstance(orangeNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
+                case 0: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.green; } catch { inst = null; } break;
+                case 1: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.red; } catch { inst = null; } break;
+                case 2: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.yellow; } catch { inst = null; } break;
+                case 3: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
+                case 4: if (coloredNotePrefab != null) try { inst = GetNoteInstance(coloredNotePrefab); gemColor = new Color(1f, 0.5f, 0f); } catch { inst = null; } break;
                 case 8: if (beginnerNotePrefab != null) try { inst = GetNoteInstance(beginnerNotePrefab); gemColor = Color.blue; } catch { inst = null; } break;
                 default: break;
             }
@@ -1269,6 +1218,9 @@ public class NoteSpawner : MonoBehaviour
         try { LaneManager.Instance.RegisterNote(inst, fret); } catch (Exception) { }
         inst.SetActive(true);
         AddObjectToGlobalMoveY(inst);
+        var visual = inst.GetComponent<NoteVisualChanger>();
+            if (visual != null)
+            visual.gemColor = gemColor;
 
         // hopo handling
         //lastNoteSpawnTime = lastN?.spawnTime ?? n.spawnTime;
@@ -1277,7 +1229,6 @@ public class NoteSpawner : MonoBehaviour
         // fret-release handling
         if (noteEntry.isfretRelease)
         {
-            var visual = inst.GetComponent<NoteVisualChanger>();
             if (visual != null)
                 visual.currentNoteType = NoteVisualChanger.NoteType.FretRelease;
         }
