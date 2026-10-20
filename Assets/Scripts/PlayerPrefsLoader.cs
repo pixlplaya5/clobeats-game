@@ -269,7 +269,7 @@ public class PlayerPrefsLoader : MonoBehaviour
                 child.gameObject.SetActive(false);
             }
 
-            Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, true);
+            //Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, true);
             RewiredStandaloneInputModule inputModule = FindFirstObjectByType<RewiredStandaloneInputModule>();
             inputModule.allowMouseInput = false;
             if (SceneManager.GetSceneByName("MainMenu").isLoaded) MessageBox.Instance.Show($"Welcome to {Application.productName} !<br>Loading custom songs takes a <b>VERY</b> long time, "

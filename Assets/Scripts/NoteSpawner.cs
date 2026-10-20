@@ -1130,7 +1130,14 @@ public class NoteSpawner : MonoBehaviour
         int calcThreshold = (resolution / 3) + 1; // 192 = 64 ticks, 480 = 160 ticks
         if (lastN != null)
         {
-            if (lastN != null && Mathf.Abs(lastN.spawnTime - n.spawnTime) < calcThreshold && lastN.fret != n.fret)
+            if (lastN.belongingPart == "drums" || n.belongingPart == "drums")
+            {
+                // force all notes for drums gamepad mode
+                var visual = inst.GetComponent<NoteVisualChanger>();
+                if (visual != null)
+                    visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
+            }
+            else if (Mathf.Abs(lastN.spawnTime - n.spawnTime) < calcThreshold && lastN.fret != n.fret)
             {
                 inst.AddComponent<HopoIndicator>();
                 var visual = inst.GetComponent<NoteVisualChanger>();

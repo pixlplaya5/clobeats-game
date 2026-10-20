@@ -1118,6 +1118,13 @@ public class MusicPlayer : MonoBehaviour
             StopStem(stemName, true);
         }
 
+#if UNITY_STANDALONE_WIN && UNITY_64
+        if (Path.GetExtension(audioClipPath) == "opus")
+        {
+            Bass.PluginLoad(Application.streamingAssetsPath + Path.DirectorySeparatorChar + "bassopus_x64.dll"); // try to load manually
+        }
+#endif
+
         int stemHandle = Bass.CreateStream(audioClipPath, 0, 0, BassFlags.Prescan);
         if (stemHandle == 0)
         {

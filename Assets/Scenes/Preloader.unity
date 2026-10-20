@@ -5691,14 +5691,6 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 7079f6274fae3904d972af8ebff52c6b, type: 2}
   - {fileID: 7400000, guid: 7dcd851a31d1dfc4b943503de732c2ad, type: 2}
   scriptEvents: []
-  vocalistVRMPath: 
-  guitaristVRMPath: 
-  bassistVRMPath: 
-  drumsistVRMPath: 
-  currentVowel: 
-  lipsyncLerpImpact: 1
-  lipsyncLerpAttack: 0.08
-  lipsyncLerpRelease: 0.35
 --- !u!4 &779913371
 Transform:
   m_ObjectHideFlags: 0

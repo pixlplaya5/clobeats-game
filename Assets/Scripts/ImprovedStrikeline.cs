@@ -41,6 +41,53 @@ public class ImprovedStrikeline : MonoBehaviour
         uiUpdater = FindFirstObjectByType<UIUpdater>();
     }
 
+    // used for hiding green/kick lane on drums
+    public void ToggleLane(int lane, bool visible)
+    {
+        GameObject lanePrefab = null;
+        GameObject laneTopPrefab = null;
+        if (lane == 0)
+        {
+            lanePrefab = greenBase;
+            laneTopPrefab = SLGreenTopPrefab;
+        }
+        else if (lane == 1)
+        {
+            lanePrefab = redBase;
+            laneTopPrefab = SLRedTopPrefab;
+        }
+        else if (lane == 2)
+        {
+            lanePrefab = yellowBase;
+            laneTopPrefab = SLYellowTopPrefab;
+        }
+        else if (lane == 3)
+        {
+            lanePrefab = blueBase;
+            laneTopPrefab = SLBlueTopPrefab;
+        }
+        else if (lane == 4)
+        {
+            lanePrefab = orangeBase;
+            laneTopPrefab = SLOrangeTopPrefab;
+        }
+        else
+        {
+            Debug.LogWarning("[ImprovedStrikeline.ToggleLane] invalid lane index: " + lane);
+        }
+
+
+        if (lanePrefab == null || laneTopPrefab == null)
+        {
+            return;
+        }
+        else
+        {
+            lanePrefab.SetActive(visible);
+            laneTopPrefab.SetActive(visible);
+        }
+    }
+
     public void HitNote(float xOffset = 0f)
     {
         Vector3 flamePosition = new Vector3(xOffset, gameObject.transform.position.y, gameObject.transform.position.z);
@@ -72,6 +119,7 @@ public class ImprovedStrikeline : MonoBehaviour
     public IEnumerator NoteFlame(Vector3 fret, float duration = 0.5f)
     {
         GameObject flamePrefab = null;
+        Vector3 purpleCentered = new Vector3(0,0,0);
 
         if (fret.x == -2)
         {
@@ -96,10 +144,11 @@ public class ImprovedStrikeline : MonoBehaviour
         else if (fret.x == 7)
         {
             flamePrefab = purpleFlamePrefab;
+            fret = purpleCentered;
         }
         else
         {
-            Debug.LogWarning("invalid fret index: " + fret.x);
+            Debug.LogWarning("[ImprovedStrikeline.NoteFlame] invalid fret index: " + fret.x);
             yield break;
         }
 

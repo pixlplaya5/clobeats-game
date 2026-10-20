@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -34,24 +35,32 @@ public class TMPInstanceMaker : MonoBehaviour
 
     public void CreateTextObject(string text, Vector2 position, Vector3 rotation, float size)
     {
-        GameObject canvasObject = new GameObject("Canvas (\"" + text + "\")", typeof(RectTransform), typeof(Canvas));
+        try
+        {
+            GameObject canvasObject = new GameObject("Canvas (\"" + text + "\")", typeof(RectTransform), typeof(Canvas));
         
-        Canvas canvas = canvasObject.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            Canvas canvas = canvasObject.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        GameObject textObject = new GameObject("Text (TMP) \"" + text + "\"");
-        textObject.transform.SetParent(canvas.transform, false);
-        RectTransform textTransform = textObject.GetComponent<RectTransform>();
-        textTransform.anchoredPosition = position;
-        textTransform.localRotation = Quaternion.Euler(rotation);
-        var tmpComp = textObject.AddComponent<TextMeshProUGUI>();
-        tmpComp.text = text;
-        tmpComp.fontSize = size;
-        tmpComp.alignment = TextAlignmentOptions.Center;
+            GameObject textObject = new GameObject("Text (TMP) \"" + text + "\"");
+            textObject.transform.SetParent(canvas.transform, false);
+            RectTransform textTransform = textObject.GetComponent<RectTransform>();
+            if (textTransform == null) textTransform = textObject.AddComponent<RectTransform>();
+            textTransform.anchoredPosition = position;
+            textTransform.localRotation = Quaternion.Euler(rotation);
+            var tmpComp = textObject.AddComponent<TextMeshProUGUI>();
+            tmpComp.text = text;
+            tmpComp.fontSize = size;
+            tmpComp.alignment = TextAlignmentOptions.Center;
         
-        textObjects.Add(textObject);
-        canvases.Add(canvasObject);
-        Debug.Log("[TMPInstanceMaker.CreateTextObject] TMP Text created with text \"" + text + "\"");
+            textObjects.Add(textObject);
+            canvases.Add(canvasObject);
+            Debug.Log("[TMPInstanceMaker.CreateTextObject] TMP Text created with text \"" + text + "\"");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[TMPInstanceMaker.CreateTextObject] Exception occoured while creating text object: " + ex.Message);
+        }
     }
 
     public IEnumerator CreateTextObjectAtGameTime(float gameTime, string text, Vector2 position, Vector3 rotation, float size)

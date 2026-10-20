@@ -515,7 +515,7 @@ public class GameManager : MonoBehaviour
             string chosenPart = currentPart.ToUpper();
         
             if (string.IsNullOrEmpty(chosenDiff)) chosenDiff = "Expert";
-            /*if (chosenPart == "DRUMS")
+            if (chosenPart == "DRUMS")
             {
                 if (partDrumsDifficultyMappings.TryGetValue(chosenDiff, out var map))
                 {
@@ -530,11 +530,6 @@ public class GameManager : MonoBehaviour
                     var trackNotes = GetNotesFromTrackByName(midi, "PART " + chosenPart, map, scale);
                     foreach (var ni in trackNotes) info.noteInfos.Enqueue(ni);
                 }
-            }*/
-            if (partGuitarDifficultyMappings.TryGetValue(chosenDiff, out var map))
-            {
-                var trackNotes = GetNotesFromTrackByName(midi, "PART " + chosenPart, map, scale);
-                foreach (var ni in trackNotes) info.noteInfos.Enqueue(ni);
             }
         }
         catch (Exception ex)
@@ -1099,7 +1094,7 @@ public class GameManager : MonoBehaviour
                 if (note.NoteNumber >= 120 && note.NoteNumber <= 124) continue;
 
                 bool insideFreestyle = regions.Any(r => note.Time >= r.startTick && note.Time < r.endTick);
-                if (insideFreestyle) continue; // don't add regular notes under freestyle
+                //if (insideFreestyle) continue; // don't add regular notes under freestyle
 
                 var metricStart = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, tempoMap);
                 var metricLength = TimeConverter.ConvertTo<MetricTimeSpan>(note.Length, tempoMap);
