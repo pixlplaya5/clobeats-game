@@ -18,9 +18,10 @@ public class UGUIMenuList : MonoBehaviour
     public Transform contentContainer;
     public Transform rootTransform;
     public ScrollRect scrollRect;
-    //public Button regenerateItemsButton;
     public bool rebuildOnEnable = true;
-    public bool wrapSelection = true;
+    [Min(1)]
+    public int itemsPerPage = 10;
+    public TextMeshProUGUI pageIndicatorText;
     public bool autoScrollToSelection = true;
     public float scrollPadding = 8f;
     public bool clickPlaysSelection = false;
@@ -65,6 +66,7 @@ public class UGUIMenuList : MonoBehaviour
     private Dictionary<int, ListObject> itemPaths = new Dictionary<int, ListObject>();
 
     private int selectedIndex = -1;
+    private int currentPage;
     private int rebuildVersion;
 
     public int currentSelectedItem
@@ -124,6 +126,10 @@ public class UGUIMenuList : MonoBehaviour
         if (version == rebuildVersion && items.Count > 0)
         {
             SelectAt(0, true);
+        }
+        else
+        {
+            SetCurrentPage(0);
         }
     }
 
@@ -222,9 +228,7 @@ public class UGUIMenuList : MonoBehaviour
             return;
         }
 
-        int resolvedIndex = wrapSelection
-            ? WrapIndex(index, items.Count)
-            : Mathf.Clamp(index, 0, items.Count - 1);
+        int resolvedIndex = Mathf.Clamp(index, 0, items.Count - 1);
 
         SelectItem(items[resolvedIndex], updatePreview);
     }
@@ -242,6 +246,7 @@ public class UGUIMenuList : MonoBehaviour
             return;
         }
 
+        SetCurrentPage(index / Mathf.Max(1, itemsPerPage));
         bool changed = selectedIndex != index;
         selectedIndex = index;
         UpdateSelectionVisuals();
@@ -273,6 +278,8 @@ public class UGUIMenuList : MonoBehaviour
         itemsByCachedId.Clear();
         itemPaths.Clear();
         selectedIndex = -1;
+        currentPage = 0;
+        UpdatePageIndicator();
     }
 
     private async Task AddEntryAsync(GameManager.SongEntryInfo entry)
@@ -297,6 +304,7 @@ public class UGUIMenuList : MonoBehaviour
 
         GameObject view = Instantiate(listItemPrefab, contentContainer);
         view.name = entry.songNumber.ToString();
+        view.SetActive(items.Count / Mathf.Max(1, itemsPerPage) == currentPage);
         instantiatedListItems.Add(view);
 
         SongMenuItem item = new SongMenuItem
@@ -602,6 +610,41 @@ public class UGUIMenuList : MonoBehaviour
                 songArtistText = artist != null ? artist.GetComponent<TextMeshProUGUI>() : null;
             }
         }
+
+        if (pageIndicatorText == null)
+        {
+            Transform pageIndicatorRoot = rootTransform != null ? rootTransform : transform;
+            Transform pageIndicator = FindDeepChild(pageIndicatorRoot, "PageIndicator");
+            pageIndicatorText = pageIndicator != null ? pageIndicator.GetComponent<TextMeshProUGUI>() : null;
+        }
+    }
+
+    private void SetCurrentPage(int page)
+    {
+        int pageSize = Mathf.Max(1, itemsPerPage);
+        int pageCount = Mathf.Max(1, Mathf.CeilToInt((float)items.Count / pageSize));
+        currentPage = Mathf.Clamp(page, 0, pageCount - 1);
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].view != null)
+            {
+                items[i].view.SetActive(i / pageSize == currentPage);
+            }
+        }
+
+        UpdatePageIndicator();
+    }
+
+    private void UpdatePageIndicator()
+    {
+        if (pageIndicatorText == null)
+        {
+            return;
+        }
+
+        int pageCount = Mathf.Max(1, Mathf.CeilToInt((float)items.Count / Mathf.Max(1, itemsPerPage)));
+        pageIndicatorText.text = $"Page {currentPage + 1} / {pageCount}";
     }
 
     private static TextMeshProUGUI FindTitleText(Transform root)
@@ -645,14 +688,4 @@ public class UGUIMenuList : MonoBehaviour
         return null;
     }
 
-    private static int WrapIndex(int index, int count)
-    {
-        if (count <= 0)
-        {
-            return -1;
-        }
-
-        int wrapped = index % count;
-        return wrapped < 0 ? wrapped + count : wrapped;
-    }
 }

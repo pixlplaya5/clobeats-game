@@ -71,8 +71,8 @@ public class SustainManager : MonoBehaviour
             active.Remove(laneIndex);
         }
 
-        var go = GetFromPool();
-        if (go == null) go = Instantiate(sustainPrefab);
+        
+        var go = Instantiate(sustainPrefab);
         go.transform.SetParent(container, false);
 
         var v = go.GetComponent<SustainVisual>();

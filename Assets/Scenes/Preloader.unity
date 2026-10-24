@@ -13760,11 +13760,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2084514632}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 60446cd404e5d5844b74130e35d308de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connectionAttempts: 0
+  connectionAttemptLimit: 5
+  attemptEverySeconds: 5
 --- !u!1 &2095484111
 GameObject:
   m_ObjectHideFlags: 0
