@@ -78,6 +78,7 @@ public class SFXPlayer : MonoBehaviour
     {
         if (loadedAudioClips.TryGetValue(clipName, out var clip))
         {
+            audioSource.clip = null;
             audioSource.PlayOneShot(clip);
         }
         else
@@ -85,6 +86,24 @@ public class SFXPlayer : MonoBehaviour
             Debug.LogError("[SFXPlayer] Audio clip '" + clipName + "' is not loaded.");
         }
     }
+
+    public void PlayFrozenClip(string clipName)
+    {
+        if (loadedAudioClips.TryGetValue(clipName, out var clip))
+        {
+            audioSource.clip = clip;
+            audioSource.Play();
+            while (audioSource.time < clip.length)
+            {
+                // freeze and do nothing
+            }
+        }
+        else
+        {
+            Debug.LogError("[SFXPlayer] Audio clip '" + clipName + "' is not loaded.");
+        }
+    }
+
     public void LoadClip(string clipName)
     {
         AudioClip clip = Resources.Load<AudioClip>(clipName);

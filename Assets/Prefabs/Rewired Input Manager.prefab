@@ -50,7 +50,7 @@ MonoBehaviour:
       updateLoop: 7
       alwaysUseUnityInput: 0
       windowsStandalonePrimaryInputSource: 0
-      osx_primaryInputSource: 0
+      osx_primaryInputSource: 100
       linux_primaryInputSource: 0
       windowsUWP_primaryInputSource: 0
       xboxOne_primaryInputSource: 0
@@ -85,7 +85,7 @@ MonoBehaviour:
         disableKeyboard: 0
         disableMouse: 1
         ignoreInputWhenAppNotInFocus: 1
-        useAppleGameController: 1
+        useAppleGameController: 0
         assignJoysticksByUserId: 0
       platformVars_windowsUWP:
         disableKeyboard: 0
