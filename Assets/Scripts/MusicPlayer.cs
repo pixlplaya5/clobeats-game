@@ -16,6 +16,12 @@ using System.Runtime.InteropServices;
 
 public class MusicPlayer : MonoBehaviour
 {
+    public enum AudioSubsystemType
+    {
+        BASS,
+        Unity
+    }
+    public AudioSubsystemType audioSubsystemType = AudioSubsystemType.BASS;
     public double musicVolume = 1.0;
     public VideoPlayer videoPlayer;
     public bool previewAudioPlaying = false;
@@ -28,6 +34,7 @@ public class MusicPlayer : MonoBehaviour
     bool bassInitialized = false;
     // ManagedBass stream handles
     private int songStreamHandle = 0;
+    private AudioSource unitySongSource;
     public AudioSource previewAudioStream;
     public double currentTimeDSP = 0;
     public double currentTime = 0;
@@ -70,6 +77,8 @@ public class MusicPlayer : MonoBehaviour
         public string name;
         public int handle;
         public List<int> childHandles = new List<int>();
+        [NonSerialized] public AudioSource audioSource;
+        [NonSerialized] public List<AudioSource> childAudioSources = new List<AudioSource>();
         [NonSerialized] public Playback midiPlayback;
         public bool isMidi;
         public bool isPlaying;
@@ -126,7 +135,7 @@ public class MusicPlayer : MonoBehaviour
         Debug.Log("[MusicPlayer.TestFullAudio] Testing BASS Audio");
         await Task.Delay(Mathf.CeilToInt((float)await TestBASSAudio(Path.Combine(Application.streamingAssetsPath, "soundcheck.wav")) * 1000));
         Debug.Log("[MusicPlayer.TestFullAudio] Testing Unity Audio");
-        await Task.Delay(Mathf.CeilToInt(TestUnityAudio(Path.Combine(Application.streamingAssetsPath, "soundcheck.wav")) * 1000));
+        await Task.Delay(Mathf.CeilToInt(await TestUnityAudio(Path.Combine(Application.streamingAssetsPath, "soundcheck.wav")) * 1000));
     }
 
     public async Task<double> TestBASSAudio(string audioPath)
@@ -146,9 +155,10 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    public float TestUnityAudio(string audioPath)
+    public async Task<float> TestUnityAudio(string audioPath)
     {
-        AudioClip testClip = LoadUnityAudioFile(audioPath);
+        AudioClip testClip = await LoadUnityAudioFile(audioPath);
+        if (testClip == null) return 0f;
         GameObject go = new GameObject("TestClip");
         //go.transform.SetParent(this.transform, false);
         var src = go.AddComponent<AudioSource>();
@@ -159,13 +169,15 @@ public class MusicPlayer : MonoBehaviour
         src.Play();
         return testClip.length;
     }
-    public AudioClip LoadUnityAudioFile(string filePath)
+    public async Task<AudioClip> LoadUnityAudioFile(string filePath)
     {
-        string uriPath = new System.Uri(filePath).AbsoluteUri;
-        using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(uriPath, AudioType.UNKNOWN))
+        if (string.IsNullOrEmpty(filePath)) return null;
+        string uriPath = filePath.Contains("://") ? filePath : new Uri(Path.GetFullPath(filePath)).AbsoluteUri;
+        using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(uriPath, GetUnityAudioType(filePath)))
         {
-            uwr.SendWebRequest();
-            if (uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError)
+            UnityWebRequestAsyncOperation operation = uwr.SendWebRequest();
+            while (!operation.isDone) await Task.Yield();
+            if (uwr.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError("Error loading audio clip: " + uwr.error);
                 return null;
@@ -183,6 +195,58 @@ public class MusicPlayer : MonoBehaviour
                 }
             }
         }
+    }
+
+    private AudioType GetUnityAudioType(string filePath)
+    {
+        switch (Path.GetExtension(filePath).ToLowerInvariant())
+        {
+            case ".wav": return AudioType.WAV;
+            case ".ogg": return AudioType.OGGVORBIS;
+            case ".mp3": return AudioType.MPEG;
+            case ".aiff":
+            case ".aif": return AudioType.AIFF;
+            default: return AudioType.UNKNOWN;
+        }
+    }
+
+    private AudioSource CreateUnityAudioSource(AudioClip clip, string sourceName, float volume)
+    {
+        GameObject sourceObject = new GameObject(sourceName);
+        sourceObject.transform.SetParent(transform, false);
+        AudioSource source = sourceObject.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.spatialBlend = 0f;
+        source.loop = false;
+        source.clip = clip;
+        source.volume = Mathf.Clamp01(volume);
+        return source;
+    }
+
+    private void SeekUnitySource(AudioSource source, double time)
+    {
+        if (source == null || source.clip == null) return;
+        source.time = Mathf.Clamp((float)time, 0f, source.clip.length);
+    }
+
+    private void ResumeUnitySource(AudioSource source, double time)
+    {
+        if (source == null || source.clip == null) return;
+        SeekUnitySource(source, time);
+        source.Play();
+    }
+
+    private void SetUnityEcho(AudioSource source, bool enabled)
+    {
+        if (source == null) return;
+        AudioEchoFilter echo = source.GetComponent<AudioEchoFilter>();
+        if (enabled && echo == null) echo = source.gameObject.AddComponent<AudioEchoFilter>();
+        if (echo == null) return;
+        echo.delay = 120f;
+        echo.decayRatio = reverbFallbackFeedback;
+        echo.dryMix = 1f;
+        echo.wetMix = reverbFallbackMix;
+        echo.enabled = enabled;
     }
 
     public async Task<int> LoadRegularAudio(string audioClipPath)
@@ -230,22 +294,32 @@ public class MusicPlayer : MonoBehaviour
     {
         if (audioClipPath != null)
         {
-            if (!bassInitialized) InitBASS();
-            if (bassInitialized)
+            if (audioSubsystemType == AudioSubsystemType.Unity)
             {
-                Debug.Log("Loading song audio (ManagedBass) from path: " + audioClipPath);
-                NSSonglength = noteSpawner.songLengthInTicks;
-                try
+                AudioClip clip = await LoadUnityAudioFile(audioClipPath);
+                if (clip == null) return;
+                if (unitySongSource != null) Destroy(unitySongSource.gameObject);
+                unitySongSource = CreateUnityAudioSource(clip, "Unity Song Audio", (float)musicVolume);
+                NSSonglength = noteSpawner != null ? noteSpawner.songLengthInTicks : NSSonglength;
+            }
+            else
+            {
+                if (!bassInitialized) InitBASS();
+                if (bassInitialized)
                 {
-                    await Task.Yield();
-                    if (songStreamHandle != 0) { Bass.StreamFree(songStreamHandle); songStreamHandle = 0; }
-                    // Create stream for file path
-                    songStreamHandle = Bass.CreateStream(audioClipPath, 0, 0, BassFlags.Prescan);
-                    if (songStreamHandle == 0) { Debug.LogError("Failed to create BASS stream: " + Bass.LastError); MessageBox.Instance.Show("Failed to create BASS stream: " + Bass.LastError + "<br>Audio playback Failed.", "Error", null);}
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("Exception creating BASS stream: " + ex.Message);
+                    Debug.Log("Loading song audio (ManagedBass) from path: " + audioClipPath);
+                    NSSonglength = noteSpawner != null ? noteSpawner.songLengthInTicks : NSSonglength;
+                    try
+                    {
+                        await Task.Yield();
+                        if (songStreamHandle != 0) { Bass.StreamFree(songStreamHandle); songStreamHandle = 0; }
+                        songStreamHandle = Bass.CreateStream(audioClipPath, 0, 0, BassFlags.Prescan);
+                        if (songStreamHandle == 0) { Debug.LogError("Failed to create BASS stream: " + Bass.LastError); MessageBox.Instance.Show("Failed to create BASS stream: " + Bass.LastError + "<br>Audio playback Failed.", "Error", null); }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError("Exception creating BASS stream: " + ex.Message);
+                    }
                 }
             }
         }
@@ -506,7 +580,11 @@ public class MusicPlayer : MonoBehaviour
 
     public void resumeAudio()
     {
-        if (bassInitialized)
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            ResumeUnitySource(unitySongSource, previousTime);
+        }
+        else if (bassInitialized)
         {
             try
             {
@@ -528,17 +606,28 @@ public class MusicPlayer : MonoBehaviour
             double stemResumeTime = Math.Max(0.0, pausedElapsedDsp);
             foreach (var pair in stemChannels)
             {
-                if (pair.Value == null || pair.Value.handle == 0) continue;
+                if (pair.Value == null || pair.Value.isMidi) continue;
                 try
                 {
-                    Bass.ChannelSetPosition(pair.Value.handle, Bass.ChannelSeconds2Bytes(pair.Value.handle, stemResumeTime));
-                    Bass.ChannelPlay(pair.Value.handle);
-                    foreach (var childHandle in pair.Value.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        ResumeUnitySource(pair.Value.audioSource, stemResumeTime);
+                        foreach (var childSource in pair.Value.childAudioSources) ResumeUnitySource(childSource, stemResumeTime);
+                    }
+                    else
+                    {
+                        if (pair.Value.handle != 0)
                         {
-                            Bass.ChannelSetPosition(childHandle, Bass.ChannelSeconds2Bytes(childHandle, stemResumeTime));
-                            Bass.ChannelPlay(childHandle);
+                            Bass.ChannelSetPosition(pair.Value.handle, Bass.ChannelSeconds2Bytes(pair.Value.handle, stemResumeTime));
+                            Bass.ChannelPlay(pair.Value.handle);
+                        }
+                        foreach (var childHandle in pair.Value.childHandles)
+                        {
+                            if (childHandle != 0)
+                            {
+                                Bass.ChannelSetPosition(childHandle, Bass.ChannelSeconds2Bytes(childHandle, stemResumeTime));
+                                Bass.ChannelPlay(childHandle);
+                            }
                         }
                     }
                     pair.Value.isPlaying = true;
@@ -609,6 +698,12 @@ public class MusicPlayer : MonoBehaviour
             try { Bass.StreamFree(songStreamHandle); } catch { }
             songStreamHandle = 0;
         }
+        if (unitySongSource != null)
+        {
+            unitySongSource.Stop();
+            Destroy(unitySongSource.gameObject);
+            unitySongSource = null;
+        }
         if (midiPlayback != null)
         {
             try { midiPlayback.Stop(); midiPlayback.Dispose(); } catch { }
@@ -620,7 +715,7 @@ public class MusicPlayer : MonoBehaviour
             midiOutput = null;
         }
         if (videoPlayer != null) videoPlayer.Stop();
-        if (freeBass)
+        if (freeBass && audioSubsystemType == AudioSubsystemType.BASS && bassInitialized)
         {
             try { Bass.Free(); } catch { }
             bassInitialized = false;
@@ -630,7 +725,15 @@ public class MusicPlayer : MonoBehaviour
     { 
         
         if (videoPlayer != null) videoPlayer.Pause();
-        if (bassInitialized)
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            if (unitySongSource != null)
+            {
+                previousTime = unitySongSource.time;
+                unitySongSource.Pause();
+            }
+        }
+        else if (bassInitialized)
         {
             if (songStreamHandle != 0)
             {
@@ -652,7 +755,8 @@ public class MusicPlayer : MonoBehaviour
     {
         if (toggle)
         {
-            if (bassInitialized)
+            if (audioSubsystemType == AudioSubsystemType.Unity && unitySongSource != null) unitySongSource.volume = 0f;
+            if (audioSubsystemType == AudioSubsystemType.BASS && bassInitialized)
             {
                 if (songStreamHandle != 0)
                 {
@@ -666,7 +770,8 @@ public class MusicPlayer : MonoBehaviour
         }
         else
         {
-            if (bassInitialized)
+            if (audioSubsystemType == AudioSubsystemType.Unity && unitySongSource != null) unitySongSource.volume = 1f;
+            if (audioSubsystemType == AudioSubsystemType.BASS && bassInitialized)
             {
                 if (songStreamHandle != 0)
                 {
@@ -682,7 +787,11 @@ public class MusicPlayer : MonoBehaviour
 
     public void SetMusicVolume(double amount)
     {
-        if (bassInitialized)
+        if (audioSubsystemType == AudioSubsystemType.Unity && unitySongSource != null)
+        {
+            unitySongSource.volume = Mathf.Clamp01((float)amount);
+        }
+        if (audioSubsystemType == AudioSubsystemType.BASS && bassInitialized)
         {
             if (songStreamHandle != 0)
             {
@@ -693,7 +802,7 @@ public class MusicPlayer : MonoBehaviour
     public void RestartAt(double time)
     {
         if (isPaused) return;
-        if (bassInitialized)
+        if (audioSubsystemType == AudioSubsystemType.BASS && bassInitialized)
         {
             if (songStreamHandle != 0)
             {
@@ -701,6 +810,16 @@ public class MusicPlayer : MonoBehaviour
                 Bass.ChannelStop(songStreamHandle);
                 Bass.ChannelSetPosition(songStreamHandle, restartPos);
                 Bass.ChannelPlay(songStreamHandle);
+            }
+        }
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            SeekUnitySource(unitySongSource, time);
+            foreach (var stem in stemChannels.Values)
+            {
+                if (stem == null || stem.isMidi) continue;
+                SeekUnitySource(stem.audioSource, time);
+                foreach (var childSource in stem.childAudioSources) SeekUnitySource(childSource, time);
             }
         }
         if (midiPlayback != null)
@@ -856,6 +975,11 @@ public class MusicPlayer : MonoBehaviour
             }
             catch { return 0f; }
         }
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            AudioSource source = unitySongSource ?? stemChannels.Values.FirstOrDefault(stem => stem != null && !stem.isMidi && stem.audioSource != null)?.audioSource;
+            return source != null ? source.time : 0f;
+        }
         if (bassInitialized && songStreamHandle != 0)
         {
             try
@@ -879,6 +1003,11 @@ public class MusicPlayer : MonoBehaviour
                 return dur.TotalSeconds;
             }
             catch { return 0f; }
+        }
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            AudioSource source = unitySongSource ?? stemChannels.Values.FirstOrDefault(stem => stem != null && !stem.isMidi && stem.audioSource != null)?.audioSource;
+            return source != null && source.clip != null ? source.clip.length : 0f;
         }
         if (bassInitialized && songStreamHandle != 0)
         {
@@ -1012,10 +1141,10 @@ public class MusicPlayer : MonoBehaviour
 
     private bool IsLoadedStem(AudioStem stem)
     {
-        return stem != null && (stem.handle != 0 || stem.midiPlayback != null);
+        return stem != null && (stem.handle != 0 || stem.audioSource != null || stem.midiPlayback != null);
     }
 
-    public void LoadAvailableStemsInPath(string songFolderPath)
+    public async Task LoadAvailableStemsInPath(string songFolderPath)
     {
         if (string.IsNullOrEmpty(songFolderPath) || !Directory.Exists(songFolderPath))
         {
@@ -1031,7 +1160,7 @@ public class MusicPlayer : MonoBehaviour
                 var drumFiles = GetStemFilesByName(songFolderPath, stemName);
                 if (drumFiles.Count > 1)
                 {
-                    if (LoadSplitStemAudio(stemName, drumFiles) != null)
+                    if (await LoadSplitStemAudio(stemName, drumFiles) != null)
                     {
                         Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded mixed-down drums audio from " + drumFiles.Count + " split files.");
                     }
@@ -1045,14 +1174,14 @@ public class MusicPlayer : MonoBehaviour
                 continue;
             }
 
-            if (LoadStemAudio(stemName, stemPath) != null)
+            if (await LoadStemAudio(stemName, stemPath) != null)
             {
                 Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded " + stemName + " audio from " + Path.GetFileName(stemPath) + ".");
             }
         }
     }
 
-    private AudioStem LoadSplitStemAudio(string stemName, List<string> drumFiles)
+    private async Task<AudioStem> LoadSplitStemAudio(string stemName, List<string> drumFiles)
     {
         if (drumFiles == null || drumFiles.Count == 0)
         {
@@ -1064,15 +1193,29 @@ public class MusicPlayer : MonoBehaviour
             StopStem(stemName, true);
         }
 
-        var primaryStem = LoadStemAudio(stemName, drumFiles[0]);
+        var primaryStem = await LoadStemAudio(stemName, drumFiles[0]);
         if (primaryStem == null)
         {
             return null;
         }
 
         primaryStem.childHandles.Clear();
+        primaryStem.childAudioSources.Clear();
         for (int i = 1; i < drumFiles.Count; i++)
         {
+            if (audioSubsystemType == AudioSubsystemType.Unity)
+            {
+                AudioClip childClip = await LoadUnityAudioFile(drumFiles[i]);
+                if (childClip == null)
+                {
+                    Debug.LogWarning("LoadSplitStemAudio: failed to load split drums clip '" + drumFiles[i] + "'.");
+                    continue;
+                }
+                AudioSource childSource = CreateUnityAudioSource(childClip, stemName + " Split " + i, primaryStem.volume);
+                primaryStem.childAudioSources.Add(childSource);
+                continue;
+            }
+
             int childHandle = Bass.CreateStream(drumFiles[i], 0, 0, BassFlags.Prescan);
             if (childHandle == 0)
             {
@@ -1087,7 +1230,7 @@ public class MusicPlayer : MonoBehaviour
         return primaryStem;
     }
 
-    public AudioStem LoadStemAudio(string stemName, string audioClipPath, float volume = 1f, bool autoplay = false)
+    public async Task<AudioStem> LoadStemAudio(string stemName, string audioClipPath, float volume = 1f, bool autoplay = false)
     {
         if (string.IsNullOrWhiteSpace(stemName))
         {
@@ -1110,13 +1253,36 @@ public class MusicPlayer : MonoBehaviour
             return midiStem;
         }
 
-        if (!bassInitialized) InitBASS();
-        if (!bassInitialized) return null;
-
         if (stemChannels.TryGetValue(stemName, out var existingStem) && IsLoadedStem(existingStem))
         {
             StopStem(stemName, true);
         }
+
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            AudioClip clip = await LoadUnityAudioFile(audioClipPath);
+            if (clip == null)
+            {
+                Debug.LogError("LoadStemAudio: failed to load Unity audio clip for stem '" + stemName + "'.");
+                return null;
+            }
+
+            AudioSource source = CreateUnityAudioSource(clip, stemName + " Audio", volume);
+            var unityStem = new AudioStem
+            {
+                name = stemName,
+                audioSource = source,
+                volume = Mathf.Clamp01(volume),
+                isPlaying = false,
+                reverbEnabled = false
+            };
+            stemChannels[stemName] = unityStem;
+            if (autoplay) PlayStem(stemName);
+            return unityStem;
+        }
+
+        if (!bassInitialized) InitBASS();
+        if (!bassInitialized) return null;
 
 #if UNITY_STANDALONE_WIN && UNITY_64
         if (Path.GetExtension(audioClipPath) == "opus")
@@ -1175,6 +1341,13 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    private void PlayUnityStemSource(AudioSource source, double resumeSeconds)
+    {
+        if (source == null) return;
+        if (resumeSeconds >= 0.0) SeekUnitySource(source, resumeSeconds);
+        source.Play();
+    }
+
     public void PlayStem(string stemName)
     {
         if (stemChannels.TryGetValue(stemName, out var stem) && IsLoadedStem(stem))
@@ -1192,12 +1365,17 @@ public class MusicPlayer : MonoBehaviour
                 }
                 else
                 {
-                    ResumeStemChannel(stem.handle, resumeSeconds);
-                    foreach (var childHandle in stem.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        PlayUnityStemSource(stem.audioSource, resumeSeconds);
+                        foreach (var childSource in stem.childAudioSources) PlayUnityStemSource(childSource, resumeSeconds);
+                    }
+                    else
+                    {
+                        ResumeStemChannel(stem.handle, resumeSeconds);
+                        foreach (var childHandle in stem.childHandles)
                         {
-                            ResumeStemChannel(childHandle, resumeSeconds);
+                            if (childHandle != 0) ResumeStemChannel(childHandle, resumeSeconds);
                         }
                     }
                 }
@@ -1225,12 +1403,20 @@ public class MusicPlayer : MonoBehaviour
                 }
                 else
                 {
-                    Bass.ChannelPause(stem.handle);
-                    foreach (var childHandle in stem.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        if (stem.audioSource != null) stem.audioSource.Pause();
+                        foreach (var childSource in stem.childAudioSources)
                         {
-                            Bass.ChannelPause(childHandle);
+                            if (childSource != null) childSource.Pause();
+                        }
+                    }
+                    else
+                    {
+                        if (stem.handle != 0) Bass.ChannelPause(stem.handle);
+                        foreach (var childHandle in stem.childHandles)
+                        {
+                            if (childHandle != 0) Bass.ChannelPause(childHandle);
                         }
                     }
                 }
@@ -1245,8 +1431,14 @@ public class MusicPlayer : MonoBehaviour
 
     public void PlayAllStems()
     {
+        bool wasPaused = isPaused;
         double resumeSeconds = isPaused ? Math.Max(0.0, pausedElapsedDsp) : -1.0;
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            PlayUnityStemSource(unitySongSource, resumeSeconds);
+        }
         isPaused = false;
+        if (wasPaused) dspSongStart = AudioSettings.dspTime - pausedElapsedDsp;
         foreach (var pair in stemChannels)
         {
             if (!IsLoadedStem(pair.Value)) continue;
@@ -1262,12 +1454,17 @@ public class MusicPlayer : MonoBehaviour
                 }
                 else
                 {
-                    ResumeStemChannel(pair.Value.handle, resumeSeconds);
-                    foreach (var childHandle in pair.Value.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        PlayUnityStemSource(pair.Value.audioSource, resumeSeconds);
+                        foreach (var childSource in pair.Value.childAudioSources) PlayUnityStemSource(childSource, resumeSeconds);
+                    }
+                    else
+                    {
+                        ResumeStemChannel(pair.Value.handle, resumeSeconds);
+                        foreach (var childHandle in pair.Value.childHandles)
                         {
-                            ResumeStemChannel(childHandle, resumeSeconds);
+                            if (childHandle != 0) ResumeStemChannel(childHandle, resumeSeconds);
                         }
                     }
                 }
@@ -1284,6 +1481,11 @@ public class MusicPlayer : MonoBehaviour
     {
         pausedElapsedDsp = GetElapsedTimeDsp();
         isPaused = true;
+        if (audioSubsystemType == AudioSubsystemType.Unity && unitySongSource != null)
+        {
+            previousTime = unitySongSource.time;
+            unitySongSource.Pause();
+        }
 
         foreach (var pair in stemChannels)
         {
@@ -1296,12 +1498,20 @@ public class MusicPlayer : MonoBehaviour
                 }
                 else
                 {
-                    Bass.ChannelPause(pair.Value.handle);
-                    foreach (var childHandle in pair.Value.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        if (pair.Value.audioSource != null) pair.Value.audioSource.Pause();
+                        foreach (var childSource in pair.Value.childAudioSources)
                         {
-                            Bass.ChannelPause(childHandle);
+                            if (childSource != null) childSource.Pause();
+                        }
+                    }
+                    else
+                    {
+                        if (pair.Value.handle != 0) Bass.ChannelPause(pair.Value.handle);
+                        foreach (var childHandle in pair.Value.childHandles)
+                        {
+                            if (childHandle != 0) Bass.ChannelPause(childHandle);
                         }
                     }
                 }
@@ -1331,23 +1541,34 @@ public class MusicPlayer : MonoBehaviour
                 }
                 else
                 {
-                    ToggleReverb(false, pair.Value.handle);
-                    foreach (var childHandle in pair.Value.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        if (pair.Value.audioSource != null)
                         {
-                            ToggleReverb(false, childHandle);
-                            Bass.ChannelStop(childHandle);
-                            if (freeStems)
-                            {
-                                Bass.StreamFree(childHandle);
-                            }
+                            SetUnityEcho(pair.Value.audioSource, false);
+                            pair.Value.audioSource.Stop();
+                            if (freeStems) Destroy(pair.Value.audioSource.gameObject);
+                        }
+                        foreach (var childSource in pair.Value.childAudioSources)
+                        {
+                            if (childSource == null) continue;
+                            SetUnityEcho(childSource, false);
+                            childSource.Stop();
+                            if (freeStems) Destroy(childSource.gameObject);
                         }
                     }
-                    Bass.ChannelStop(pair.Value.handle);
-                    if (freeStems)
+                    else
                     {
-                        Bass.StreamFree(pair.Value.handle);
+                        ToggleReverb(false, pair.Value.handle);
+                        foreach (var childHandle in pair.Value.childHandles)
+                        {
+                            if (childHandle == 0) continue;
+                            ToggleReverb(false, childHandle);
+                            Bass.ChannelStop(childHandle);
+                            if (freeStems) Bass.StreamFree(childHandle);
+                        }
+                        if (pair.Value.handle != 0) Bass.ChannelStop(pair.Value.handle);
+                        if (freeStems && pair.Value.handle != 0) Bass.StreamFree(pair.Value.handle);
                     }
                 }
             }
@@ -1358,10 +1579,12 @@ public class MusicPlayer : MonoBehaviour
             finally
             {
                 pair.Value.isPlaying = false;
-                pair.Value.childHandles.Clear();
                 if (freeStems)
                 {
+                    pair.Value.childHandles.Clear();
+                    pair.Value.childAudioSources.Clear();
                     pair.Value.handle = 0;
+                    pair.Value.audioSource = null;
                     pair.Value.midiPlayback = null;
                     stemChannels.Remove(pair.Key);
                 }
@@ -1396,23 +1619,34 @@ public class MusicPlayer : MonoBehaviour
                 }
                 else
                 {
-                    ToggleReverb(false, stem.handle);
-                    Bass.ChannelStop(stem.handle);
-                    foreach (var childHandle in stem.childHandles)
+                    if (audioSubsystemType == AudioSubsystemType.Unity)
                     {
-                        if (childHandle != 0)
+                        if (stem.audioSource != null)
                         {
-                            ToggleReverb(false, childHandle);
-                            Bass.ChannelStop(childHandle);
-                            if (freeStem)
-                            {
-                                Bass.StreamFree(childHandle);
-                            }
+                            SetUnityEcho(stem.audioSource, false);
+                            stem.audioSource.Stop();
+                            if (freeStem) Destroy(stem.audioSource.gameObject);
+                        }
+                        foreach (var childSource in stem.childAudioSources)
+                        {
+                            if (childSource == null) continue;
+                            SetUnityEcho(childSource, false);
+                            childSource.Stop();
+                            if (freeStem) Destroy(childSource.gameObject);
                         }
                     }
-                    if (freeStem)
+                    else
                     {
-                        Bass.StreamFree(stem.handle);
+                        ToggleReverb(false, stem.handle);
+                        if (stem.handle != 0) Bass.ChannelStop(stem.handle);
+                        foreach (var childHandle in stem.childHandles)
+                        {
+                            if (childHandle == 0) continue;
+                            ToggleReverb(false, childHandle);
+                            Bass.ChannelStop(childHandle);
+                            if (freeStem) Bass.StreamFree(childHandle);
+                        }
+                        if (freeStem && stem.handle != 0) Bass.StreamFree(stem.handle);
                     }
                 }
             }
@@ -1424,7 +1658,9 @@ public class MusicPlayer : MonoBehaviour
             {
                 stem.isPlaying = false;
                 stem.childHandles.Clear();
+                stem.childAudioSources.Clear();
                 stem.handle = 0;
+                stem.audioSource = null;
                 stem.midiPlayback = null;
                 stemChannels.Remove(stemName);
                 if (ReferenceEquals(midiPlayback, stoppedMidiPlayback)) midiPlayback = null;
@@ -1445,6 +1681,15 @@ public class MusicPlayer : MonoBehaviour
             var clamped = Mathf.Clamp01(volume);
             stem.volume = clamped;
             if (stem.isMidi) return;
+            if (audioSubsystemType == AudioSubsystemType.Unity)
+            {
+                if (stem.audioSource != null) stem.audioSource.volume = clamped;
+                foreach (var childSource in stem.childAudioSources)
+                {
+                    if (childSource != null) childSource.volume = clamped;
+                }
+                return;
+            }
             try { Bass.ChannelSetAttribute(stem.handle, ChannelAttribute.Volume, clamped); } catch { }
             foreach (var childHandle in stem.childHandles)
             {
@@ -1464,6 +1709,15 @@ public class MusicPlayer : MonoBehaviour
             if (!IsLoadedStem(pair.Value)) continue;
             pair.Value.volume = clamped;
             if (pair.Value.isMidi) continue;
+            if (audioSubsystemType == AudioSubsystemType.Unity)
+            {
+                if (pair.Value.audioSource != null) pair.Value.audioSource.volume = clamped;
+                foreach (var childSource in pair.Value.childAudioSources)
+                {
+                    if (childSource != null) childSource.volume = clamped;
+                }
+                continue;
+            }
             try { Bass.ChannelSetAttribute(pair.Value.handle, ChannelAttribute.Volume, clamped); } catch { }
             foreach (var childHandle in pair.Value.childHandles)
             {
@@ -1482,6 +1736,13 @@ public class MusicPlayer : MonoBehaviour
             if (stem.isMidi)
             {
                 stem.reverbEnabled = false;
+                return;
+            }
+            if (audioSubsystemType == AudioSubsystemType.Unity)
+            {
+                SetUnityEcho(stem.audioSource, on);
+                foreach (var childSource in stem.childAudioSources) SetUnityEcho(childSource, on);
+                stem.reverbEnabled = on;
                 return;
             }
             ToggleReverb(on, stem.handle);

@@ -9273,6 +9273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c8bfceda9fcd1a4590c36d03dfb5e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSubsystemType: 1
   musicVolume: 1
   videoPlayer: {fileID: 0}
   previewAudioPlaying: 0

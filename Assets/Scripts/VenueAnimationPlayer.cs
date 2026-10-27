@@ -355,6 +355,24 @@ public class VenueAnimationPlayer : MonoBehaviour
             Debug.LogError("[VenueAnimationPlayer.TryCueCamAnim] Failed to cue camera animation: " + ex.Message);
         }
     }
+    public void TryCueCamAnimCont(string cue)
+    {
+        if (highwayCamera)
+        {
+            Animator animator = highwayCamera.GetComponent<Animator>();
+            if (animator)
+            {
+                try
+                {
+                    animator.Play(cue);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("[VenueAnimationPlayer.TryCueCamAnimCont(\"" + cue + "\")] Unable to play state: " + ex.Message);
+                }
+            }
+        }
+    }
 
     public GameObject TrySpawnNewCamera(int ID, AnimationClip animationClip, Vector3 position, Vector3 rotation, bool includeFrameLimit = true, int framerateLimit = 60)
     {
@@ -622,11 +640,7 @@ public class VenueAnimationPlayer : MonoBehaviour
         {
             if (mainCamera)
             {
-                AnimationClip clip = Resources.Load<AnimationClip>(args[0]);
-                if (clip)
-                {
-                    TryCueCamAnim(mainCamera.gameObject, clip);
-                }
+                TryCueCamAnimCont(args[0]);
             }
         };
 

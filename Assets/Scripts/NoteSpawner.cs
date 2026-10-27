@@ -270,7 +270,7 @@ public class NoteSpawner : MonoBehaviour
             {
                 await musicPlayer.loadSongAudio(audioClipPath);
             }*/
-            musicPlayer.LoadAvailableStemsInPath(songFolderLoader.songFolderPath);
+            await musicPlayer.LoadAvailableStemsInPath(songFolderLoader.songFolderPath);
             videoClipPath = songFolderLoader.songVideoClipPath;
             if (PlayerPrefs.GetInt("EnableVideo", 1) == 1)
             {

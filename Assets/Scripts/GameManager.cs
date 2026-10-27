@@ -1397,7 +1397,7 @@ public class GameManager : MonoBehaviour
         {
             
             AnimationClip vEntry = Resources.Load<AnimationClip>("VenueEntry");
-            venueAnimationPlayer.TryCueCamAnim(venueAnimationPlayer.mainCamera, vEntry);
+            venueAnimationPlayer.TryCueCamAnimCont("VenueEntry");
             yield return new WaitForSeconds(vEntry.length);
             venueAnimationPlayer.ReturnCameraToDefaultPosition();
             
