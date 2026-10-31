@@ -208,7 +208,9 @@ public class GameManager : MonoBehaviour
     {
         if (ask)
         {
-            MessageBox.Instance.Show("Are you sure you want to exit the game?<br>All unsaved data will be lost.", "Message", ForceExitGame);
+            MessageBox.Instance.Show("Are you sure you want to exit the game?<br>All unsaved data will be lost.",
+            "Message",
+            new List<MessageBox.MethodEntry> { new MessageBox.MethodEntry { methodName = "OK", method = ForceExitGame } });
         }
         else
         {

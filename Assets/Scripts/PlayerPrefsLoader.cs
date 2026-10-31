@@ -274,7 +274,7 @@ public class PlayerPrefsLoader : MonoBehaviour
             inputModule.allowMouseInput = false;
             if (SceneManager.GetSceneByName("MainMenu").isLoaded) MessageBox.Instance.Show($"Welcome to {Application.productName} !<br>Loading custom songs takes a <b>VERY</b> long time, "
             + "so if you don't want to wait, please exit the game and move your custom songs somewhere else to access the online song catalog, "
-            + "or simply wait.<br>Press OK to continue.", "Message", async () => await LoadGame());
+            + "or simply wait.<br>Press OK to continue.", "Message", new List<MessageBox.MethodEntry> { new MessageBox.MethodEntry { methodName = "OK", method = async () => await LoadGame() } });
         }
         else
         {
