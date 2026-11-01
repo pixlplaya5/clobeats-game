@@ -374,6 +374,7 @@ public class VenueAnimationPlayer : MonoBehaviour
         }
     }
 
+    // not recommended
     public GameObject TrySpawnNewCamera(int ID, AnimationClip animationClip, Vector3 position, Vector3 rotation, bool includeFrameLimit = true, int framerateLimit = 60)
     {
         try
@@ -403,12 +404,12 @@ public class VenueAnimationPlayer : MonoBehaviour
         }
     }
 
-    public void ReturnCameraToDefaultPosition()
+    public void ReturnCameraToDefaultPosition(Vector3 pos, Vector3 rot)
     {
         if (mainCamera)
         {
-            mainCamera.transform.position = new Vector3(28, 6, 48);
-            mainCamera.transform.rotation = Quaternion.Euler(new Vector3(-5, 164, -4));
+            mainCamera.transform.position = pos;
+            mainCamera.transform.rotation = Quaternion.Euler(rot);
         }
     }
 

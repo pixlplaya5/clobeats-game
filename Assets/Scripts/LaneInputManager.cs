@@ -70,14 +70,12 @@ public class LaneInputManager : MonoBehaviour
     public void ToggleAutoplay(bool toggle)
     {
         autoPlayEnabled = toggle;
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Autoplay toggled to " + toggle.ToString(), 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Autoplay toggled to " + toggle.ToString(), 5f));
     }
     public void ToggleAnyFret(bool toggle)
     {
         anyFretMode = toggle;
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Any Fret Hack toggled to " + toggle.ToString(), 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Any Fret Hack toggled to " + toggle.ToString(), 5f));
     }
 
     void Update()

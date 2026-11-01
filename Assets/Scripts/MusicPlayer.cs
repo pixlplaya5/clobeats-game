@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 
 public class MusicPlayer : MonoBehaviour
 {
+    public static MusicPlayer Instance;
     public enum AudioSubsystemType
     {
         BASS,
@@ -96,6 +97,7 @@ public class MusicPlayer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Instance = this;
         DontDestroyOnLoad(this.gameObject);
     }
 

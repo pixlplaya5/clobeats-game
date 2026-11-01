@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class NotificationHandler : MonoBehaviour
 {
+    public static NotificationHandler Instance;
     public float showingYPosition = -300f;
     public float showingXPosition = 472f;
     public float downHidingYPosition = -410f;
@@ -23,7 +24,7 @@ public class NotificationHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Instance = this;
     }
     // Update is called once per frame
     void Update()

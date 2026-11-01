@@ -99,14 +99,13 @@ public class UGUIMenuList : MonoBehaviour
         ResolveReferences();
         await ClearItemObjects();
 
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        if (gameManager == null)
+        if (GameManager.Instance == null)
         {
             Debug.LogWarning("Cannot build song list because GameManager was not found.");
             return;
         }
 
-        foreach (GameManager.SongEntryInfo entry in gameManager.cachedEntries) // attempting dont sort entries
+        foreach (GameManager.SongEntryInfo entry in GameManager.Instance.cachedEntries) // attempting dont sort entries
         {
             if (version != rebuildVersion)
             {
@@ -117,10 +116,10 @@ public class UGUIMenuList : MonoBehaviour
             await AddEntryAsync(entry);
         }
 
-        SongFolderLoader songFolderLoader = FindFirstObjectByType<SongFolderLoader>();
-        if (songFolderLoader != null)
+
+        if (SongFolderLoader.Instance != null)
         {
-            songFolderLoader.ClearValues();
+            SongFolderLoader.Instance.ClearValues();
         }
 
         if (version == rebuildVersion && items.Count > 0)
@@ -291,9 +290,9 @@ public class UGUIMenuList : MonoBehaviour
             return;
         }
 
-        if (!await HasPlayableAudioAsync(entry.songPath))
+        if (!await HasPlayableAudioAsync(entry.songPath, "preview"))
         {
-            Debug.LogWarning("Song entry audio is missing.");
+            Debug.LogWarning("Song entry preview audio is missing.");
             return;
         }
 
@@ -398,25 +397,22 @@ public class UGUIMenuList : MonoBehaviour
 
     private void PlayPreviewAudio(GameManager.SongEntryInfo entry)
     {
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        MusicPlayer musicPlayer = FindFirstObjectByType<MusicPlayer>();
-
-        if (gameManager == null || musicPlayer == null)
+        if (GameManager.Instance == null || MusicPlayer.Instance == null)
         {
             return;
         }
 
-        if (!gameManager.cachedAudioClips.TryGetValue(entry.cachedSongID, out AudioClip clip))
+        if (!GameManager.Instance.cachedAudioClips.TryGetValue(entry.cachedSongID, out AudioClip clip))
         {
             return;
         }
 
-        if (musicPlayer.previewAudioPlaying)
+        if (MusicPlayer.Instance.previewAudioPlaying)
         {
-            StartCoroutine(musicPlayer.StopPreviewAudio(previewVolume));
+            StartCoroutine(MusicPlayer.Instance.StopPreviewAudio(previewVolume));
         }
 
-        StartCoroutine(musicPlayer.PlayPooledPreviewAudio(clip, entry.songPreviewStartTime, previewVolume));
+        StartCoroutine(MusicPlayer.Instance.PlayPooledPreviewAudio(clip, 0, previewVolume));
     }
 
     private Texture LoadAlbumTexture(string songPath)
@@ -445,13 +441,13 @@ public class UGUIMenuList : MonoBehaviour
         }
     }
 
-    private async Task<bool> HasPlayableAudioAsync(string songPath)
+    private async Task<bool> HasPlayableAudioAsync(string songPath, string query)
     {
         try
         {
             string[] files = await Task.Run(() => Directory.GetFiles(songPath));
             return files.Any(path =>
-                string.Equals(Path.GetFileNameWithoutExtension(path), "song_mixed", StringComparison.OrdinalIgnoreCase)
+                string.Equals(Path.GetFileNameWithoutExtension(path), query, StringComparison.OrdinalIgnoreCase)
                 && SupportedAudioFormats.Contains(Path.GetExtension(path).ToLowerInvariant()));
         }
         catch (Exception ex)

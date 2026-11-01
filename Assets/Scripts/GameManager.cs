@@ -115,22 +115,19 @@ public class GameManager : MonoBehaviour
     public void SwapInstrument(string inst)
     {
         currentPart = inst;
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Instrument swapped to " + inst, 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Instrument swapped to " + inst, 5f));
     }
 
     public void SwapDifficulty(string inst)
     {
         ddst = inst;
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Difficulty swapped to " + inst, 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Difficulty swapped to " + inst, 5f));
     }
 
     public void ToggleNoFail(bool yes)
     {
         allowFail = yes;
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Allow Fail toggled to " + yes.ToString(), 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Allow Fail toggled to " + yes.ToString(), 5f));
     }
 
     public void ToggleVenue(bool yes)
@@ -141,8 +138,7 @@ public class GameManager : MonoBehaviour
             {
                 SceneManager.LoadScene(2, LoadSceneMode.Additive);
                 venueLoaded = true;
-                NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-                StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Venue loaded.", 5f));
+                StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Venue loaded.", 5f));
             }
             else
             {
@@ -155,8 +151,7 @@ public class GameManager : MonoBehaviour
             {
                 SceneManager.UnloadSceneAsync(2);
                 venueLoaded = false;
-                NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-                StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Venue unloaded.", 5f));
+                StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Venue unloaded.", 5f));
             }
             else
             {
@@ -176,8 +171,7 @@ public class GameManager : MonoBehaviour
         {
             Application.targetFrameRate = -1;
         }
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Lite Mode toggled to " + yes.ToString(), 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Lite Mode toggled to " + yes.ToString(), 5f));
     }
 
     public async Task PlaySongGlobal(string path)
@@ -344,6 +338,25 @@ public class GameManager : MonoBehaviour
             return string.Empty;
         }
     }
+
+    public string FindQueryAudioInPath(string path, string query)
+    {
+        SongFolderLoader songFolderLoader = FindAnyObjectByType<SongFolderLoader>();
+        string[] songFiles = Directory.GetFiles(path);
+        var songMatch = songFiles
+            .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
+            .FirstOrDefault(x => x.name == query && songFolderLoader.supportedFormats.Contains(x.ext));
+
+        if (songMatch != null)
+        {
+            return songMatch.path;
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
     public async Task ReadMidiFile(string path)
     {
         // Read MIDI, cache it by a stable hash of the full path, and copy into current song queues
@@ -1381,7 +1394,6 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(uiUpdater.SongInfoAnim());
             uiUpdater.InitializeUI();
-            
         }
         
         if (venueAnimationPlayer != null)
@@ -1389,7 +1401,6 @@ public class GameManager : MonoBehaviour
             venueAnimationPlayer.TryToggleHighwayCam(false);
             venueAnimationPlayer.Load();
             uiUpdater.ScoreVisibility(false);
-
         }
         if (unDestructibleLoadingPhraseScreen != null && unDestructibleLoadingPhraseScreen.activeSelf)
         {
@@ -1399,12 +1410,9 @@ public class GameManager : MonoBehaviour
         
         if (SceneManager.GetSceneByBuildIndex(2).isLoaded)
         {
-            
-            AnimationClip vEntry = Resources.Load<AnimationClip>("VenueEntry");
             venueAnimationPlayer.TryCueCamAnimCont("VenueEntry");
-            yield return new WaitForSeconds(vEntry.length);
-            venueAnimationPlayer.ReturnCameraToDefaultPosition();
-            
+            yield return new WaitForSeconds(6);
+            venueAnimationPlayer.ReturnCameraToDefaultPosition(new Vector3(), new Vector3());
         }
 
         if (gp != null)

@@ -45,8 +45,7 @@ public class OldInputManager : MonoBehaviour
     {
         gamepadMode = yes;
         GameManager.Instance.gamepadMode = yes;
-        NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
-        StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Gamepad Mode toggled to " + yes.ToString(), 5f));
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Gamepad Mode toggled to " + yes.ToString(), 5f));
     }
 
     private async Task InputNoteDown(int value)
