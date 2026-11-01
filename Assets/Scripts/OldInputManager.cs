@@ -108,6 +108,7 @@ public class OldInputManager : MonoBehaviour
         if (denyInput)
         {
             ReleaseSP();
+            return;
         }
             
         if (updateType == InputUpdateType.PerFrame)
