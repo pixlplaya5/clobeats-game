@@ -529,6 +529,7 @@ public class MusicPlayer : MonoBehaviour
             previewAudioStream.Play();
             previewAudioPlaying = true;
             yield return StartCoroutine(FadeInCoroutine(volume));
+            yield return new WaitForSeconds(1.0f);
             yield return null;
         }
     }

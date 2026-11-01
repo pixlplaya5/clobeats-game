@@ -130,6 +130,7 @@ public class MenuManager : MonoBehaviour
         {
             if (IsMenuOpen(QuickPlayMenuId))
             {
+                SFXPlayer.Instance.PlayClip("MenuOpenLong");
                 PlaySelectedSong();
                 return;
             }
@@ -192,6 +193,7 @@ public class MenuManager : MonoBehaviour
 
     public void Exit()
     {
+        SFXPlayer.Instance.PlayClip("MenuClose");
         if (IsMenuOpen(QuickPlayMenuId))
         {
             StopPreviewAudio();
@@ -422,8 +424,7 @@ public class MenuManager : MonoBehaviour
                     PlaySelectedSong();
                     break;
                 case MenuAction.PlayCachedSong:
-                    GameManager gameManager = FindAnyObjectByType<GameManager>();
-                    await gameManager.PlaySongGlobal(currentPreviewingSongPath);
+                    await GameManager.Instance.PlaySongGlobal(currentPreviewingSongPath);
                     break;
                 case MenuAction.PlaySongFromPath:
                     MouseInputCheck mouseInputCheck1 = FindAnyObjectByType<MouseInputCheck>();
@@ -431,7 +432,6 @@ public class MenuManager : MonoBehaviour
                     SimpleFileBrowser.FileBrowser.ShowLoadDialog( (paths) => {
                     MouseInputCheck mic = FindAnyObjectByType<MouseInputCheck>();
                     mic.allowMouseInput = false;
-                    GameManager gameManager = FindAnyObjectByType<GameManager>();
                     currentPreviewingSongPath = paths[0];
                     ShowMenu("songentry");
                     Debug.Log("Folder selected: '" + paths[0] + "'"); },
@@ -469,36 +469,29 @@ public class MenuManager : MonoBehaviour
                     QuitGame();
                     break;
                 case MenuAction.ToggleAutoPlayMod:
-                    LaneInputManager lim = FindAnyObjectByType<LaneInputManager>();
-                    lim.ToggleAutoplay(!lim.autoPlayEnabled ? true : false);
+                    LaneInputManager.Instance.ToggleAutoplay(!LaneInputManager.Instance.autoPlayEnabled ? true : false);
                     break;
                 case MenuAction.ToggleGamepadMod:
                     OldInputManager oim = FindAnyObjectByType<OldInputManager>();
                     oim.ToggleGamepadMode(!oim.gamepadMode ? true : false);
                     break;
                 case MenuAction.ToggleNoFailMod:
-                    GameManager gm = FindAnyObjectByType<GameManager>();
-                    gm.ToggleNoFail(gm.allowFail ? false : true);
+                    GameManager.Instance.ToggleNoFail(GameManager.Instance.allowFail ? false : true);
                     break;
                 case MenuAction.ToggleVenueMod:
-                    GameManager gm2 = FindAnyObjectByType<GameManager>();
-                    gm2.ToggleVenue(gm2.venueLoaded ? false : true);
+                    GameManager.Instance.ToggleVenue(GameManager.Instance.venueLoaded ? false : true);
                     break;
                 case MenuAction.ToggleLiteMode:
-                    GameManager gm3 = FindAnyObjectByType<GameManager>();
-                    gm3.ToggleLiteMode(!gm3.liteMode ? true : false);
+                    GameManager.Instance.ToggleLiteMode(!GameManager.Instance.liteMode ? true : false);
                     break;
                 case MenuAction.SwapInstrument:
-                    GameManager gm4 = FindAnyObjectByType<GameManager>();
-                    gm4.SwapInstrument(actionArgs[0]);
+                    GameManager.Instance.SwapInstrument(actionArgs[0]);
                     break;
                 case MenuAction.ToggleAnyFretMod:
-                    LaneInputManager lim2 = FindAnyObjectByType<LaneInputManager>();
-                    lim2.ToggleAnyFret(!lim2.anyFretMode ? true : false);
+                    LaneInputManager.Instance.ToggleAnyFret(!LaneInputManager.Instance.anyFretMode ? true : false);
                     break;
                 case MenuAction.SwapDifficulty:
-                    GameManager gm5 = FindAnyObjectByType<GameManager>();
-                    gm5.SwapDifficulty(actionArgs[0]);
+                    GameManager.Instance.SwapDifficulty(actionArgs[0]);
                     break;
             }
         }
@@ -620,6 +613,7 @@ public class MenuManager : MonoBehaviour
 
         int nextIndex = currentIndex < 0 ? 0 : WrapIndex(currentIndex + direction, controls.Length);
         EventSystem.current.SetSelectedGameObject(controls[nextIndex].gameObject);
+        SFXPlayer.Instance.PlayClip("MenuOpen");
     }
 
     private void StopPreviewAudio()

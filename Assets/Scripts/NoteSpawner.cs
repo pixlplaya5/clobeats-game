@@ -1089,6 +1089,12 @@ public class NoteSpawner : MonoBehaviour
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
             }
+            else if (gameManager.gamepadMode)
+            {
+                // force all notes for keyboard / gamepad mode
+                if (visual != null)
+                    visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
+            }
             else if (Mathf.Abs(lastN.spawnTime - n.spawnTime) < calcThreshold && lastN.fret != n.fret)
             {
                 inst.AddComponent<HopoIndicator>();

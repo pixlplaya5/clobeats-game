@@ -44,6 +44,7 @@ public class OldInputManager : MonoBehaviour
     public void ToggleGamepadMode(bool yes)
     {
         gamepadMode = yes;
+        GameManager.Instance.gamepadMode = yes;
         NotificationHandler notification = FindAnyObjectByType<NotificationHandler>();
         StartCoroutine(notification.ShowNotifImmediatelyWithTimeout("Gamepad Mode toggled to " + yes.ToString(), 5f));
     }
@@ -162,8 +163,6 @@ public class OldInputManager : MonoBehaviour
                 if (player.GetButtonDown("Green"))
                 {
                     //Debug.Log("Green button pressed");
-                    SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-                    sFXPlayer.PlayClip("MenuOpenLong");
                     if (menuManager.IsMenuOpen(MenuManager.StartMenuId))
                     {
                         menuManager.Submit(2);
@@ -181,8 +180,6 @@ public class OldInputManager : MonoBehaviour
                 if (player.GetButtonDown("Red"))
                 {
                     //Debug.Log("Red button pressed");
-                    SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-                    sFXPlayer.PlayClip("MenuClose");
                     menuManager.Exit();
                 }
                 if (menuManager.IsMenuOpen(MenuManager.QuickPlayMenuId))
@@ -191,15 +188,11 @@ public class OldInputManager : MonoBehaviour
                     {
                         UGUIMenuList menuList = FindAnyObjectByType<UGUIMenuList>();
                         if (menuList != null) menuList.SelectNext();
-                        SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-                        sFXPlayer.PlayClip("MenuOpen");
                     }
                     else if (player.GetButtonDown("StrumUp") || scrollAxis == -1)
                     {
                         UGUIMenuList menuList = FindAnyObjectByType<UGUIMenuList>();
                         if (menuList != null) menuList.SelectPrevious();
-                        SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-                        sFXPlayer.PlayClip("MenuOpen");
                     }
                 }
                 else
@@ -207,14 +200,10 @@ public class OldInputManager : MonoBehaviour
                     if (player.GetButtonDown("StrumDown"))
                     {
                         menuManager.SelectNextControl();
-                        SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-                        sFXPlayer.PlayClip("MenuOpen");
                     }
                     else if (player.GetButtonDown("StrumUp"))
                     {
                         menuManager.SelectPreviousControl();
-                        SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-                        sFXPlayer.PlayClip("MenuOpen");
                     }
                 }
                 

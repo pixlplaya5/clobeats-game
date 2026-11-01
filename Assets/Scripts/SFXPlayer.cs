@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class SFXPlayer : MonoBehaviour
 {
+    public static SFXPlayer Instance;
     public AudioSource audioSource;
     public AudioClip[] overstrumClips;
     public AudioClip comboLostClip;
@@ -16,6 +17,7 @@ public class SFXPlayer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Instance = this;
         if (audioSource == null)
         {
             audioSource = GetComponent<AudioSource>();

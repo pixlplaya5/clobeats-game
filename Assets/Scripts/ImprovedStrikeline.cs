@@ -477,7 +477,7 @@ public class ImprovedStrikeline : MonoBehaviour
             {
                 Destroy(spark);
                 activeSustainSparks.Remove(xOffset+2);
-                SLTopHit(xOffset); // SLTopHold already called
+                SLTopHit(xOffset+2); // SLTopHold already called
             }
         }
     }

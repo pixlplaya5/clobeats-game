@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melanchall.DryWetMidi.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Enhanced input handler: shows a hit-window visual, supports strum/chords,
 // hits multiple notes in a lane within the window, and supports sustained notes.
 public class LaneInputManager : MonoBehaviour
 {
+    public static LaneInputManager Instance;
     public float hitWindowSeconds = 0.15f; // +/- timing window in seconds
 
     // Optional: assign a simple transparent prefab (SpriteRenderer or UI Image) that will be
@@ -54,6 +56,7 @@ public class LaneInputManager : MonoBehaviour
 
     void Start()
     {
+        Instance = this;
         spawner = FindAnyObjectByType<NoteSpawner>();
         mp = FindAnyObjectByType<MusicPlayer>();
         oim = FindAnyObjectByType<OldInputManager>();
@@ -138,7 +141,8 @@ public class LaneInputManager : MonoBehaviour
         }
 
         if (autoPlayEnabled)
-        {
+        {           
+            oim.denyInput = SceneManager.GetSceneByName("Gameplay").isLoaded;
             TryHitLane(0, true, NoteVisualChanger.NoteType.Forced, true);
             TryHitLane(1, true, NoteVisualChanger.NoteType.Forced, true);
             TryHitLane(2, true, NoteVisualChanger.NoteType.Forced, true);

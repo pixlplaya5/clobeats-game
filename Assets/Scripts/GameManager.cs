@@ -19,6 +19,7 @@ using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
     public float audioOffsetSeconds = 0.04f;
     public bool enableSustains = true;
     public bool initialized = false;
@@ -91,6 +92,7 @@ public class GameManager : MonoBehaviour
     public GameObject unDestructibleLoadingPhraseScreen;
     public bool venueLoaded = false;
     public bool liteMode = false;
+    public bool gamepadMode = false;
 
     // note mappings (RBN2)
     Dictionary<string, Dictionary<int, int>> partGuitarDifficultyMappings = new Dictionary<string, Dictionary<int,int>>
@@ -242,7 +244,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Instance = this;
     }
     void Awake()
     {
