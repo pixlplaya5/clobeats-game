@@ -1,6 +1,6 @@
 # 🎵 Project CloBeats (PROTOTYPE)
 
-**Project CloBeats** is a modern, customizable, and brand-new Guitar Hero clone game built from the ground-up for simplicity, and user friendliness.
+**Project CloBeats** is a modern, customizable, and brand-new Guitar Hero clone game built from the ground up for simplicity and user-friendliness.
 
 ## ❗ Disclaimers
 
@@ -11,26 +11,32 @@
 > Anti-Piracy Notice: **Project CloBeats** is planned to **only** have songs uploaded by the community, and will **not** include any pirated songs or assets. I neither support nor endorse piracy, as it is a violation of copyright law with serious legal consequences. It is the community/uploader's responsibility to upload songs with the proper licenses and not violate copyright law. By using **Project CloBeats**, users agree not to promote or endorse piracy in any way through this platform. Complying with these principles ensures a community that respects copyright, creativity, and legal standards.
 
 ## 🚀 Planned Features
-- **Animated Venue** – Venue animation (i.e. lipsync and dance animations) will be auto-generated or use MMD2Unity for motion capture moments.
+- **Animated Venue** – Venue animation (i.e., lip-sync and dance animations) will be auto-generated or use MMD2Unity for motion capture moments.
 - **Custom Online Downloads** – Download community-curated songs, venue decor, and 3D models.
 - **Custom Player Models** – Import custom player models in VRM 0.x format (models created with VRoid Studio recommended)
 - **Fast Rendering** – Powered by Unity 2022 for high performance.
-- **MMD2Unity** – MMD2Unity is a planned feature/tool that can convert MMD (MikuMikuDance) avatar motion into Unity's Humanoid animation format for avatar models, and can convert MMD-curated camera motion into a regular animation that Unity is able to understand. This feature will be useful for animation memes that were originally animated in MMD to be easily importable into a venue animation.
+- **MMD2Unity** – MMD2Unity is a planned feature/tool that can convert MMD (MikuMikuDance) avatar motion into Unity's Humanoid animation format for avatar models, and can convert MMD-curated camera motion into a regular animation that Unity can understand. This feature will be useful for animation memes that were originally animated in MMD to be easily importable into a venue animation.
 - **Rapid/Tremolo Sustains** – When sustains show up as squiggly lines, the player can rapidly strum until the note ends.
-- **Sliding Sustains** – When sliding sustains show up, keep holding the first fret of the sustain then press the fret at the end of the sustain. (similar to a HOPO, but a sustain is connected linearly to the end of the ending note.)
+- **Sliding Sustains** – When sliding sustains show up, keep holding the first fret of the sustain, then press the fret at the end of the sustain. (similar to a HOPO, but a sustain is connected linearly to the end of the ending note.)
 - **and more coming soon!**
 
 ## 📦 Installation
 
-When the game launches for the first time, the game will scan your song library in a specific folder `C:\Users\$USER\Documents\CloBeats\songs\local`, then save the folders to a cache that makes sure the songs will be scanned properly. (It takes a while to scan songs in the Editor, so a built version of the game can be used instead of the Unity Editor, and your song library must be small. (less than 50 songs, but there is no definite limit of songs, because I didn't test with that much songs.))
+Every time the game launches, it will scan your song library in a specific folder `C:\Users\$USER\Documents\CloBeats\songs\local`, so it may take a while to start the game.
 
-In the future when network songs are available to download, they will be saved to `C:\Users\$USER\Documents\CloBeats\songs\network`.
+It takes a while to scan songs in the Editor, so a built version of the game can be used instead of the Unity Editor.
+
+Your song library must be less than 50 songs, but there is no definite limit on the number of songs, because I didn't test with that many songs.
+
+Also, your songs must have a playable `preview.ogg` file that is at least 15-30 seconds long to be listed.
+
+In the future, when network songs are available to download, they will be saved to `C:\Users\$USER\Documents\CloBeats\songs\network`.
 
 ## 📚 Documentation
 Please see the Wiki (WIP) for detailed documentation on curating for the game, making custom 3D models, and animating venues.
 
 ## 📃 License
-Public Domain by [Unlicense](https://unlicense.org/). See [UNLICENSE](https://github.com/robloxboy1000/clobeats-game/blob/main/UNLICENSE) for more details.
+Licensed under GNU GPL-3.0. See [LICENSE](https://github.com/pixlplaya5/clobeats-game/blob/main/LICENSE) for more details.
 
 ## 🧠 Credits
 Developed and maintained by **PixlPlaya5**. (one person!)
