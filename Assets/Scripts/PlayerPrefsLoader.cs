@@ -315,7 +315,6 @@ public class PlayerPrefsLoader : MonoBehaviour
             {
                 Directory.CreateDirectory(gameManager.savePath);
             }
-            gameManager.initialized = true;
         }
     }
 
@@ -358,7 +357,10 @@ public class PlayerPrefsLoader : MonoBehaviour
     public async Task<bool> LoadWholeGame(bool loadMainMenu = true)
     {
         Debug.Log("Loading game...");
-        await LoadPart1(); // loads local songs
+        if (await LoadPart1())
+        {
+            GameManager.Instance.initialized = true;
+        } // loads local songs
         LoadPart2(); // loads shaders
         if (indefiniteLoadingScreen != null)
         {
@@ -393,8 +395,7 @@ public class PlayerPrefsLoader : MonoBehaviour
 
     public async Task<bool> LoadPart1()
     {
-        songItemNames.Clear();
-        if (songItemNames.Count == 0)
+        if (!GameManager.Instance.initialized)
         {
             try
             {
@@ -405,7 +406,6 @@ public class PlayerPrefsLoader : MonoBehaviour
                 {
                     Directory.CreateDirectory(songFoldersPath);
                 }
-                GameManager gameManager = FindAnyObjectByType<GameManager>();
                 string[] directories = Directory.GetDirectories(songFoldersPath);
                 if (directories != null)
                 {
@@ -415,11 +415,10 @@ public class PlayerPrefsLoader : MonoBehaviour
                     foreach (string dir in directories)
                     {
                         int hash = Mathf.Abs(dir.GetHashCode());
-                        
-                        gameManager.songFolders.Add(dir);
+                        GameManager.Instance.songFolders.Add(dir);
                         songItemNames.Add(dir);
-                        gameManager.CacheSingleSong(dir, hash, ind);
-                        StartCoroutine(gameManager.CacheAudioFile(gameManager.FindQueryAudioInPath(dir, "preview"), hash)); // use preview version if available
+                        GameManager.Instance.CacheSingleSong(dir, hash, ind);
+                        StartCoroutine(GameManager.Instance.CacheAudioFile(GameManager.Instance.FindQueryAudioInPath(dir, "preview"), hash)); // use preview version if available
                         Debug.Log($"Cached {ind} song dir \"" + dir + "\" with absolute hash code " + hash);
                         ind++;
                         //loadingText.text = "Loading songs: (" + ind + " songs)";

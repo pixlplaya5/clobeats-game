@@ -13448,6 +13448,7 @@ MonoBehaviour:
   unDestructibleLoadingPhraseScreen: {fileID: 4562336475162592509, guid: e864f3a7686f97b49b162747898d1c1f, type: 3}
   venueLoaded: 0
   liteMode: 0
+  gamepadMode: 0
 --- !u!114 &2084514636
 MonoBehaviour:
   m_ObjectHideFlags: 0

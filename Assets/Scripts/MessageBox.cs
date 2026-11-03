@@ -42,9 +42,12 @@ public class MessageBox : MonoBehaviour
             }
             if (methodList != null)
             {
-                foreach (GameObject arbButton in buttons)
+                foreach (Transform arbButton in buttons)
                 {
-                    if (arbButton) Destroy(arbButton); // prevents duplicate entries
+                    if (arbButton.GetComponent<Button>() is Button)
+                    {
+                        Destroy(arbButton.gameObject);
+                    } // prevents duplicate entries
                 }
                 foreach (var action in methodList)
                 {
@@ -56,7 +59,7 @@ public class MessageBox : MonoBehaviour
                     selectable.onClick.AddListener(() =>
                     {
                         menuManager.ShowMenu("null");
-                        action.method();
+                        action.method.Invoke();
                     });
                     EventSystem.current.SetSelectedGameObject(button);
                 }
