@@ -786,7 +786,32 @@ public class GameManager : MonoBehaviour
         // 4) Parse difficulty instrument track (e.g. ExpertSingle) and map notes
         string chosenDiff = ddst; if (string.IsNullOrEmpty(chosenDiff)) chosenDiff = "Expert";
         string chosenPart = currentPart.ToUpper();
-        string desiredTrack = chosenDiff + "Single";
+        string desiredTrack;
+
+        if (chosenPart == "GUITAR COOP")
+        {
+            desiredTrack = chosenDiff + "DoubleGuitar";
+        }
+        else if (chosenPart == "BASS")
+        {
+            desiredTrack = chosenDiff + "DoubleBass";
+        }
+        else if (chosenPart == "RHYTHM")
+        {
+            desiredTrack = chosenDiff + "DoubleRhythm";
+        }
+        else if (chosenPart == "KEYS")
+        {
+            desiredTrack = chosenDiff + "Keyboard";
+        }
+        else if (chosenPart == "MOTION")
+        {
+            desiredTrack = chosenDiff + "Motion";
+        }
+        else
+        {
+            desiredTrack = chosenDiff + "Single";
+        }
 
         Match chosenTrackMatch = null;
         foreach (Match m in sections)
@@ -1352,13 +1377,12 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                string preLoadedServerString = await GetStringFromAddr($"http://{serverIPAddr}/clobeats/getRandLdgPhr.php");
+                string preLoadedServerString = await GetStringFromAddr($"http://{serverIPAddr}/api/lpRand");
                 string serverLoad = string.Empty;
                 if (preLoadedServerString == string.Empty)
                 {
                     string ldgphrPath = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "loadingphrases.txt";
-                    System.Random random = new System.Random();
-                    serverLoad = GetValueFromTxt(ldgphrPath, random.Next(1, GetLineAmountFromTxt(ldgphrPath)));
+                    serverLoad = GetValueFromTxt(ldgphrPath, UnityEngine.Random.Range(1, GetLineAmountFromTxt(ldgphrPath)));
                 }
                 else
                 {
