@@ -237,7 +237,7 @@ public class NoteSpawner : MonoBehaviour
         if (Instance == null) Instance = this; else if (Instance != this) Destroy(gameObject);
         songLoader = FindFirstObjectByType<SongLoader>();
         songFolderLoader = FindFirstObjectByType<SongFolderLoader>();
-        desiredHyperspeedSingleThreaded = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        desiredHyperspeedSingleThreaded = GameManager.Instance.GetNoteSpeed();
     }
 
 
@@ -387,7 +387,7 @@ public class NoteSpawner : MonoBehaviour
         StartProgressiveSpawning();
         
         // Start managed spawning of bars/beats (pooled, ahead-window)
-        if (PlayerPrefs.GetInt("EnableBarBeats", 1) == 1)
+        if (GameManager.Instance.GetTempoMapToggle())
         {
             if (barBeatSpawnerCoroutine == null)
             {
@@ -396,7 +396,7 @@ public class NoteSpawner : MonoBehaviour
         }
         else
         {
-            // PlayerPrefs requests no bars/beats; still spawn a single FirstBar to synchronize music.
+            // Player requests no bars/beats; still spawn a single FirstBar to synchronize music.
             SpawnFirstBarOnly();
         }
     }
@@ -422,7 +422,7 @@ public class NoteSpawner : MonoBehaviour
         if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
         if (musicPlayer != null) currentSongSeconds = (float)musicPlayer.GetElapsedTimeDsp();
 
-        float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        float spacingFactor = GameManager.Instance.GetNoteSpeed();
         float strikeY = GetStrikeLineY();
         float secondsUntilBar = barTime - currentSongSeconds;
         float barY = strikeY + startingYPosition + startingYOffset + (secondsUntilBar + spawnLeadSeconds) * spacingFactor;
@@ -777,7 +777,7 @@ public class NoteSpawner : MonoBehaviour
     // Spawn only notes whose time is within `windowSeconds` of currentSeconds. Uses pooling.
     private void PreSpawnWindow(float currentSeconds, float windowSeconds)
     {
-        float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", desiredHyperspeedSingleThreaded);
+        float spacingFactor = GameManager.Instance.GetNoteSpeed();
         for (int i = 0; i < gameManager.currentSongNotes.Count; i++)
         {
             var n = gameManager.currentSongNotes.ElementAt(i);
@@ -806,7 +806,7 @@ public class NoteSpawner : MonoBehaviour
                 float noteTime = (n.spawnTimeMs > 0f) ? n.spawnTimeMs / 1000f : GetTimeInSecondsAtTick(n.spawnTime);
                 if (noteTime - current <= lead)
                 {
-                    SpawnNoteInstance(nextRuntimeSpawnIndex, noteTime, PlayerPrefs.GetFloat("Hyperspeed", desiredHyperspeedSingleThreaded));
+                    SpawnNoteInstance(nextRuntimeSpawnIndex, noteTime, GameManager.Instance.GetNoteSpeed());
                     nextRuntimeSpawnIndex++;
                     continue;
                 }
@@ -1359,7 +1359,7 @@ public class NoteSpawner : MonoBehaviour
     private IEnumerator ManageBarBeatSpawning()
     {
         if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        float spacingFactor = GameManager.Instance.GetNoteSpeed();
 
         // Start spawning from the first sync tick or 0
         int nextBarTick = 0;

@@ -15,12 +15,12 @@ public class GlobalMoveY : MonoBehaviour
     NoteSpawner ns;
     LaneInputManager lim;
     float cachedSpeed;
-    float prefsPollInterval = 0.5f; // seconds between PlayerPrefs polls
-    float lastPrefsCheckTime = 0f;
+    //float prefsPollInterval = 0.5f; // seconds between PlayerPrefs polls
+    //float lastPrefsCheckTime = 0f;
     // Start is called before the first frame update
     void Start()
     {
-        cachedSpeed = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        cachedSpeed = GameManager.Instance.GetNoteSpeed();
         speed = cachedSpeed;
         sl = FindAnyObjectByType<ImprovedStrikeline>();
         mp = FindAnyObjectByType<MusicPlayer>();
@@ -31,12 +31,12 @@ public class GlobalMoveY : MonoBehaviour
 
     void Awake()
     {
-        cachedSpeed = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        cachedSpeed = GameManager.Instance.GetNoteSpeed();
         speed = cachedSpeed;
     }
     void OnEnable()
     {
-        cachedSpeed = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        cachedSpeed = GameManager.Instance.GetNoteSpeed();
         speed = cachedSpeed;
     }
 
@@ -44,16 +44,16 @@ public class GlobalMoveY : MonoBehaviour
     void Update()
     {
         // Poll PlayerPrefs occasionally rather than every frame
-        if (Time.time - lastPrefsCheckTime > prefsPollInterval)
-        {
-            lastPrefsCheckTime = Time.time;
-            float newSpeed = PlayerPrefs.GetFloat("Hyperspeed", cachedSpeed);
-            if (Mathf.Abs(newSpeed - cachedSpeed) > 0.0001f)
-            {
-                cachedSpeed = newSpeed;
-                speed = cachedSpeed;
-            }
-        }
+        //if (Time.time - lastPrefsCheckTime > prefsPollInterval)
+        //{
+        //    lastPrefsCheckTime = Time.time;
+        //    float newSpeed = PlayerPrefs.GetFloat("Hyperspeed", cachedSpeed);
+        //    if (Mathf.Abs(newSpeed - cachedSpeed) > 0.0001f)
+        //    {
+        //        cachedSpeed = newSpeed;
+        //        speed = cachedSpeed;
+        //    }
+        //}
 
         //if (!isMoving) return;
 
@@ -88,14 +88,14 @@ public class GlobalMoveY : MonoBehaviour
                 }
 
                 var t = obj.transform;
-                float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+                float spacingFactor = GameManager.Instance.GetNoteSpeed();
                 // If the object has a ScheduledTime component, compute its world Y directly
                 // from its scheduled song time and the currentSongSeconds using NoteSpawner's
                 // layout parameters so tempo changes are respected.
                 var sched = obj.GetComponent<ScheduledTime>();
                 if (sched != null && ns != null)
                 {
-                    spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", ns != null ? ns.desiredHyperspeedSingleThreaded : speed);
+                    spacingFactor = GameManager.Instance.GetNoteSpeed();
                     float strikeY = ns != null ? ns.GetStrikeLineY() : 0f;
                     float targetY = strikeY + ns.startingYPosition + ns.startingYOffset + ((sched.scheduledSeconds - currentSongSeconds) + ns.spawnLeadSeconds) * spacingFactor;
                     // preserve x,z

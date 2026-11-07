@@ -81,7 +81,7 @@ public class SustainManager : MonoBehaviour
         //sched.scheduledSeconds = startSeconds;
 
         float baseY = spawner != null ? spawner.GetStrikeLineY() : 0f;
-        float spacing = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        float spacing = GameManager.Instance.GetNoteSpeed();
         float x = (laneXPositions != null && laneIndex >= 0 && laneIndex < laneXPositions.Length)
             ? laneXPositions[laneIndex]
             : laneIndex;

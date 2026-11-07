@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
+    public static MenuManager Instance;
     public const string StartMenuId = "start";
     private const string MainMenuId = "main";
     public const string QuickPlayMenuId = "quickplay";
@@ -40,8 +41,9 @@ public class MenuManager : MonoBehaviour
         ToggleLiteMode,
         SwapInstrument,
         ToggleAnyFretMod,
-        SwapDifficulty
-
+        SwapDifficulty,
+        ToggleVSync,
+        AdjustNoteSpeed
     }
 
     [Serializable]
@@ -87,6 +89,7 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         RebuildLookups();
         WireButtons();
         ShowMenu(string.IsNullOrWhiteSpace(firstMenuId) ? StartMenuId : firstMenuId);
@@ -130,7 +133,6 @@ public class MenuManager : MonoBehaviour
         {
             if (IsMenuOpen(QuickPlayMenuId))
             {
-                SFXPlayer.Instance.PlayClip("MenuOpenLong");
                 PlaySelectedSong();
                 return;
             }
@@ -412,6 +414,7 @@ public class MenuManager : MonoBehaviour
     {
         try
         {
+            SFXPlayer.Instance.PlayClip("MenuOpenLong");
             switch (action)
             {
                 case MenuAction.ShowMenu:
@@ -492,6 +495,12 @@ public class MenuManager : MonoBehaviour
                     break;
                 case MenuAction.SwapDifficulty:
                     GameManager.Instance.SwapDifficulty(actionArgs[0]);
+                    break;
+                case MenuAction.ToggleVSync:
+                    GameManager.Instance.SetVSyncToggle(GameManager.Instance.GetVSyncToggle() ? false : true);
+                    break;
+                case MenuAction.AdjustNoteSpeed:
+                    GameManager.Instance.SetNoteSpeed(GameManager.Instance.GetNoteSpeed() + float.Parse(actionArgs[0]));
                     break;
             }
         }

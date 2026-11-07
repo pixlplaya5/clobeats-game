@@ -48,7 +48,7 @@ public class PlayerPrefsLoader : MonoBehaviour
         speedInputField = gameObject.transform.Find("HyperspeedSlider").GetComponent<Slider>();
         if (speedInputField != null)
         {
-            speedInputField.value = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+            speedInputField.value = GameManager.Instance.GetNoteSpeed();
         }
         venueToggle = gameObject.transform.Find("VenueToggle").GetComponent<Toggle>();
         if (venueToggle != null)

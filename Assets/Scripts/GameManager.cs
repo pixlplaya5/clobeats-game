@@ -20,6 +20,9 @@ using UnityEngine.Networking;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public float hyperspeed = 12f;
+    public bool tempoMapEnabled = true;
+    public bool postProcEnabled = true;
     public float audioOffsetSeconds = 0.04f;
     public bool enableSustains = true;
     public bool initialized = false;
@@ -206,7 +209,7 @@ public class GameManager : MonoBehaviour
         {
             MessageBox.Instance.Show("Are you sure you want to exit the game?<br>All unsaved data will be lost.",
             "Message",
-            new List<MessageBox.MethodEntry> { new MessageBox.MethodEntry { methodName = "Yes", method = () => {ForceExitGame();} }, new MessageBox.MethodEntry { methodName = "No", method = () => {return;} } });
+            new List<MessageBox.MethodEntry> { new MessageBox.MethodEntry { methodName = "Yes", method = () => {ForceExitGame();} }, new MessageBox.MethodEntry { methodName = "No", method = () => {MenuManager.Instance.ShowMenu("main");} } });
         }
         else
         {
@@ -233,6 +236,57 @@ public class GameManager : MonoBehaviour
         MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         SceneManager.UnloadSceneAsync("Gameplay");
         menuManager.ShowMenu("main");
+    }
+
+    public float GetNoteSpeed()
+    {
+        return hyperspeed;
+    }
+
+    public void SetNoteSpeed(float speed)
+    {
+        hyperspeed = speed;
+        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Note Speed to " + speed, 5f);
+    }
+
+    public bool GetTempoMapToggle()
+    {
+        return tempoMapEnabled;
+    }
+
+    public void SetTempoMapToggle(bool toggle)
+    {
+        tempoMapEnabled = toggle;
+        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Enable Tempo Map to " + toggle, 5f);
+    }
+
+    public bool GetPostProcSetting()
+    {
+        return postProcEnabled;
+    }
+
+    public void SetPostProcSetting(bool toggle)
+    {
+        postProcEnabled = toggle;
+        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Enable Post Proc to " + toggle, 5f);
+    }
+
+    public bool GetVSyncToggle()
+    {
+        return QualitySettings.vSyncCount == 1;
+    }
+
+    public void SetVSyncToggle(bool toggle)
+    {
+        if (toggle)
+        {
+            QualitySettings.vSyncCount = 1;
+        }
+        else
+        {
+            QualitySettings.vSyncCount = 0;
+        }
+        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set VSync to " + toggle, 5f);
     }
 
     // Start is called before the first frame update

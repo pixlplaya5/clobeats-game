@@ -346,7 +346,7 @@ public class LaneInputManager : MonoBehaviour
     {
         if (spawner == null) spawner = FindAnyObjectByType<NoteSpawner>();
         if (spawner == null) return false;
-        float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        float spacingFactor = GameManager.Instance.GetNoteSpeed();
         float strikeY = spawner.GetStrikeLineY();
         // Use the same base Y as NoteSpawner so world Y <-> seconds mapping matches:
         float baseY = strikeY + spawner.startingYPosition + spawner.startingYOffset;
@@ -595,7 +595,7 @@ public class LaneInputManager : MonoBehaviour
         if (hitWindowInstance == null || spawner == null) return;
 
         float strikeY = spawner.GetStrikeLineY();
-        float spacingFactor = PlayerPrefs.GetFloat("Hyperspeed", 5f);
+        float spacingFactor = GameManager.Instance.GetNoteSpeed();
         
         // visual height in world units approximated by seconds * spacingFactor
         float height = hitWindowSeconds * spacingFactor;
