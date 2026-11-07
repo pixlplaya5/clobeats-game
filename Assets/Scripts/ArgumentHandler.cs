@@ -12,19 +12,9 @@ public class ArgumentHandler : MonoBehaviour
 
         foreach (string arg in args)
         {
-            if (arg == "--autoplay")
+            if (arg == "--help")
             {
-                LaneInputManager laneInputManager = FindAnyObjectByType<LaneInputManager>();
-                laneInputManager.autoPlayEnabled = true;
-            }
-            else if (arg == "--debug")
-            {
-                PlayerPrefsLoader pPl = FindAnyObjectByType<PlayerPrefsLoader>();
-                pPl.autoLoad = false;
-            }
-            else if (arg == "--path")
-            {
-                
+                SafeMessageBox.Instance.Show("TODO: show about screen", "Help", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.None);
             }
         }
     }
