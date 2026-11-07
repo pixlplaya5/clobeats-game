@@ -13421,6 +13421,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3e009c83de304c4e85ec9fe842ac325, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hyperspeed: 12
+  tempoMapEnabled: 1
+  postProcEnabled: 1
   audioOffsetSeconds: 0
   enableSustains: 1
   initialized: 0

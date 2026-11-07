@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class UIUpdater : MonoBehaviour
 {
+    public static UIUpdater Instance;
     public TMPro.TMP_Text scoreText;
     public GameObject scoreObject;
     public TMPro.TMP_Text comboText;
@@ -43,8 +44,7 @@ public class UIUpdater : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
-        
+        Instance = this;
     }
     public void InitializeUI()
     {

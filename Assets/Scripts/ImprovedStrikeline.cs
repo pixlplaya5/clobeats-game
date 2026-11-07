@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ImprovedStrikeline : MonoBehaviour
 {
+    public static ImprovedStrikeline Instance;
     public enum FlameReleaseMode
     {
         BoolToggle,
@@ -33,12 +34,13 @@ public class ImprovedStrikeline : MonoBehaviour
     public GameObject orangeBase;
     Dictionary<int, GameObject> activeSustainSparks;
 
-    UIUpdater uiUpdater;
+    //UIUpdater uiUpdater;
 
     void Awake()
     {
+        Instance = this;
         activeSustainSparks = new Dictionary<int, GameObject>();
-        uiUpdater = FindFirstObjectByType<UIUpdater>();
+        //uiUpdater = FindFirstObjectByType<UIUpdater>();
     }
 
     // used for hiding green/kick lane on drums
@@ -92,17 +94,17 @@ public class ImprovedStrikeline : MonoBehaviour
     {
         Vector3 flamePosition = new Vector3(xOffset, gameObject.transform.position.y, gameObject.transform.position.z);
         StartCoroutine(NoteFlame(flamePosition, 0.5f));
-        if (uiUpdater != null)
+        if (UIUpdater.Instance != null)
         {
-            uiUpdater.UpdateForNoteHit();
+            UIUpdater.Instance.UpdateForNoteHit();
         }
     }
 
     public void MissNote()
     {
-        if (uiUpdater != null)
+        if (UIUpdater.Instance != null)
         {
-            uiUpdater.UpdateForNoteMiss();
+            UIUpdater.Instance.UpdateForNoteMiss();
         }
 
         

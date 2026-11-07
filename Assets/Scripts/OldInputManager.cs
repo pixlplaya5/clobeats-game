@@ -6,6 +6,7 @@ using Rewired;
 
 public class OldInputManager : MonoBehaviour
 {
+    public static OldInputManager Instance;
     public enum InputUpdateType
     {
         PerFrame,
@@ -30,7 +31,7 @@ public class OldInputManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Instance = this;
     }
 
     void Awake()
@@ -233,11 +234,11 @@ public class OldInputManager : MonoBehaviour
             }
             else
             {
-                await InputNote(0, player.GetButton("Green"));
-                await InputNote(1, player.GetButton("Red"));
-                await InputNote(2, player.GetButton("Yellow"));
-                await InputNote(3, player.GetButton("Blue"));
-                await InputNote(4, player.GetButton("Orange"));
+                await InputNote(0, player.GetButtonDown("Green"));
+                await InputNote(1, player.GetButtonDown("Red"));
+                await InputNote(2, player.GetButtonDown("Yellow"));
+                await InputNote(3, player.GetButtonDown("Blue"));
+                await InputNote(4, player.GetButtonDown("Orange"));
 
                 if (player.GetButtonUp("Start")) PauseGame();
                 if (player.GetButtonUp("Select")) ReleaseSP();

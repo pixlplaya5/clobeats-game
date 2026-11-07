@@ -16,7 +16,7 @@ public class LaneInputManager : MonoBehaviour
     // scaled/positioned to show the timing window at the strike line.
     public GameObject hitWindowPrefab;
 
-    NoteSpawner spawner;
+    //NoteSpawner spawner;
     GameObject hitWindowInstance;
 
     // Tracks held frets (for chord/strum behavior)
@@ -39,9 +39,9 @@ public class LaneInputManager : MonoBehaviour
     // Active sustains that are currently being held after a successful hit
     class ActiveSustain { public GameObject note; public float endTime; public int lane; }
     List<ActiveSustain> activeSustains = new List<ActiveSustain>();
-    ImprovedStrikeline strikeline;
+    //ImprovedStrikeline strikeline;
 
-    UIUpdater uiUpdater;
+    //UIUpdater uiUpdater;
     
 
     public bool autoPlayEnabled = false;
@@ -49,17 +49,15 @@ public class LaneInputManager : MonoBehaviour
     public bool anyFretMode = false;
     GameObject note = null;
 
-    MusicPlayer mp;
-    OldInputManager oim;
+    //MusicPlayer mp;
     public float secondsUntil;
 
 
     void Start()
     {
         Instance = this;
-        spawner = FindAnyObjectByType<NoteSpawner>();
-        mp = FindAnyObjectByType<MusicPlayer>();
-        oim = FindAnyObjectByType<OldInputManager>();
+        //spawner = FindAnyObjectByType<NoteSpawner>();
+        //mp = FindAnyObjectByType<MusicPlayer>();
         if (hitWindowPrefab != null)
         {
             hitWindowInstance = Instantiate(hitWindowPrefab, transform);
@@ -80,67 +78,67 @@ public class LaneInputManager : MonoBehaviour
 
     void Update()
     {
-        if (spawner == null) spawner = FindAnyObjectByType<NoteSpawner>();
-        if (strikeline == null) strikeline = FindAnyObjectByType<ImprovedStrikeline>();
-        if (uiUpdater == null) uiUpdater = FindAnyObjectByType<UIUpdater>();
+        //if (spawner == null) spawner = FindAnyObjectByType<NoteSpawner>();
+        //if (strikeline == null) strikeline = FindAnyObjectByType<ImprovedStrikeline>();
+        //if (uiUpdater == null) uiUpdater = FindAnyObjectByType<UIUpdater>();
         UpdateHitWindowVisual();
         UpdateActiveSustains();
         laneCount = heldLanes.Count;
 
         if (heldLanes.Contains(0))
         {
-            if (strikeline != null)
-            strikeline.HoldLane(0); // zero-based xOffset
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.HoldLane(0); // zero-based xOffset
         }
         else
         {
-            if (strikeline != null)
-            strikeline.ReleaseLane(0);
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.ReleaseLane(0);
         }
         if (heldLanes.Contains(1))
         {
-            if (strikeline != null)
-            strikeline.HoldLane(1); // zero-based xOffset
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.HoldLane(1); // zero-based xOffset
         }
         else
         {
-            if (strikeline != null)
-            strikeline.ReleaseLane(1);
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.ReleaseLane(1);
         }
         if (heldLanes.Contains(2))
         {
-            if (strikeline != null)
-            strikeline.HoldLane(2); // zero-based xOffset
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.HoldLane(2); // zero-based xOffset
         }
         else
         {
-            if (strikeline != null)
-            strikeline.ReleaseLane(2);
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.ReleaseLane(2);
         }
         if (heldLanes.Contains(3))
         {
-            if (strikeline != null)
-            strikeline.HoldLane(3); // zero-based xOffset
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.HoldLane(3); // zero-based xOffset
         }
         else
         {
-            if (strikeline != null)
-            strikeline.ReleaseLane(3);
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.ReleaseLane(3);
         }
         if (heldLanes.Contains(4))
         {
-            if (strikeline != null)
-            strikeline.HoldLane(4); // zero-based xOffset
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.HoldLane(4); // zero-based xOffset
         }
         else
         {
-            if (strikeline != null)
-            strikeline.ReleaseLane(4);
+            if (ImprovedStrikeline.Instance != null)
+            ImprovedStrikeline.Instance.ReleaseLane(4);
         }
 
         if (autoPlayEnabled)
         {           
-            oim.denyInput = SceneManager.GetSceneByName("Gameplay").isLoaded;
+            OldInputManager.Instance.denyInput = SceneManager.GetSceneByName("Gameplay").isLoaded;
             TryHitLane(0, true, NoteVisualChanger.NoteType.Forced, true);
             TryHitLane(1, true, NoteVisualChanger.NoteType.Forced, true);
             TryHitLane(2, true, NoteVisualChanger.NoteType.Forced, true);
@@ -149,7 +147,7 @@ public class LaneInputManager : MonoBehaviour
             TryHitLane(7, true, NoteVisualChanger.NoteType.Forced, true);
             TryHitLane(8, true, NoteVisualChanger.NoteType.Forced, true);
         }
-        if (oim.gamepadMode)
+        if (OldInputManager.Instance.gamepadMode)
         {
             TryHitLane(7, true, NoteVisualChanger.NoteType.Forced, true);
         }
@@ -159,7 +157,7 @@ public class LaneInputManager : MonoBehaviour
     public void OnFretPressed(int laneIndex)
     {
         heldLanes.Add(laneIndex);
-        if (oim.gamepadMode)
+        if (OldInputManager.Instance.gamepadMode)
         {
             if (!TryHitLane(8, false, NoteVisualChanger.NoteType.Any, true))
             TryHitLane(laneIndex, false, NoteVisualChanger.NoteType.Any, true);
@@ -178,7 +176,7 @@ public class LaneInputManager : MonoBehaviour
     {
         heldLanes.Remove(laneIndex);
         EndSustainForLane(laneIndex);
-        if (oim.gamepadMode)
+        if (OldInputManager.Instance.gamepadMode)
         {
             if (CanHitTapOrHopo(laneIndex) || laneIndex == 8)
             {
@@ -201,7 +199,7 @@ public class LaneInputManager : MonoBehaviour
 
     bool IsChordAtCurrentTick()
     {
-        if (spawner == null || heldLanes.Count < 2) return false;
+        if (NoteSpawner.Instance == null || heldLanes.Count < 2) return false;
 
         List<float> noteTimes = new List<float>();
         for (int lane = 0; lane <= 4; lane++)
@@ -213,8 +211,8 @@ public class LaneInputManager : MonoBehaviour
             if (sched == null) continue;
 
             float scheduledSeconds = sched.scheduledSeconds;
-            float noteTick = spawner.GetTickAtTimeSeconds(scheduledSeconds, true);
-            float currentTick = spawner.currentTick;
+            float noteTick = NoteSpawner.Instance.GetTickAtTimeSeconds(scheduledSeconds, true);
+            float currentTick = NoteSpawner.Instance.currentTick;
             if (Mathf.Abs(noteTick - currentTick) <= 1f)
             {
                 noteTimes.Add(scheduledSeconds);
@@ -344,19 +342,18 @@ public class LaneInputManager : MonoBehaviour
 
     bool TryHitLane(int laneIndex, bool autoHit = false, NoteVisualChanger.NoteType noteType = NoteVisualChanger.NoteType.Forced, bool isChord = false)
     {
-        if (spawner == null) spawner = FindAnyObjectByType<NoteSpawner>();
-        if (spawner == null) return false;
+        if (NoteSpawner.Instance == null) return false;
         float spacingFactor = GameManager.Instance.GetNoteSpeed();
-        float strikeY = spawner.GetStrikeLineY();
+        float strikeY = NoteSpawner.Instance.GetStrikeLineY();
         // Use the same base Y as NoteSpawner so world Y <-> seconds mapping matches:
-        float baseY = strikeY + spawner.startingYPosition + spawner.startingYOffset;
+        float baseY = strikeY + NoteSpawner.Instance.startingYPosition + NoteSpawner.Instance.startingYOffset;
         note = LaneManager.Instance.GetNextNoteInLane(laneIndex);
         if (note == null) return false;
         float noteY = note.transform.position.y;
         // Prefer scheduled song time if available (more accurate and synced to audio DSP clock)
         var sched = note.GetComponent<ScheduledTime>();
-        mp = FindAnyObjectByType<MusicPlayer>();
-        float currentSongSeconds = mp != null ? (float)mp.GetElapsedTimeDsp() : Time.time;
+        //mp = FindAnyObjectByType<MusicPlayer>();
+        float currentSongSeconds = MusicPlayer.Instance != null ? (float)MusicPlayer.Instance.GetElapsedTimeDsp() : Time.time;
         var visual = note.GetComponent<NoteVisualChanger>();
             
         if (sched != null)
@@ -369,7 +366,7 @@ public class LaneInputManager : MonoBehaviour
             // Fallback to world-Y -> time mapping used by NoteSpawner
             // NoteSpawner: y = strikeY + startingYPosition + startingYOffset + (timeSeconds + spawnLeadSeconds) * spacingFactor
             // therefore timeSeconds = (y - baseY) / spacingFactor - spawnLeadSeconds
-            secondsUntil = (noteY - baseY) / Mathf.Max(0.0001f, spacingFactor) - spawner.spawnLeadSeconds;
+            secondsUntil = (noteY - baseY) / Mathf.Max(0.0001f, spacingFactor) - NoteSpawner.Instance.spawnLeadSeconds;
         }
         float autoHitWindowSeconds = Mathf.Min(0, hitWindowSeconds);
         if (Mathf.Abs(secondsUntil) <= hitWindowSeconds && !autoHit)
@@ -397,20 +394,20 @@ public class LaneInputManager : MonoBehaviour
 
             if (sustainComp != null && sustainComp.durationSeconds > 0f)
             {
-                spawner.ReturnObjectToPool(note);
+                NoteSpawner.Instance.ReturnObjectToPool(note);
                 // Start sustain tracking instead of immediately returning to pool.
                 activeSustains.Add(new ActiveSustain
                 {
                     note = note,
-                    endTime = (float)mp.currentTimeDSP + sustainComp.durationSeconds,
+                    endTime = (float)MusicPlayer.Instance.currentTimeDSP + sustainComp.durationSeconds,
                     lane = laneIndex
                 });
                 // Optionally: play sustain start FX / scoring events here
-                if (strikeline != null)
+                if (ImprovedStrikeline.Instance != null)
                 {
-                    strikeline.HitNote(laneIndex - 2); // zero-based xOffset
-                    strikeline.HitSustain(laneIndex - 2); // zero-based xOffset
-                    strikeline.SLTopHold(laneIndex);
+                    ImprovedStrikeline.Instance.HitNote(laneIndex - 2); // zero-based xOffset
+                    ImprovedStrikeline.Instance.HitSustain(laneIndex - 2); // zero-based xOffset
+                    ImprovedStrikeline.Instance.SLTopHold(laneIndex);
                 }
                 int visualLaneInd = 0;
                 switch (laneIndex)
@@ -431,19 +428,19 @@ public class LaneInputManager : MonoBehaviour
             }
             else
             {
-                spawner.ReturnObjectToPool(note);
+                NoteSpawner.Instance.ReturnObjectToPool(note);
                 // Optionally: play tap FX / scoring events here
-                if (strikeline != null)
+                if (ImprovedStrikeline.Instance != null)
                 {
                     if (laneIndex == 7)
                     {
-                        strikeline.HitNote(7);
-                        strikeline.SLTopHit(laneIndex);
+                        ImprovedStrikeline.Instance.HitNote(7);
+                        ImprovedStrikeline.Instance.SLTopHit(laneIndex);
                     }
                     else
                     {
-                        strikeline.HitNote(laneIndex - 2); // zero-based xOffset
-                        strikeline.SLTopHit(laneIndex);
+                        ImprovedStrikeline.Instance.HitNote(laneIndex - 2); // zero-based xOffset
+                        ImprovedStrikeline.Instance.SLTopHit(laneIndex);
                     }
                 }
             }
@@ -459,27 +456,27 @@ public class LaneInputManager : MonoBehaviour
 
             if (sustainComp != null && sustainComp.durationSeconds > 0f)
             {
-                spawner.ReturnObjectToPool(note);
+                NoteSpawner.Instance.ReturnObjectToPool(note);
                 // Start sustain tracking instead of immediately returning to pool.
                 activeSustains.Add(new ActiveSustain
                 {
                     note = note,
-                    endTime = (float)mp.currentTimeDSP + sustainComp.durationSeconds,
+                    endTime = (float)MusicPlayer.Instance.currentTimeDSP + sustainComp.durationSeconds,
                     lane = laneIndex
                 });
                 // Optionally: play sustain start FX / scoring events here
-                if (strikeline != null)
+                if (ImprovedStrikeline.Instance != null)
                 {
                     if (laneIndex != 7) 
                     {
-                        strikeline.HitNote(laneIndex - 2); // zero-based xOffset
+                        ImprovedStrikeline.Instance.HitNote(laneIndex - 2); // zero-based xOffset
                     }
                     else
                     {
-                        strikeline.HitNote(7);
+                        ImprovedStrikeline.Instance.HitNote(7);
                     }
-                    strikeline.HitSustain(laneIndex - 2); // zero-based xOffset
-                    strikeline.SLTopHold(laneIndex);
+                    ImprovedStrikeline.Instance.HitSustain(laneIndex - 2); // zero-based xOffset
+                    ImprovedStrikeline.Instance.SLTopHold(laneIndex);
                 }
                 int visualLaneInd = 0;
                 switch (laneIndex)
@@ -500,19 +497,19 @@ public class LaneInputManager : MonoBehaviour
             }
             else
             {
-                spawner.ReturnObjectToPool(note);
+                NoteSpawner.Instance.ReturnObjectToPool(note);
                 // Optionally: play tap FX / scoring events here
-                if (strikeline != null)
+                if (ImprovedStrikeline.Instance != null)
                 {
                     if (laneIndex == 7)
                     {
-                        strikeline.HitNote(7);
-                        strikeline.SLTopHit(laneIndex);
+                        ImprovedStrikeline.Instance.HitNote(7);
+                        ImprovedStrikeline.Instance.SLTopHit(laneIndex);
                     }
                     else
                     {
-                        strikeline.HitNote(laneIndex - 2); // zero-based xOffset
-                        strikeline.SLTopHit(laneIndex);
+                        ImprovedStrikeline.Instance.HitNote(laneIndex - 2); // zero-based xOffset
+                        ImprovedStrikeline.Instance.SLTopHit(laneIndex);
                     }
                 }
             }
@@ -538,18 +535,18 @@ public class LaneInputManager : MonoBehaviour
             }
 
             // If sustain time elapsed, end it
-            if (mp.currentTimeDSP >= s.endTime)
+            if (MusicPlayer.Instance.currentTimeDSP >= s.endTime)
             {
                 //Debug.Log(s.lane + " ended");
-                if (spawner != null)
+                if (NoteSpawner.Instance != null)
                 {
-                    spawner.ReturnObjectToPool(s.note);
+                    NoteSpawner.Instance.ReturnObjectToPool(s.note);
                 }
                 activeSustains.RemoveAt(i);
-                if (strikeline != null)
+                if (ImprovedStrikeline.Instance != null)
                 {
-                    strikeline.DisableSustainSparks(s.lane - 2);
-                    strikeline.SLTopHit(s.lane);
+                    ImprovedStrikeline.Instance.DisableSustainSparks(s.lane - 2);
+                    ImprovedStrikeline.Instance.SLTopHit(s.lane);
                 }
                 if (SustainManager.Instance != null)
                 {
@@ -559,9 +556,9 @@ public class LaneInputManager : MonoBehaviour
             else
             {
                 // sustain is ongoing; scoring / FX per-frame can be handled here
-                if (uiUpdater != null)
+                if (UIUpdater.Instance != null)
                 {
-                    uiUpdater.UpdateForSustainHold(uiUpdater.inStar ? Time.deltaTime * 80f : Time.deltaTime * 40f); // e.g., score for holding sustain
+                    UIUpdater.Instance.UpdateForSustainHold(UIUpdater.Instance.inStar ? Time.deltaTime * 80f : Time.deltaTime * 40f); // e.g., score for holding sustain
                 }
             }
         }
@@ -575,12 +572,12 @@ public class LaneInputManager : MonoBehaviour
             if (activeSustains[i].lane == laneIndex)
             {
                 var note = activeSustains[i].note;
-                if (note != null && spawner != null) spawner.ReturnObjectToPool(note);
+                if (note != null && NoteSpawner.Instance != null) NoteSpawner.Instance.ReturnObjectToPool(note);
                 activeSustains.RemoveAt(i);
-                if (strikeline != null)
+                if (ImprovedStrikeline.Instance != null)
                 {
-                    strikeline.DisableSustainSparks(laneIndex);
-                    strikeline.SLTopHit(laneIndex);
+                    ImprovedStrikeline.Instance.DisableSustainSparks(laneIndex);
+                    ImprovedStrikeline.Instance.SLTopHit(laneIndex);
                 }
                 if (SustainManager.Instance != null)
                 {
@@ -592,9 +589,9 @@ public class LaneInputManager : MonoBehaviour
 
     void UpdateHitWindowVisual()
     {
-        if (hitWindowInstance == null || spawner == null) return;
+        if (hitWindowInstance == null || NoteSpawner.Instance == null) return;
 
-        float strikeY = spawner.GetStrikeLineY();
+        float strikeY = NoteSpawner.Instance.GetStrikeLineY();
         float spacingFactor = GameManager.Instance.GetNoteSpeed();
         
         // visual height in world units approximated by seconds * spacingFactor
