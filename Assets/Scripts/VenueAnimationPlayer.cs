@@ -517,6 +517,11 @@ public class VenueAnimationPlayer : MonoBehaviour
         }
     }
 
+    public void LoadPVFile(string path)
+    {
+        
+    }
+
     
     void Update()
     {
@@ -618,34 +623,29 @@ public class VenueAnimationPlayer : MonoBehaviour
     {
         fnRegistry.Clear();
         // regular scripts
-        fnRegistry["SetPVCamPosition"] = (args) =>
+        fnRegistry["PVCamPosition"] = (args) =>
         {
             float x = ParseF(args, 0), y = ParseF(args, 1), z = ParseF(args, 2);
             MMDCam.Instance.SetPosition(new Vector3(x, y, z));
         };
-        fnRegistry["SetPVCamRotation"] = (args) =>
+        fnRegistry["PVCamRotation"] = (args) =>
         {
             float x = ParseF(args, 0), y = ParseF(args, 1), z = ParseF(args, 2);
             MMDCam.Instance.SetRotation(new Vector3(x, y, z));
         };
-        fnRegistry["SetPVCamDistance"] = (args) =>
+        fnRegistry["PVCamDistance"] = (args) =>
         {
             float z = ParseF(args, 0);
             MMDCam.Instance.SetDistance(z);
         };
-        fnRegistry["SetPVCamVisible"] = (args) =>
+        fnRegistry["PVCamVisible"] = (args) =>
         {
             bool tgle = bool.Parse(args[0]);
             MMDCam.Instance.SetVisibility(tgle);
         };
-        fnRegistry["ForceExit"] = (args) =>
+        fnRegistry["PVCamEffect"] = (args) =>
         {
-            if (args.Count > 0) return;
-            MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
-            StartCoroutine(musicPlayer.EndSong(false));
-            GameManager gameManager = FindAnyObjectByType<GameManager>();
-            gameManager.ResetAllValues();
-            gameManager.ExitGame(false);
+            MMDCam.Instance.SetEffect(args[0]);
         };
         fnRegistry["PVCamChromAbr"] = (args) =>
         {
@@ -657,9 +657,14 @@ public class VenueAnimationPlayer : MonoBehaviour
             bool tgle = bool.Parse(args[0]);
             hapticToggle = tgle;
         };
-        fnRegistry["StartPVFromPath"] = (args) =>
+        fnRegistry["ForceExit"] = (args) =>
         {
-            Debug.Log($"[StartPVFromPath({args[0]})] TODO: implement *.pjcbpv file logic");
+            if (args.Count > 0) return;
+            MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
+            StartCoroutine(musicPlayer.EndSong(false));
+            GameManager gameManager = FindAnyObjectByType<GameManager>();
+            gameManager.ResetAllValues();
+            gameManager.ExitGame(false);
         };
     }
 
