@@ -521,14 +521,14 @@ public class VenueAnimationPlayer : MonoBehaviour
     void Update()
     {
         GameManager gameManager = FindAnyObjectByType<GameManager>();
-        if (SceneManager.GetSceneByBuildIndex(2).isLoaded)
+        if (SceneManager.GetSceneByName("v_PJCBPV").isLoaded)
         {
             if (!mainCamera)
             {
-                mainCamera = Camera.main.gameObject;
+                mainCamera = MMDCam.Instance.gameObject;
             }
         }
-        if (SceneManager.GetSceneByBuildIndex(1).isLoaded)
+        if (SceneManager.GetSceneByName("Gameplay").isLoaded)
         {
             if (!highwayCamera)
             {
@@ -618,180 +618,27 @@ public class VenueAnimationPlayer : MonoBehaviour
     {
         fnRegistry.Clear();
         // regular scripts
-        fnRegistry["venue.camera.move"] = (args) =>
+        fnRegistry["SetPVCamPosition"] = (args) =>
         {
             float x = ParseF(args, 0), y = ParseF(args, 1), z = ParseF(args, 2);
-            if (mainCamera) mainCamera.transform.position = new Vector3(x, y, z);
+            MMDCam.Instance.SetPosition(new Vector3(x, y, z));
         };
-
-        fnRegistry["venue.camera.rotate"] = (args) =>
+        fnRegistry["SetPVCamRotation"] = (args) =>
         {
             float x = ParseF(args, 0), y = ParseF(args, 1), z = ParseF(args, 2);
-            if (mainCamera) mainCamera.transform.rotation = Quaternion.Euler(x, y, z);
+            MMDCam.Instance.SetRotation(new Vector3(x, y, z));
         };
-
-        fnRegistry["venue.camera.fov"] = (args) =>
+        fnRegistry["SetPVCamDistance"] = (args) =>
         {
-            float f = ParseF(args, 0);
-            Camera cam = mainCamera.GetComponent<Camera>();
-            cam.fieldOfView = f;
+            float z = ParseF(args, 0);
+            MMDCam.Instance.SetDistance(z);
         };
-
-        fnRegistry["venue.camera.cue"] = (args) =>
-        {
-            if (mainCamera)
-            {
-                TryCueCamAnimCont(args[0]);
-            }
-        };
-
-        fnRegistry["venue.camera.toggle"] = (args) =>
+        fnRegistry["SetPVCamVisible"] = (args) =>
         {
             bool tgle = bool.Parse(args[0]);
-            if (mainCamera)
-            {
-                TryToggleCamera(tgle);
-            }
+            MMDCam.Instance.SetVisibility(tgle);
         };
-
-        fnRegistry["highway.camera.move"] = (args) =>
-        {
-            float x = ParseF(args, 0), y = ParseF(args, 1), z = ParseF(args, 2);
-            GameObject camera = GameObject.Find("Highway_cam");
-            if (camera) camera.transform.position = new Vector3(x, y, z);
-        };
-
-        fnRegistry["highway.camera.rotate"] = (args) =>
-        {
-            float x = ParseF(args, 0), y = ParseF(args, 1), z = ParseF(args, 2);
-            GameObject camera = GameObject.Find("Highway_cam");
-            if (camera) camera.transform.rotation = Quaternion.Euler(x, y, z);
-        };
-
-        fnRegistry["highway.camera.fov"] = (args) =>
-        {
-            float f = ParseF(args, 0);
-            GameObject camera = GameObject.Find("Highway_cam");
-            Camera camera1 = camera.GetComponent<Camera>();
-            if (camera) camera1.fieldOfView = f;
-        };
-
-        fnRegistry["highway.camera.cue"] = (args) =>
-        {
-            GameObject camera = GameObject.Find("Highway_cam");
-            if (camera)
-            {
-                AnimationClip clip = Resources.Load<AnimationClip>(args[0]);
-                if (clip)
-                {
-                    TryCueCamAnim(camera.gameObject, clip);
-                }
-            }
-        };
-
-        fnRegistry["highway.camera.toggle"] = (args) =>
-        {
-            bool tgle = bool.Parse(args[0]);
-            TryToggleHighwayCam(tgle);
-        };
-
-        fnRegistry["highway.fretboard.color"] = (args) =>
-        {
-            float colR = ParseF(args, 0);
-            float colG = ParseF(args, 1);
-            float colB = ParseF(args, 2);
-            HighwayTextureChanger highwayTexture = FindAnyObjectByType<HighwayTextureChanger>();
-            if (highwayTexture)
-            {
-                highwayTexture.TrySetSpriteColor(colR, colG, colB);
-            }
-        };
-
-        fnRegistry["highway.main.opacity"] = (args) =>
-        {
-            float alpha = ParseF(args, 0);
-            
-            GuitarPlayer highwayTexture = FindAnyObjectByType<GuitarPlayer>();
-            if (highwayTexture)
-            {
-                highwayTexture.SetOpacity(alpha);
-            }
-        };
-
-        fnRegistry["spawn"] = (args) =>
-        {
-            if (args.Count == 0) return;
-            var prefab = Resources.Load<GameObject>(args[0]);
-            if (prefab == null) return;
-            Vector3 pos = mainCamera ? mainCamera.transform.position + mainCamera.transform.forward * 5f : Vector3.zero;
-            UnityEngine.Object.Instantiate(prefab, pos, Quaternion.identity);
-        };
-
-        fnRegistry["setActive"] = (args) =>
-        {
-            if (args.Count < 2) return;
-            var go = GameObject.Find(args[0]);
-            if (go != null) go.SetActive(bool.TryParse(args[1], out var b) && b);
-        };
-
-        fnRegistry["venue.lighting.stage.light4.center.default"] = (args) =>
-        {
-            if (args.Count == 0) return;
-            float bright = ParseF(args, 0);
-            float colR = ParseF(args, 1);
-            float colG = ParseF(args, 2);
-            float colB = ParseF(args, 3);
-            LightingManager lightingManager = FindAnyObjectByType<LightingManager>();
-            if (lightingManager)
-            lightingManager.StageLight(0,
-            bright,
-            new Vector2(90, 0),
-            new Color(colR, colG, colB));
-        };
-        fnRegistry["venue.lighting.stage.light3.center.default"] = (args) =>
-        {
-            if (args.Count == 0) return;
-            float bright = ParseF(args, 0);
-            float colR = ParseF(args, 1);
-            float colG = ParseF(args, 2);
-            float colB = ParseF(args, 3);
-            LightingManager lightingManager = FindAnyObjectByType<LightingManager>();
-            if (lightingManager)
-            lightingManager.StageLight(1,
-            bright,
-            new Vector2(90, 0),
-            new Color(colR, colG, colB));
-        };
-        fnRegistry["venue.lighting.stage.light2.center.default"] = (args) =>
-        {
-            if (args.Count == 0) return;
-            float bright = ParseF(args, 0);
-            float colR = ParseF(args, 1);
-            float colG = ParseF(args, 2);
-            float colB = ParseF(args, 3);
-            LightingManager lightingManager = FindAnyObjectByType<LightingManager>();
-            if (lightingManager)
-            lightingManager.StageLight(2,
-            bright,
-            new Vector2(90, 0),
-            new Color(colR, colG, colB));
-        };
-        fnRegistry["venue.lighting.stage.light1.center.default"] = (args) =>
-        {
-            if (args.Count == 0) return;
-            float bright = ParseF(args, 0);
-            float colR = ParseF(args, 1);
-            float colG = ParseF(args, 2);
-            float colB = ParseF(args, 3);
-            LightingManager lightingManager = FindAnyObjectByType<LightingManager>();
-            if (lightingManager)
-            lightingManager.StageLight(3,
-            bright,
-            new Vector2(90, 0),
-            new Color(colR, colG, colB));
-        };
-
-        fnRegistry["closeWithoutSaving"] = (args) =>
+        fnRegistry["ForceExit"] = (args) =>
         {
             if (args.Count > 0) return;
             MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
@@ -800,30 +647,20 @@ public class VenueAnimationPlayer : MonoBehaviour
             gameManager.ResetAllValues();
             gameManager.ExitGame(false);
         };
-
-        fnRegistry["lighting"] = (args) =>
+        fnRegistry["PVCamChromAbr"] = (args) =>
         {
-            LightingManager lighting = FindAnyObjectByType<LightingManager>();
-            StartCoroutine(lighting.PlayCue(args[0]));
+            bool tgle = bool.Parse(args[0]);
+            chrabrToggle = tgle;
         };
-        
-        fnRegistry["chrabr4thnote_on"] = (args) =>
+        fnRegistry["PVHaptic"] = (args) =>
         {
-            chrabrToggle = true;
+            bool tgle = bool.Parse(args[0]);
+            hapticToggle = tgle;
         };
-        fnRegistry["chrabr4thnote_off"] = (args) =>
+        fnRegistry["StartPVFromPath"] = (args) =>
         {
-            chrabrToggle = false;
+            Debug.Log($"[StartPVFromPath({args[0]})] TODO: implement *.pjcbpv file logic");
         };
-        fnRegistry["haptic4thnote_on"] = (args) =>
-        {
-            hapticToggle = true;
-        };
-        fnRegistry["haptic4thnote_off"] = (args) =>
-        {
-            hapticToggle = false;
-        };
-
     }
 
     void ExecuteScriptEvent(ScriptEvent ev)

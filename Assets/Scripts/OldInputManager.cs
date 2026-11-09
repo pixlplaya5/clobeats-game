@@ -250,7 +250,7 @@ public class OldInputManager : MonoBehaviour
     public void ReleaseSP()
     {
         // automatically handled by just releasing whenever star power hits 100% just like in regular roBeats
-        if (SceneManager.GetSceneByBuildIndex(1).isLoaded)
+        if (SceneManager.GetSceneByName("Gameplay").isLoaded)
         {
             GameManager gameManager = FindAnyObjectByType<GameManager>();
             StarMeter spmeter = FindAnyObjectByType<StarMeter>();
@@ -270,7 +270,7 @@ public class OldInputManager : MonoBehaviour
     }
     public void PauseGame()
     {
-        if (SceneManager.GetSceneByBuildIndex(1).isLoaded)
+        if (SceneManager.GetSceneByName("Gameplay").isLoaded)
         {
             MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
             if (isPaused)

@@ -137,11 +137,11 @@ public class GameManager : MonoBehaviour
     {
         if (yes)
         {
-            if (!SceneManager.GetSceneByBuildIndex(2).isLoaded)
+            if (!SceneManager.GetSceneByName("v_PJCBPV").isLoaded)
             {
-                SceneManager.LoadScene(2, LoadSceneMode.Additive);
+                SceneManager.LoadScene("v_PJCBPV", LoadSceneMode.Additive);
                 venueLoaded = true;
-                StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Venue loaded.", 5f));
+                StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("PV Venue loaded.", 5f));
             }
             else
             {
@@ -150,11 +150,11 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (SceneManager.GetSceneByBuildIndex(2).isLoaded)
+            if (SceneManager.GetSceneByName("v_PJCBPV").isLoaded)
             {
-                SceneManager.UnloadSceneAsync(2);
+                SceneManager.UnloadSceneAsync("v_PJCBPV");
                 venueLoaded = false;
-                StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Venue unloaded.", 5f));
+                StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("PV Venue unloaded.", 5f));
             }
             else
             {
@@ -1464,60 +1464,40 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlaySong()
     {
-        UIUpdater uiUpdater = FindAnyObjectByType<UIUpdater>();
-        GameObject gp = GameObject.Find("GuitarPlayer");
-        SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-        VenueAnimationPlayer venueAnimationPlayer = FindAnyObjectByType<VenueAnimationPlayer>();
-        if (uiUpdater != null)
+        if (UIUpdater.Instance != null)
         {
-            StartCoroutine(uiUpdater.SongInfoAnim());
-            uiUpdater.InitializeUI();
+            StartCoroutine(UIUpdater.Instance.SongInfoAnim());
+            UIUpdater.Instance.InitializeUI();
         }
-        
-        if (venueAnimationPlayer != null)
+        if (VenueAnimationPlayer.Instance != null)
         {
-            venueAnimationPlayer.TryToggleHighwayCam(false);
-            venueAnimationPlayer.Load();
-            uiUpdater.ScoreVisibility(false);
+            VenueAnimationPlayer.Instance.TryToggleHighwayCam(false);
+            VenueAnimationPlayer.Instance.Load();
+            UIUpdater.Instance.ScoreVisibility(false);
+        }
+        if (SceneManager.GetSceneByName("v_PJCBPV").isLoaded)
+        {
+            yield return new WaitForSeconds(6);
+            VenueAnimationPlayer.Instance.ReturnCameraToDefaultPosition(new Vector3(), new Vector3());
         }
         if (unDestructibleLoadingPhraseScreen != null && unDestructibleLoadingPhraseScreen.activeSelf)
         {
             DisableLoadSongVisual(unDestructibleLoadingPhraseScreen);
         }
-        //sFXPlayer.PlayClip("StartCheer1");
-        
-        if (SceneManager.GetSceneByBuildIndex(2).isLoaded)
+        if (NoteSpawner.Instance != null)
         {
-            venueAnimationPlayer.TryCueCamAnimCont("VenueEntry");
-            yield return new WaitForSeconds(6);
-            venueAnimationPlayer.ReturnCameraToDefaultPosition(new Vector3(), new Vector3());
+            VenueAnimationPlayer.Instance.TryToggleHighwayCam(true);
+            NoteSpawner.Instance.Play();
+            inSong = true;
         }
-
-        if (gp != null)
+        if (UIUpdater.Instance != null)
         {
-            NoteSpawner noteSpawner = FindAnyObjectByType<NoteSpawner>();
-            gp.transform.position = new Vector3(0, 0, 0);
-            
-            if (noteSpawner != null)
-            {
-                venueAnimationPlayer.TryToggleHighwayCam(true);
-                //yield return noteSpawner.InitGameplay();
-                noteSpawner.Play();
-                inSong = true;
-            }
-            
-        }
-        if (uiUpdater != null)
-        {
-            uiUpdater.ScoreVisibility(true);
-            sFXPlayer.PlayClip("ScoreShow");
-            ImprovedStrikeline strikeline = FindFirstObjectByType<ImprovedStrikeline>();
-            sFXPlayer.PlayClip("Notes_Ripple_Up_01");
-            StartCoroutine(strikeline.RippleAnim());
+            UIUpdater.Instance.ScoreVisibility(true);
+            SFXPlayer.Instance.PlayClip("ScoreShow");
+            SFXPlayer.Instance.PlayClip("Notes_Ripple_Up_01");
+            StartCoroutine(ImprovedStrikeline.Instance.RippleAnim());
         }
         yield return null;
-        
-        
     }
 
     public IEnumerator FailSong()
