@@ -4,7 +4,26 @@ using UnityEngine;
 
 public class NotificationHandler : MonoBehaviour
 {
-    public static NotificationHandler Instance;
+    static NotificationHandler _instance;
+    public static NotificationHandler Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindAnyObjectByType<NotificationHandler>();
+                if (_instance == null)
+                {
+                    var go = new GameObject("_NotificationHandler");
+                    #if UNITY_EDITOR
+                    go.hideFlags = HideFlags.HideAndDontSave;
+                    #endif
+                    _instance = go.AddComponent<NotificationHandler>();
+                }
+            }
+            return _instance;
+        }
+    }
     public float showingYPosition = -300f;
     public float showingXPosition = 472f;
     public float downHidingYPosition = -410f;
@@ -24,7 +43,7 @@ public class NotificationHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Instance = this;
+        //Instance = this;
     }
     // Update is called once per frame
     void Update()
@@ -44,7 +63,7 @@ public class NotificationHandler : MonoBehaviour
     public void ShowNotif()
     {
         SFXPlayer sFX = FindAnyObjectByType<SFXPlayer>();
-        sFX.PlayClip("Acquire");
+        sFX.PlayClip("notify");
         StartCoroutine(RiseNotif(RiseDirection.Up));
         notifShowing = true;
     }

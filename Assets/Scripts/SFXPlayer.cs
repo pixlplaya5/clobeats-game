@@ -5,12 +5,6 @@ public class SFXPlayer : MonoBehaviour
 {
     public static SFXPlayer Instance;
     public AudioSource audioSource;
-    public AudioClip[] overstrumClips;
-    public AudioClip comboLostClip;
-    public AudioClip highwayRiseClip;
-    public AudioClip fretRippleUpClip;
-    public AudioClip songFailClip;
-    public AudioClip scoreShowClip;
     public Dictionary<string, AudioClip> loadedAudioClips = new Dictionary<string, AudioClip>();
 
 
@@ -29,53 +23,7 @@ public class SFXPlayer : MonoBehaviour
             }
         }
     }
-    public void PlayOverstrumClip()
-    {
-        if (overstrumClips != null && overstrumClips.Length > 0)
-        {
-            int randomIndex = Random.Range(0, overstrumClips.Length);
-            audioSource.PlayOneShot(overstrumClips[randomIndex]); // Use PlayOneShot to avoid cutting off current sounds
-        }
-        else
-        {
-            Debug.LogWarning("No overstrum audio clips available to play.");
-        }
-    }
-    public void PlayComboLostClip()
-    {
-        if (comboLostClip != null)
-        {
-            audioSource.PlayOneShot(comboLostClip);
-        }
-    }
-    public void PlayHighwayRiseClip()
-    {
-        if (highwayRiseClip != null)
-        {
-            audioSource.PlayOneShot(highwayRiseClip);
-        }
-    }
-    public void PlayFretRippleUpClip()
-    {
-        if (fretRippleUpClip != null)
-        {
-            audioSource.PlayOneShot(fretRippleUpClip);
-        }
-    }
-    public void PlaySongFailedClip()
-    {
-        if (songFailClip != null)
-        {
-            audioSource.PlayOneShot(songFailClip);
-        }
-    }
-    public void PlayScoreShowClip()
-    {
-        if (scoreShowClip != null)
-        {
-            audioSource.PlayOneShot(scoreShowClip);
-        }
-    }
+    
     public void PlayClip(string clipName)
     {
         if (loadedAudioClips.TryGetValue(clipName, out var clip))

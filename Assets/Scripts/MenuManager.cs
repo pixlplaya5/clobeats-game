@@ -64,10 +64,13 @@ public class MenuManager : MonoBehaviour
         public string[] actionArgs;
         public string targetMenuId;
         public int legacySubmitIndex = -1;
+        public string toolTip;
     }
 
     [Header("Scene References")]
     public GameObject logoObject;
+    public GameObject toolTipObject;
+    public string currentToolTip;
 
     [Header("Flexible Menu Setup")]
     public string firstMenuId = StartMenuId;
@@ -86,6 +89,58 @@ public class MenuManager : MonoBehaviour
     private readonly Dictionary<int, MenuButtonBinding> legacySubmitBindings = new Dictionary<int, MenuButtonBinding>();
     private string currentMenuId = string.Empty;
     private bool isLaunchingSong;
+    private GameObject lastTooltipSelection;
+
+    private void Update()
+    {
+        GameObject selected = EventSystem.current != null
+            ? EventSystem.current.currentSelectedGameObject
+            : null;
+
+        if (selected != lastTooltipSelection)
+        {
+            lastTooltipSelection = selected;
+            UpdateToolTipText();
+        }
+    }
+
+    public void UpdateToolTipText()
+    {
+        Button selectedButton = EventSystem.current != null &&
+            EventSystem.current.currentSelectedGameObject != null
+                ? EventSystem.current.currentSelectedGameObject.GetComponent<Button>()
+                : null;
+
+        currentToolTip = string.Empty;
+
+        if (selectedButton != null)
+        {
+            foreach (MenuButtonBinding binding in menuButtons)
+            {
+                if (binding != null && binding.button == selectedButton)
+                {
+                    currentToolTip = binding.toolTip ?? string.Empty;
+                    break;
+                }
+            }
+        }
+
+        if (toolTipObject != null)
+        {
+            TMP_Text tooltipText = toolTipObject.GetComponent<TMP_Text>();
+            if (tooltipText == null)
+            {
+                tooltipText = toolTipObject.GetComponentInChildren<TMP_Text>(true);
+            }
+
+            if (tooltipText != null)
+            {
+                tooltipText.text = currentToolTip;
+            }
+        }
+    }
+
+
 
     private void Awake()
     {
@@ -195,7 +250,7 @@ public class MenuManager : MonoBehaviour
 
     public void Exit()
     {
-        SFXPlayer.Instance.PlayClip("MenuClose");
+        SFXPlayer.Instance.PlayClip("exit");
         if (IsMenuOpen(QuickPlayMenuId))
         {
             StopPreviewAudio();
@@ -282,8 +337,8 @@ public class MenuManager : MonoBehaviour
                 return;
             }
 
-            PlayerPrefs.SetString("SelectedFolderPath", currentPreviewingSongPath);
-            PlayerPrefs.Save();
+            //PlayerPrefs.SetString("SelectedFolderPath", currentPreviewingSongPath);
+            //PlayerPrefs.Save();
 
             gameManager.currentSongID = currentPreviewingID;
             Debug.Log("[MenuManager] Loading selected song. (Include loading visual)");
@@ -351,7 +406,7 @@ public class MenuManager : MonoBehaviour
         });
     }
 
-    private void AddButtonBinding(Button button, MenuAction action, string targetMenuId, int legacySubmitIndex)
+    private void AddButtonBinding(Button button, MenuAction action, string targetMenuId, int legacySubmitIndex, string tooltip)
     {
         if (button == null)
         {
@@ -363,7 +418,8 @@ public class MenuManager : MonoBehaviour
             button = button,
             action = action,
             targetMenuId = targetMenuId,
-            legacySubmitIndex = legacySubmitIndex
+            legacySubmitIndex = legacySubmitIndex,
+            toolTip = tooltip
         });
     }
 
@@ -414,7 +470,7 @@ public class MenuManager : MonoBehaviour
     {
         try
         {
-            SFXPlayer.Instance.PlayClip("MenuOpenLong");
+            SFXPlayer.Instance.PlayClip("submit");
             switch (action)
             {
                 case MenuAction.ShowMenu:
@@ -622,7 +678,7 @@ public class MenuManager : MonoBehaviour
 
         int nextIndex = currentIndex < 0 ? 0 : WrapIndex(currentIndex + direction, controls.Length);
         EventSystem.current.SetSelectedGameObject(controls[nextIndex].gameObject);
-        SFXPlayer.Instance.PlayClip("MenuOpen");
+        SFXPlayer.Instance.PlayClip("navigate");
     }
 
     private void StopPreviewAudio()

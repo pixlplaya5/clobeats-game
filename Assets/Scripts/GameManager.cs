@@ -19,7 +19,26 @@ using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    static GameManager _instance;
+    public static GameManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindAnyObjectByType<GameManager>();
+                if (_instance == null)
+                {
+                    var go = new GameObject("_GameManager");
+                    #if UNITY_EDITOR
+                    go.hideFlags = HideFlags.HideAndDontSave;
+                    #endif
+                    _instance = go.AddComponent<GameManager>();
+                }
+            }
+            return _instance;
+        }
+    }
     public float hyperspeed = 12f;
     public bool tempoMapEnabled = true;
     public bool postProcEnabled = true;
@@ -114,6 +133,17 @@ public class GameManager : MonoBehaviour
         ["Hard"] = new Dictionary<int,int> { {89,0}, {85,1}, {86,2}, {87,3}, {88,4}, {84,7} },
         ["Expert"] = new Dictionary<int,int> { {97,0}, {98,1}, {99,2}, {100,3}, {101,4}, {96,7}, {95,7} },
     };
+    public string sfxPackName = "default";
+
+    public string GetSFXPackName()
+    {
+        return sfxPackName;
+    }
+
+    public void SetSFXPackName(string name)
+    {
+        sfxPackName = name;
+    }
 
     public void SwapInstrument(string inst)
     {
@@ -246,7 +276,8 @@ public class GameManager : MonoBehaviour
     public void SetNoteSpeed(float speed)
     {
         hyperspeed = speed;
-        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Note Speed to " + speed, 5f);
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Note Speed to " + speed, 5f));
+        Debug.Log("Set Note Speed to " + speed);
     }
 
     public bool GetTempoMapToggle()
@@ -257,7 +288,8 @@ public class GameManager : MonoBehaviour
     public void SetTempoMapToggle(bool toggle)
     {
         tempoMapEnabled = toggle;
-        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Enable Tempo Map to " + toggle, 5f);
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Enable Tempo Map to " + toggle, 5f));
+        Debug.Log("Set Tempo Map to " + toggle);
     }
 
     public bool GetPostProcSetting()
@@ -268,7 +300,8 @@ public class GameManager : MonoBehaviour
     public void SetPostProcSetting(bool toggle)
     {
         postProcEnabled = toggle;
-        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Enable Post Proc to " + toggle, 5f);
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set Enable Post Proc to " + toggle, 5f));
+        Debug.Log("Set Enable Post Proc to " + toggle);
     }
 
     public bool GetVSyncToggle()
@@ -286,13 +319,14 @@ public class GameManager : MonoBehaviour
         {
             QualitySettings.vSyncCount = 0;
         }
-        NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set VSync to " + toggle, 5f);
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Set VSync to " + toggle, 5f));
+        Debug.Log("Set VSync to " + toggle);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        Instance = this;
+        
     }
     void Awake()
     {
@@ -1493,8 +1527,8 @@ public class GameManager : MonoBehaviour
         if (UIUpdater.Instance != null)
         {
             UIUpdater.Instance.ScoreVisibility(true);
-            SFXPlayer.Instance.PlayClip("ScoreShow");
-            SFXPlayer.Instance.PlayClip("Notes_Ripple_Up_01");
+            //SFXPlayer.Instance.PlayClip("ScoreShow");
+            SFXPlayer.Instance.PlayClip("ripple");
             StartCoroutine(ImprovedStrikeline.Instance.RippleAnim());
         }
         yield return null;
@@ -1505,7 +1539,7 @@ public class GameManager : MonoBehaviour
         MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
         StartCoroutine(musicPlayer.EndSong(false));
         SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-        sFXPlayer.PlayClip("GH3_Sudden_Death");
+        sFXPlayer.PlayClip("fail");
         yield return new WaitForSecondsRealtime(3);
         MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         SceneManager.UnloadSceneAsync("Gameplay");

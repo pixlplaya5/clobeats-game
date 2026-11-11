@@ -1734,7 +1734,6 @@ MonoBehaviour:
   songFolderLoader: {fileID: 0}
   noteSpawningXOffset: 0
   noteSpawningZOffset: 0
-  desiredHyperspeedSingleThreaded: 5
   highwayTransform: {fileID: 0}
   venueDisplayImage: {fileID: 8400000, guid: 0d5982b8d05e08841ae57d052e68e9a8, type: 2}
   allowNotePooling: 0
@@ -1748,7 +1747,7 @@ Transform:
   m_GameObject: {fileID: 290342706}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 690.50354, y: 353.0759, z: -92.96867}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13452,6 +13451,7 @@ MonoBehaviour:
   venueLoaded: 0
   liteMode: 0
   gamepadMode: 0
+  sfxPackName: default
 --- !u!114 &2084514636
 MonoBehaviour:
   m_ObjectHideFlags: 0

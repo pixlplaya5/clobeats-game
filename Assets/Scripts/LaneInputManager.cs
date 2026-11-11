@@ -325,7 +325,7 @@ public class LaneInputManager : MonoBehaviour
     public void OnOverstrum()
     {
         var sfx = FindAnyObjectByType<SFXPlayer>();
-        sfx.PlayClip("Miss");
+        sfx.PlayClip("miss");
         var ui = FindAnyObjectByType<UIUpdater>();
         ui.UpdateForNoteMiss();
     }

@@ -40,7 +40,7 @@ public class PlayerPrefsLoader : MonoBehaviour
         //QualitySettings.SetQualityLevel(2); // force normal quality
         //Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow); // force fullscreen
         
-        pathInputField = gameObject.transform.Find("SongFolderPathField").GetComponent<TMPro.TMP_InputField>();
+        /*pathInputField = gameObject.transform.Find("SongFolderPathField").GetComponent<TMPro.TMP_InputField>();
         if (pathInputField != null)
         {
             pathInputField.text = PlayerPrefs.GetString("SelectedFolderPath", string.Empty);
@@ -253,8 +253,8 @@ public class PlayerPrefsLoader : MonoBehaviour
                 MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
                 await musicPlayer.TestFullAudio();
             });
-        }
-        LoadAllSFX();
+        }*/
+        await LoadAllSFX();
         if (autoLoad)
         {
             Debug.Log("Auto Load enabled.");
@@ -318,16 +318,20 @@ public class PlayerPrefsLoader : MonoBehaviour
         }
     }
 
-    public void LoadAllSFX()
+    public async Task LoadAllSFX()
     {
         SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
         if (sFXPlayer != null)
         {
             if (sFXPlayer.loadedAudioClips.Count == 0)
             {
-                foreach (AudioClip clip in Resources.LoadAll<AudioClip>("SFX"))
+                string[] audioclips = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, "SFXPacks", GameManager.Instance.GetSFXPackName()));
+
+                foreach (string clip in audioclips)
                 {
-                    sFXPlayer.LoadActualClip(clip);
+                    if (clip.EndsWith("meta")) continue;
+                    AudioClip clip1 = await MusicPlayer.Instance.LoadUnityAudioFile(clip);
+                    sFXPlayer.LoadActualClip(clip1);
                 }
             }
             else

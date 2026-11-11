@@ -16,7 +16,26 @@ using System.Runtime.InteropServices;
 
 public class MusicPlayer : MonoBehaviour
 {
-    public static MusicPlayer Instance;
+    static MusicPlayer _instance;
+    public static MusicPlayer Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindAnyObjectByType<MusicPlayer>();
+                if (_instance == null)
+                {
+                    var go = new GameObject("_MusicPlayer");
+                    #if UNITY_EDITOR
+                    go.hideFlags = HideFlags.HideAndDontSave;
+                    #endif
+                    _instance = go.AddComponent<MusicPlayer>();
+                }
+            }
+            return _instance;
+        }
+    }
     public enum AudioSubsystemType
     {
         BASS,
@@ -97,7 +116,6 @@ public class MusicPlayer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Instance = this;
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -189,6 +207,7 @@ public class MusicPlayer : MonoBehaviour
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(uwr);
                 if (clip != null)
                 {
+                    clip.name = Path.GetFileNameWithoutExtension(filePath);
                     return clip;
                 }
                 else

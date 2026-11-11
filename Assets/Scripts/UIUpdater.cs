@@ -230,7 +230,7 @@ public class UIUpdater : MonoBehaviour
         else
         {
             SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-            sFXPlayer.PlayClip("ui_lose_multiplier_hq");
+            sFXPlayer.PlayClip("multilost");
             savedcombo = 1;
             savednotesHit = 0;
             comboDotsCount = 0;

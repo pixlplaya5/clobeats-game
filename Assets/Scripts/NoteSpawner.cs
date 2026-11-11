@@ -215,7 +215,7 @@ public class NoteSpawner : MonoBehaviour
     //private string audioClipPath = "";
     public float noteSpawningXOffset = 0;
     public float noteSpawningZOffset = 0;
-    public float desiredHyperspeedSingleThreaded = 5f;
+    //public float desiredHyperspeedSingleThreaded = 5f;
     public Transform highwayTransform;
     public RenderTexture venueDisplayImage; // venue display/jumbotron
     public bool allowNotePooling = false;
@@ -237,7 +237,7 @@ public class NoteSpawner : MonoBehaviour
         if (Instance == null) Instance = this; else if (Instance != this) Destroy(gameObject);
         songLoader = FindFirstObjectByType<SongLoader>();
         songFolderLoader = FindFirstObjectByType<SongFolderLoader>();
-        desiredHyperspeedSingleThreaded = GameManager.Instance.GetNoteSpeed();
+        //desiredHyperspeedSingleThreaded = GameManager.Instance.GetNoteSpeed();
     }
 
 
