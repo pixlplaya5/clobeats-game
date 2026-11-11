@@ -251,7 +251,7 @@ public class UGUIMenuList : MonoBehaviour
         UpdateSelectionVisuals();
         FocusSelectedItem(item);
         ScrollToSelectedItem();
-        SFXPlayer.Instance.PlayClip("submit");
+        SFXPlayer.Instance.PlayClip("navigate");
 
         if (updatePreview && (changed || forcePreview))
         {
