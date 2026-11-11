@@ -6,19 +6,19 @@ using UnityEngine.Experimental.GlobalIllumination;
 public class GlobalMoveY : MonoBehaviour
 {
     public List<GameObject> objectsToMove;
-    public float speed = 5f;
+    //public float speed = 5f;
 
     // cached references to avoid per-object/find overhead
-    ImprovedStrikeline sl;
-    MusicPlayer mp;
-    NoteDeletor nd;
-    NoteSpawner ns;
-    LaneInputManager lim;
-    float cachedSpeed;
+    //ImprovedStrikeline sl;
+    //MusicPlayer mp;
+    //NoteDeletor nd;
+    //NoteSpawner ns;
+    //LaneInputManager lim;
+    //float cachedSpeed;
     //float prefsPollInterval = 0.5f; // seconds between PlayerPrefs polls
     //float lastPrefsCheckTime = 0f;
     // Start is called before the first frame update
-    void Start()
+    /*void Start()
     {
         cachedSpeed = GameManager.Instance.GetNoteSpeed();
         speed = cachedSpeed;
@@ -38,7 +38,7 @@ public class GlobalMoveY : MonoBehaviour
     {
         cachedSpeed = GameManager.Instance.GetNoteSpeed();
         speed = cachedSpeed;
-    }
+    }*/
 
     // Update is called once per frame
     void Update()
@@ -58,22 +58,22 @@ public class GlobalMoveY : MonoBehaviour
         //if (!isMoving) return;
 
         // Ensure cached global refs are present
-        if (sl == null) sl = FindAnyObjectByType<ImprovedStrikeline>();
-        if (mp == null) mp = FindAnyObjectByType<MusicPlayer>();
-        if (nd == null) nd = FindAnyObjectByType<NoteDeletor>();
-        if (ns == null) ns = FindAnyObjectByType<NoteSpawner>();
-        if (lim == null) lim = FindAnyObjectByType<LaneInputManager>();
+        //if (sl == null) sl = FindAnyObjectByType<ImprovedStrikeline>();
+        //if (mp == null) mp = FindAnyObjectByType<MusicPlayer>();
+        //if (nd == null) nd = FindAnyObjectByType<NoteDeletor>();
+        //if (ns == null) ns = FindAnyObjectByType<NoteSpawner>();
+        //if (lim == null) lim = FindAnyObjectByType<LaneInputManager>();
 
         // Iterate backwards so we can remove destroyed/null entries safely
         // Prefer DSP-derived elapsed time (allows negative lead before audio starts).
         float currentSongSeconds = 0f;
-        if (mp != null)
+        if (MusicPlayer.Instance != null)
         {
-            currentSongSeconds = (float)mp.GetElapsedTimeDsp();
+            currentSongSeconds = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
         }
-        else if (ns != null)
+        else if (NoteSpawner.Instance != null)
         {
-            currentSongSeconds = ns.GetTimeInSecondsAtTick(ns.currentTick);
+            currentSongSeconds = NoteSpawner.Instance.GetTimeInSecondsAtTick(NoteSpawner.Instance.currentTick);
         }
 
         try
@@ -93,20 +93,20 @@ public class GlobalMoveY : MonoBehaviour
                 // from its scheduled song time and the currentSongSeconds using NoteSpawner's
                 // layout parameters so tempo changes are respected.
                 var sched = obj.GetComponent<ScheduledTime>();
-                if (sched != null && ns != null)
+                if (sched != null && NoteSpawner.Instance != null)
                 {
                     spacingFactor = GameManager.Instance.GetNoteSpeed();
-                    float strikeY = ns != null ? ns.GetStrikeLineY() : 0f;
-                    float targetY = strikeY + ns.startingYPosition + ns.startingYOffset + ((sched.scheduledSeconds - currentSongSeconds) + ns.spawnLeadSeconds) * spacingFactor;
+                    float strikeY = NoteSpawner.Instance != null ? NoteSpawner.Instance.GetStrikeLineY() : 0f;
+                    float targetY = strikeY + NoteSpawner.Instance.startingYPosition + NoteSpawner.Instance.startingYOffset + ((sched.scheduledSeconds - currentSongSeconds) + NoteSpawner.Instance.spawnLeadSeconds) * spacingFactor;
                     // preserve x,z
                     t.position = new Vector3(t.position.x, targetY, t.position.z);
                 }
                 else
                 {
-                    t.Translate(0f, -speed * Time.deltaTime, 0f, Space.World);
+                    t.Translate(0f, -GameManager.Instance.GetNoteSpeed() * Time.deltaTime, 0f, Space.World);
                 }
 
-                float twend = lim.hitWindowSeconds * spacingFactor;
+                float twend = LaneInputManager.Instance.hitWindowSeconds * spacingFactor;
                 if (obj.name.ToLower().Contains("sustainvisual") || obj.GetComponent<Sustain>() != null)
                 {
                     continue;
@@ -129,7 +129,7 @@ public class GlobalMoveY : MonoBehaviour
                         var note = obj.GetComponent<PooledNote>();
                         if (note != null)
                         {
-                            sl.MissNote();
+                            ImprovedStrikeline.Instance.MissNote();
                         }
                         continue;
                     }
