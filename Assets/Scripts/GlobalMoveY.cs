@@ -6,64 +6,10 @@ using UnityEngine.Experimental.GlobalIllumination;
 public class GlobalMoveY : MonoBehaviour
 {
     public List<GameObject> objectsToMove;
-    //public float speed = 5f;
-
-    // cached references to avoid per-object/find overhead
-    //ImprovedStrikeline sl;
-    //MusicPlayer mp;
-    //NoteDeletor nd;
-    //NoteSpawner ns;
-    //LaneInputManager lim;
-    //float cachedSpeed;
-    //float prefsPollInterval = 0.5f; // seconds between PlayerPrefs polls
-    //float lastPrefsCheckTime = 0f;
-    // Start is called before the first frame update
-    /*void Start()
-    {
-        cachedSpeed = GameManager.Instance.GetNoteSpeed();
-        speed = cachedSpeed;
-        sl = FindAnyObjectByType<ImprovedStrikeline>();
-        mp = FindAnyObjectByType<MusicPlayer>();
-        nd = FindAnyObjectByType<NoteDeletor>();
-        ns = FindAnyObjectByType<NoteSpawner>();
-        lim = FindAnyObjectByType<LaneInputManager>();
-    }
-
-    void Awake()
-    {
-        cachedSpeed = GameManager.Instance.GetNoteSpeed();
-        speed = cachedSpeed;
-    }
-    void OnEnable()
-    {
-        cachedSpeed = GameManager.Instance.GetNoteSpeed();
-        speed = cachedSpeed;
-    }*/
 
     // Update is called once per frame
     void Update()
     {
-        // Poll PlayerPrefs occasionally rather than every frame
-        //if (Time.time - lastPrefsCheckTime > prefsPollInterval)
-        //{
-        //    lastPrefsCheckTime = Time.time;
-        //    float newSpeed = PlayerPrefs.GetFloat("Hyperspeed", cachedSpeed);
-        //    if (Mathf.Abs(newSpeed - cachedSpeed) > 0.0001f)
-        //    {
-        //        cachedSpeed = newSpeed;
-        //        speed = cachedSpeed;
-        //    }
-        //}
-
-        //if (!isMoving) return;
-
-        // Ensure cached global refs are present
-        //if (sl == null) sl = FindAnyObjectByType<ImprovedStrikeline>();
-        //if (mp == null) mp = FindAnyObjectByType<MusicPlayer>();
-        //if (nd == null) nd = FindAnyObjectByType<NoteDeletor>();
-        //if (ns == null) ns = FindAnyObjectByType<NoteSpawner>();
-        //if (lim == null) lim = FindAnyObjectByType<LaneInputManager>();
-
         // Iterate backwards so we can remove destroyed/null entries safely
         // Prefer DSP-derived elapsed time (allows negative lead before audio starts).
         float currentSongSeconds = 0f;
@@ -115,15 +61,7 @@ public class GlobalMoveY : MonoBehaviour
                 {
                     if (obj.transform.position.y < -twend)
                     {
-                        if (PlayerPrefs.GetInt("EnableLite", 0) == 0)
-                        {
-                            NotePoolManager.Instance.Return(obj);
-                        }
-                        else
-                        {
-                            Destroy(obj);
-                        }
-                    
+                        NotePoolManager.Instance.Return(obj);
                         LaneManager.Instance.UnregisterNote(obj);
                         objectsToMove.RemoveAt(i);
                         var note = obj.GetComponent<PooledNote>();
@@ -140,6 +78,5 @@ public class GlobalMoveY : MonoBehaviour
         {
             
         }
-        
     }
 }
