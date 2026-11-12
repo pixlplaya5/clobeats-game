@@ -93,7 +93,7 @@ public class UGUIMenuList : MonoBehaviour
         rebuildVersion++;
     }
 
-    public async Task RebuildAsync()
+    public async Task RebuildAsync(string rebuildSearch = "preview")
     {
         int version = ++rebuildVersion;
         ResolveReferences();
@@ -113,7 +113,7 @@ public class UGUIMenuList : MonoBehaviour
                 return;
             }
 
-            await AddEntryAsync(entry);
+            await AddEntryAsync(entry, rebuildSearch);
         }
 
 
@@ -282,7 +282,7 @@ public class UGUIMenuList : MonoBehaviour
         UpdatePageIndicator();
     }
 
-    private async Task AddEntryAsync(GameManager.SongEntryInfo entry)
+    private async Task AddEntryAsync(GameManager.SongEntryInfo entry, string searchPlayable = "preview")
     {
         if (entry == null || string.IsNullOrEmpty(entry.songPath))
         {
@@ -290,9 +290,9 @@ public class UGUIMenuList : MonoBehaviour
             return;
         }
 
-        if (!await HasPlayableAudioAsync(entry.songPath, "preview"))
+        if (!await HasPlayableAudioAsync(entry.songPath, searchPlayable))
         {
-            Debug.LogWarning("Song entry preview audio is missing.");
+            Debug.LogWarning("Song entry " + searchPlayable + " audio is missing.");
             return;
         }
 
