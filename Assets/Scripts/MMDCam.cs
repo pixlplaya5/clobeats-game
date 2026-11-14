@@ -11,6 +11,7 @@ public class MMDCam : MonoBehaviour
     public static MMDCam Instance;
     public GameObject targetCamera;
     public float distance = 0f; // z distance (zoom)
+    public Color backColor = Color.white;
 
     void Start()
     {
@@ -23,6 +24,9 @@ public class MMDCam : MonoBehaviour
         targetCamera.transform.position.x,
         targetCamera.transform.position.y,
         -distance);
+
+        targetCamera.GetComponent<Camera>().backgroundColor =
+        new Color(backColor.r, backColor.g, backColor.b);
     }
 
     public void SetEffect(string effKey)

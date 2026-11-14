@@ -71,8 +71,8 @@ public class NoteSpawner : MonoBehaviour
         public float spawnTick; // must comply to tempo map
         public float spawnTickMs;
         public double sungNote;
-        public float length;
-        public int lengthMs;
+        public float endTick;
+        public int endMs;
         public string value;
         public bool passed = false;
     }

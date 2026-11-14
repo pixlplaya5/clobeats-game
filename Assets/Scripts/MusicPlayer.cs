@@ -549,8 +549,8 @@ public class MusicPlayer : MonoBehaviour
             previewAudioStream.loop = true;
             previewAudioStream.Play();
             previewAudioPlaying = true;
-            yield return StartCoroutine(FadeInCoroutine(volume));
-            yield return new WaitForSeconds(1.0f);
+            //yield return StartCoroutine(FadeInCoroutine(volume));
+            //yield return new WaitForSeconds(1.0f);
             yield return null;
         }
     }
@@ -558,8 +558,8 @@ public class MusicPlayer : MonoBehaviour
     {
         if (previewAudioStream != null)
         {
-            yield return StartCoroutine(FadeOutCoroutine(fadeFromVol));
-            yield return new WaitForSeconds(1.0f); // coroutines dont give execution length
+            //yield return StartCoroutine(FadeOutCoroutine(fadeFromVol));
+            //yield return new WaitForSeconds(1.0f); // coroutines dont give execution length
             previewAudioStream.Stop();
             previewAudioStream.clip = null;
             previewAudioStream.time = 0;

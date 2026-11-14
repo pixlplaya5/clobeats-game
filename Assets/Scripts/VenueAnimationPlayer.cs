@@ -604,6 +604,11 @@ public class VenueAnimationPlayer : MonoBehaviour
                 if (!ev.passed && currentTick >= ev.spawnTick)
                 {
                     if (ev.value.StartsWith("[")) continue; // ignore "[play]" notes
+                    if (ev.value == "START_PHRASE")
+                    {
+                        // use StringBuilder or similar to build complete vocal phrase as lyric phrase
+                    }
+                    LyricViewer.Instance.currentLyricPhrase = ev.value;
                     //Debug.Log(ev.value + " (Freq=" + ev.sungNote + ", StartTick=" + ev.spawnTick + ", EndTick=" + (ev.spawnTick + ev.length) + ")"); // log lyrics to console for now
                     //Debug.Log($"$beep,{ev.sungNote},{ev.lengthMs},1.0,Sine"); // custom debug console synth
                     //System.Threading.Thread playThread = new System.Threading.Thread(() => NAudioBeepSynth.PlayToneNAudio(ev.sungNote, (int)ev.lengthMs, 1.0));

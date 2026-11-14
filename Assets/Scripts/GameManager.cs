@@ -1392,6 +1392,30 @@ public class GameManager : MonoBehaviour
             var notes = trackChunk.GetNotes().ToList();
             var texts = trackChunk.GetTimedEvents().Where(e => e.Event is BaseTextEvent).ToList();
 
+            // Phrase start/end
+            foreach (var unTimed in notes)
+            {
+                string startPhraseValue = "START_PHRASE";
+                //string endPhraseValue = "END_PHRASE";
+
+                var tempoMap = midi.GetTempoMap();
+                var metricStart = TimeConverter.ConvertTo<MetricTimeSpan>(unTimed.Time, tempoMap);
+                var metricEnd = TimeConverter.ConvertTo<MetricTimeSpan>(unTimed.EndTime, tempoMap);
+                double startSeconds = metricStart.TotalMicroseconds / 1_000_000.0;
+                double endSeconds = metricEnd.TotalMicroseconds / 1_000_000.0;
+
+                if (unTimed.NoteNumber == 105)
+                result.Add(new NoteSpawner.LyricEventInfo
+                {
+                    spawnTick = (float)Math.Round(unTimed.Time * scale),
+                    spawnTickMs = (float)(startSeconds * 1000.0),
+                    sungNote = -1,
+                    endTick = (float)Math.Round(unTimed.EndTime * scale),
+                    endMs = (int)(endSeconds * 1000.0),
+                    value = startPhraseValue
+                });
+            }
+
             // For each text event, find notes that occur at the same MIDI tick and create lyric entries.
             foreach (var timed in texts)
             {
@@ -1409,17 +1433,18 @@ public class GameManager : MonoBehaviour
                     
                     var tempoMap = midi.GetTempoMap();
                     var metricStart = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, tempoMap);
-                    var metricLength = TimeConverter.ConvertTo<MetricTimeSpan>(note.Length, tempoMap);
+                    var metricEnd = TimeConverter.ConvertTo<MetricTimeSpan>(note.EndTime, tempoMap);
                     double startSeconds = metricStart.TotalMicroseconds / 1_000_000.0;
-                    double lengthSeconds = metricLength.TotalMicroseconds / 1_000_000.0;
+                    double endSeconds = metricEnd.TotalMicroseconds / 1_000_000.0;
 
+                    if (note.NoteNumber != 105 || note.NoteNumber != 116 || note.NoteNumber != 106)
                     result.Add(new NoteSpawner.LyricEventInfo
                     {
                         spawnTick = (float)Math.Round(note.Time * scale),
                         spawnTickMs = (float)(startSeconds * 1000.0),
                         sungNote = freq,
-                        length = (float)Math.Round(note.Length * scale),
-                        lengthMs = (int)(lengthSeconds * 1000.0),
+                        endTick = (float)Math.Round(note.EndTime * scale),
+                        endMs = (int)(endSeconds * 1000.0),
                         value = lyricValue
                     });
                 }
