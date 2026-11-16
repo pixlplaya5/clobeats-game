@@ -10,6 +10,17 @@
 > [!IMPORTANT]
 > Anti-Piracy Notice: **Project CloBeats** is planned to **only** have songs uploaded by the community, and will **not** include any pirated songs or assets. I neither support nor endorse piracy, as it is a violation of copyright law with serious legal consequences. It is the community/uploader's responsibility to upload songs with the proper licenses and not violate copyright law. By using **Project CloBeats**, users agree not to promote or endorse piracy in any way through this platform. Complying with these principles ensures a community that respects copyright, creativity, and legal standards.
 
+## ⚙ System Requirements
+| Minimum | Recommended |
+| ------- | ----------- |
+| OS: Windows 7 64-bit | OS: Windows 10 64-bit |
+| CPU: Intel Core i5 (4th Gen) | CPU: Intel Core i7 (6th Gen) |
+| RAM: 4 GB | RAM: 8 GB |
+| GPU: Intel HD Graphics | GPU: NVIDIA GeForce GTX1660 |
+| GFX Backend: DirectX 9.0c | GFX Backend: DirectX 11 |
+| Storage: 600MB available space | Storage: Depends on online downloads |
+
+
 ## 🚀 Planned Features
 - **Animated Venue** – Venue animation (i.e., lip-sync and dance animations) will be auto-generated or use MMD2Unity for motion capture moments.
 - **Custom Online Downloads** – Download community-curated songs, venue decor, and 3D models.
