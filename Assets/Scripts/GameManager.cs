@@ -115,6 +115,7 @@ public class GameManager : MonoBehaviour
     public bool venueLoaded = false;
     public bool liteMode = false;
     public bool gamepadMode = false;
+    public bool isLoading;
 
     // note mappings (RBN2)
     Dictionary<string, Dictionary<int, int>> partGuitarDifficultyMappings = new Dictionary<string, Dictionary<int,int>>
@@ -143,6 +144,16 @@ public class GameManager : MonoBehaviour
     public void SetSFXPackName(string name)
     {
         sfxPackName = name;
+    }
+
+    public bool GetIsLoading()
+    {
+        return isLoading;
+    }
+
+    public void SetIsLoading(bool toggle)
+    {
+        isLoading = toggle;
     }
 
     public void SwapInstrument(string inst)
@@ -210,6 +221,7 @@ public class GameManager : MonoBehaviour
     public async Task PlaySongGlobal(string path)
     {
         await EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
+        SetIsLoading(true);
         MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         menuManager.ShowMenu("null");
         SongFolderLoader songFolderLoader = FindAnyObjectByType<SongFolderLoader>();
@@ -1555,6 +1567,7 @@ public class GameManager : MonoBehaviour
             //SFXPlayer.Instance.PlayClip("ScoreShow");
             SFXPlayer.Instance.PlayClip("ripple");
             StartCoroutine(ImprovedStrikeline.Instance.RippleAnim());
+            SetIsLoading(false);
         }
         yield return null;
     }

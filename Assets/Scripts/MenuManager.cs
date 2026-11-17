@@ -218,6 +218,7 @@ public class MenuManager : MonoBehaviour
         {
             ShowMenu(MainMenuId);
         }
+        SFXPlayer.Instance.PlayClip("submit");
     }
 
     public void SubmitCurrentSelection()

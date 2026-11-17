@@ -37,8 +37,16 @@ public class LaneInputManager : MonoBehaviour
     }
 
     // Active sustains that are currently being held after a successful hit
-    class ActiveSustain { public GameObject note; public float endTime; public int lane; }
+    class ActiveSustain
+    {
+        public GameObject note;
+        public float endTime;
+        public int lane;
+        public float releaseTimeoutEndTime;
+        public bool releaseTimeoutActive;
+    }
     List<ActiveSustain> activeSustains = new List<ActiveSustain>();
+    public float gamepadSustainTimeoutSeconds = 0.15f;
     //ImprovedStrikeline strikeline;
 
     //UIUpdater uiUpdater;
@@ -159,6 +167,7 @@ public class LaneInputManager : MonoBehaviour
         heldLanes.Add(laneIndex);
         if (OldInputManager.Instance.gamepadMode)
         {
+            ResetSustainTimeoutForLane(laneIndex);
             if (!TryHitLane(8, false, NoteVisualChanger.NoteType.Any, true))
             TryHitLane(laneIndex, false, NoteVisualChanger.NoteType.Any, true);
         }
@@ -174,14 +183,19 @@ public class LaneInputManager : MonoBehaviour
 
     public void OnFretReleased(int laneIndex)
     {
-        heldLanes.Remove(laneIndex);
-        EndSustainForLane(laneIndex);
         if (OldInputManager.Instance.gamepadMode)
         {
+            heldLanes.Remove(laneIndex);
+            StartSustainTimeoutForLane(laneIndex);
             if (CanHitTapOrHopo(laneIndex) || laneIndex == 8)
             {
                 TryHitLane(laneIndex, false, NoteVisualChanger.NoteType.FretRelease, true);
             }
+        }
+        else
+        {
+            heldLanes.Remove(laneIndex);
+            EndSustainForLane(laneIndex);
         }
     }
 
@@ -524,6 +538,7 @@ public class LaneInputManager : MonoBehaviour
     void UpdateActiveSustains()
     {
         if (activeSustains.Count == 0) return;
+        float currentTime = (float)MusicPlayer.Instance.currentTimeDSP;
 
         for (int i = activeSustains.Count - 1; i >= 0; --i)
         {
@@ -535,7 +550,7 @@ public class LaneInputManager : MonoBehaviour
             }
 
             // If sustain time elapsed, end it
-            if (MusicPlayer.Instance.currentTimeDSP >= s.endTime)
+            if (currentTime >= s.endTime || (s.releaseTimeoutActive && currentTime >= s.releaseTimeoutEndTime))
             {
                 //Debug.Log(s.lane + " ended");
                 if (NoteSpawner.Instance != null)
@@ -560,6 +575,29 @@ public class LaneInputManager : MonoBehaviour
                 {
                     UIUpdater.Instance.UpdateForSustainHold(UIUpdater.Instance.inStar ? Time.deltaTime * 80f : Time.deltaTime * 40f); // e.g., score for holding sustain
                 }
+            }
+        }
+    }
+
+    void StartSustainTimeoutForLane(int laneIndex)
+    {
+        foreach (var sustain in activeSustains)
+        {
+            if (sustain.lane == laneIndex)
+            {
+                sustain.releaseTimeoutEndTime = (float)MusicPlayer.Instance.currentTimeDSP + Mathf.Max(0f, gamepadSustainTimeoutSeconds);
+                sustain.releaseTimeoutActive = true;
+            }
+        }
+    }
+
+    void ResetSustainTimeoutForLane(int laneIndex)
+    {
+        foreach (var sustain in activeSustains)
+        {
+            if (sustain.lane == laneIndex)
+            {
+                sustain.releaseTimeoutActive = false;
             }
         }
     }

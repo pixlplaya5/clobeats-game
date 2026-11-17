@@ -147,6 +147,10 @@ public class OldInputManager : MonoBehaviour
     }
     private async Task GetInput()
     {
+        if (GameManager.Instance.isLoading)
+        {
+            return;
+        }
         scrollAxis = player.GetAxis("ScrollWheel");
         whammyAmount = player.GetAxis("Whammy");
         tiltAmount = player.GetAxis("Tilt");
@@ -156,34 +160,28 @@ public class OldInputManager : MonoBehaviour
         }
         if (SceneManager.GetSceneByName("MainMenu").isLoaded && !SceneManager.GetSceneByName("Gameplay").isLoaded)
         {
-            //Debug.Log("In MainMenu");
-            MenuManager menuManager = FindAnyObjectByType<MenuManager>();
-            if (menuManager != null)
+            if (MenuManager.Instance != null)
             {
-                
                 if (player.GetButtonDown("Green"))
                 {
-                    //Debug.Log("Green button pressed");
-                    if (menuManager.IsMenuOpen(MenuManager.StartMenuId))
+                    if (MenuManager.Instance.IsMenuOpen(MenuManager.StartMenuId))
                     {
-                        menuManager.Submit(2);
+                        MenuManager.Instance.Submit(2);
                     }
-                    else if (menuManager.IsMenuOpen(MenuManager.QuickPlayMenuId))
+                    else if (MenuManager.Instance.IsMenuOpen(MenuManager.QuickPlayMenuId))
                     {
-                        menuManager.Submit(1);
+                        MenuManager.Instance.Submit(1);
                     }
                     else
                     {
-                        menuManager.SubmitCurrentSelection();
+                        MenuManager.Instance.SubmitCurrentSelection();
                     }
-                    
                 }
                 if (player.GetButtonDown("Red"))
                 {
-                    //Debug.Log("Red button pressed");
-                    menuManager.Exit();
+                    MenuManager.Instance.Exit();
                 }
-                if (menuManager.IsMenuOpen(MenuManager.QuickPlayMenuId))
+                if (MenuManager.Instance.IsMenuOpen(MenuManager.QuickPlayMenuId))
                 {
                     if (player.GetButtonDown("StrumDown") || scrollAxis == 1)
                     {
@@ -200,11 +198,11 @@ public class OldInputManager : MonoBehaviour
                 {
                     if (player.GetButtonDown("StrumDown"))
                     {
-                        menuManager.SelectNextControl();
+                        MenuManager.Instance.SelectNextControl();
                     }
                     else if (player.GetButtonDown("StrumUp"))
                     {
-                        menuManager.SelectPreviousControl();
+                        MenuManager.Instance.SelectPreviousControl();
                     }
                 }
                 
@@ -212,40 +210,61 @@ public class OldInputManager : MonoBehaviour
         }
         else if (SceneManager.GetSceneByName("Gameplay").isLoaded)
         {
-            if (!gamepadMode)
+            if (isPaused)
             {
-                await InputNote(0, player.GetButton("Green"));
-                await InputNote(1, player.GetButton("Red"));
-                await InputNote(2, player.GetButton("Yellow"));
-                await InputNote(3, player.GetButton("Blue"));
-                await InputNote(4, player.GetButton("Orange"));
-
-                if (player.GetButtonDown("StrumUp")) await InputStrum();
-                if (player.GetButtonDown("StrumDown")) await InputStrum();
-
-                if (player.GetButtonUp("Start")) PauseGame();
-                if (player.GetButtonUp("Select")) ReleaseSP();
-
-                
-                if (tiltAmount == 1)
+                if (player.GetButtonDown("Green"))
                 {
-                    ReleaseSP();
+                    MenuManager.Instance.SubmitCurrentSelection();
+                }
+                if (player.GetButtonDown("Red"))
+                {
+                    MenuManager.Instance.Exit();
+                }
+                if (player.GetButtonUp("Start")) PauseGame();
+                if (player.GetButtonDown("StrumDown"))
+                {
+                    MenuManager.Instance.SelectNextControl();
+                }
+                else if (player.GetButtonDown("StrumUp"))
+                {
+                    MenuManager.Instance.SelectPreviousControl();
                 }
             }
             else
             {
-                await InputNote(0, player.GetButtonDown("Green"));
-                await InputNote(1, player.GetButtonDown("Red"));
-                await InputNote(2, player.GetButtonDown("Yellow"));
-                await InputNote(3, player.GetButtonDown("Blue"));
-                await InputNote(4, player.GetButtonDown("Orange"));
+                if (!gamepadMode)
+                {
+                    await InputNote(0, player.GetButton("Green"));
+                    await InputNote(1, player.GetButton("Red"));
+                    await InputNote(2, player.GetButton("Yellow"));
+                    await InputNote(3, player.GetButton("Blue"));
+                    await InputNote(4, player.GetButton("Orange"));
 
-                if (player.GetButtonUp("Start")) PauseGame();
-                if (player.GetButtonUp("Select")) ReleaseSP();
+                    if (player.GetButtonDown("StrumUp")) await InputStrum();
+                    if (player.GetButtonDown("StrumDown")) await InputStrum();
+
+                    if (player.GetButtonUp("Start")) PauseGame();
+                    if (player.GetButtonUp("Select")) ReleaseSP();
+
+                
+                    if (tiltAmount == 1)
+                    {
+                        ReleaseSP();
+                    }
+                }
+                else
+                {
+                    await InputNote(0, player.GetButtonDown("Green"));
+                    await InputNote(1, player.GetButtonDown("Red"));
+                    await InputNote(2, player.GetButtonDown("Yellow"));
+                    await InputNote(3, player.GetButtonDown("Blue"));
+                    await InputNote(4, player.GetButtonDown("Orange"));
+
+                    if (player.GetButtonUp("Start")) PauseGame();
+                    if (player.GetButtonUp("Select")) ReleaseSP();
+                }
             }
-            
         }
-        
     }
     public void ReleaseSP()
     {
