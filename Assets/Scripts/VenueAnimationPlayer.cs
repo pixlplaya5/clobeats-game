@@ -594,11 +594,11 @@ public class VenueAnimationPlayer : MonoBehaviour
 
         if (gameManager.currentSongLyrics != null && gameManager.currentSongLyrics.Count > 0)
         {
+            string phrase = string.Empty;
             if (currentTick < lastTickForLyrics)
             {
                 foreach (var ev in gameManager.currentSongLyrics) ev.passed = false;
             }
-
             foreach (var ev in gameManager.currentSongLyrics)
             {
                 if (!ev.passed && currentTick >= ev.spawnTick)
@@ -606,9 +606,13 @@ public class VenueAnimationPlayer : MonoBehaviour
                     if (ev.value.StartsWith("[")) continue; // ignore "[play]" notes
                     if (ev.value == "START_PHRASE" || ev.value == "END_PHRASE")
                     {
-                        LyricViewer.Instance.currentLyricPhrase = string.Empty;
+                        phrase = string.Empty;
                     }
-                    LyricViewer.Instance.currentLyricPhrase += ev.value + " ";
+                    else
+                    {
+                        phrase += ev.value + " ";
+                    }
+                    LyricViewer.Instance.currentLyricPhrase = phrase;
                     //Debug.Log(ev.value + " (Freq=" + ev.sungNote + ", StartTick=" + ev.spawnTick + ", EndTick=" + (ev.spawnTick + ev.length) + ")"); // log lyrics to console for now
                     //Debug.Log($"$beep,{ev.sungNote},{ev.lengthMs},1.0,Sine"); // custom debug console synth
                     //System.Threading.Thread playThread = new System.Threading.Thread(() => NAudioBeepSynth.PlayToneNAudio(ev.sungNote, (int)ev.lengthMs, 1.0));
