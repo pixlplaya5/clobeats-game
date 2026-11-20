@@ -49,11 +49,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Change this to the actual server you want to connect to.")]
     public string serverIPAddr = "pixlplaya5.xyz";
     public List<string> songFolders;
-
     public Dictionary<int, SongInfo> cachedSongs = new Dictionary<int, SongInfo>();
     public List<SongEntryInfo> cachedEntries = new List<SongEntryInfo>();
     public Dictionary<int, AudioClip> cachedAudioClips = new Dictionary<int, AudioClip>();
-
     public class SongInfo
     {
         public int resolution = 480;
@@ -84,7 +82,6 @@ public class GameManager : MonoBehaviour
     }
     public string ddst;
     public string currentPart = "Guitar";
-
     public int currentSongResolution = 480;
     public Queue<NoteSpawner.NoteInfo> currentSongNotes = new Queue<NoteSpawner.NoteInfo>();
     public Queue<NoteSpawner.SyncInfo> currentSongSyncTrack = new Queue<NoteSpawner.SyncInfo>();
@@ -94,7 +91,6 @@ public class GameManager : MonoBehaviour
     public List<NoteSpawner.GlobalEventInfo> currentSongVenueCueEvents = new List<NoteSpawner.GlobalEventInfo>();
     public List<NoteSpawner.LyricEventInfo> currentSongLyrics = new List<NoteSpawner.LyricEventInfo>();
     public int currentSongLengthInTicks = 0;
-
     public string currentSongTitle;
     public string currentSongArtist;
     public string currentSongAlbum;
@@ -104,13 +100,9 @@ public class GameManager : MonoBehaviour
     public int currentSongLength;
     public string currentSongAccentColor;
     public int currentSongPreviewStartTime;
-    public string currentSongPath;
-
     public int currentSongID = 0;
-
     public bool inSong = false;
     public string savePath = null;
-
     public GameObject unDestructibleLoadingPhraseScreen;
     public bool venueLoaded = false;
     public bool liteMode = false;
@@ -222,13 +214,10 @@ public class GameManager : MonoBehaviour
     {
         await EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
         SetIsLoading(true);
-        MenuManager menuManager = FindAnyObjectByType<MenuManager>();
-        menuManager.ShowMenu("null");
-        SongFolderLoader songFolderLoader = FindAnyObjectByType<SongFolderLoader>();
-        if (songFolderLoader != null)
+        MenuManager.Instance.ShowMenu("null");
+        if (SongFolderLoader.Instance != null)
         {
-            songFolderLoader.songFolderPath = path;
-            await songFolderLoader.Load();
+            await SongFolderLoader.Instance.Load(path);
         }
         else
         {
@@ -236,12 +225,11 @@ public class GameManager : MonoBehaviour
         }
             
         SceneManager.LoadScene("Gameplay", LoadSceneMode.Additive); // load synchronously
-            
-        NoteSpawner noteSpawner = FindAnyObjectByType<NoteSpawner>();
-        if (noteSpawner)
+
+        if (NoteSpawner.Instance)
         {
-            await noteSpawner.Load();
-            await noteSpawner.InitGameplay();
+            await NoteSpawner.Instance.Load();
+            await NoteSpawner.Instance.InitGameplay();
         }
     }
 
@@ -275,9 +263,8 @@ public class GameManager : MonoBehaviour
         TMPInstanceMaker.Instance.CreateTextObject(clearText, Vector2.zero, Vector3.zero, 72f);
         yield return new WaitForSeconds(6);
         TMPInstanceMaker.Instance.DeleteAllTextObjects();
-        MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         SceneManager.UnloadSceneAsync("Gameplay");
-        menuManager.ShowMenu("main");
+        MenuManager.Instance.ShowMenu("main");
     }
 
     public float GetNoteSpeed()
@@ -1408,7 +1395,7 @@ public class GameManager : MonoBehaviour
             foreach (var unTimed in notes)
             {
                 string startPhraseValue = "START_PHRASE";
-                //string endPhraseValue = "END_PHRASE";
+                string endPhraseValue = "END_PHRASE";
 
                 var tempoMap = midi.GetTempoMap();
                 var metricStart = TimeConverter.ConvertTo<MetricTimeSpan>(unTimed.Time, tempoMap);
@@ -1417,15 +1404,27 @@ public class GameManager : MonoBehaviour
                 double endSeconds = metricEnd.TotalMicroseconds / 1_000_000.0;
 
                 if (unTimed.NoteNumber == 105)
-                result.Add(new NoteSpawner.LyricEventInfo
                 {
-                    spawnTick = (float)Math.Round(unTimed.Time * scale),
-                    spawnTickMs = (float)(startSeconds * 1000.0),
-                    sungNote = -1,
-                    endTick = (float)Math.Round(unTimed.EndTime * scale),
-                    endMs = (int)(endSeconds * 1000.0),
-                    value = startPhraseValue
-                });
+                    result.Add(new NoteSpawner.LyricEventInfo
+                    {
+                        spawnTick = (float)Math.Round(unTimed.Time * scale),
+                        spawnTickMs = (float)(startSeconds * 1000.0),
+                        sungNote = -1,
+                        endTick = 0,
+                        endMs = 0,
+                        value = startPhraseValue
+                    });
+                    result.Add(new NoteSpawner.LyricEventInfo
+                    {
+                        spawnTick = (float)Math.Round(unTimed.EndTime * scale),
+                        spawnTickMs = (float)(endSeconds * 1000.0),
+                        sungNote = -1,
+                        endTick = 0,
+                        endMs = 0,
+                        value = endPhraseValue
+                    });
+                }
+                
             }
 
             // For each text event, find notes that occur at the same MIDI tick and create lyric entries.
@@ -1535,17 +1534,12 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlaySong()
     {
-        if (UIUpdater.Instance != null)
-        {
-            StartCoroutine(UIUpdater.Instance.SongInfoAnim());
-            UIUpdater.Instance.InitializeUI();
-        }
-        if (VenueAnimationPlayer.Instance != null)
-        {
-            VenueAnimationPlayer.Instance.TryToggleHighwayCam(false);
-            VenueAnimationPlayer.Instance.Load();
-            UIUpdater.Instance.ScoreVisibility(false);
-        }
+        StartCoroutine(UIUpdater.Instance.SongInfoAnim());
+        UIUpdater.Instance.InitializeUI();
+        VenueAnimationPlayer.Instance.TryToggleHighwayCam(false);
+        VenueAnimationPlayer.Instance.Load();
+        UIUpdater.Instance.ScoreVisibility(false);
+
         if (SceneManager.GetSceneByName("v_PJCBPV").isLoaded)
         {
             yield return new WaitForSeconds(6);
@@ -1555,33 +1549,24 @@ public class GameManager : MonoBehaviour
         {
             DisableLoadSongVisual(unDestructibleLoadingPhraseScreen);
         }
-        if (NoteSpawner.Instance != null)
-        {
-            VenueAnimationPlayer.Instance.TryToggleHighwayCam(true);
-            NoteSpawner.Instance.Play();
-            inSong = true;
-        }
-        if (UIUpdater.Instance != null)
-        {
-            UIUpdater.Instance.ScoreVisibility(true);
-            //SFXPlayer.Instance.PlayClip("ScoreShow");
-            SFXPlayer.Instance.PlayClip("ripple");
-            StartCoroutine(ImprovedStrikeline.Instance.RippleAnim());
-            SetIsLoading(false);
-        }
+
+        VenueAnimationPlayer.Instance.TryToggleHighwayCam(true);
+        NoteSpawner.Instance.Play();
+        inSong = true;
+        UIUpdater.Instance.ScoreVisibility(true);
+        SFXPlayer.Instance.PlayClip("ripple");
+        StartCoroutine(ImprovedStrikeline.Instance.RippleAnim());
+        SetIsLoading(false);
         yield return null;
     }
 
     public IEnumerator FailSong()
     {
-        MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        StartCoroutine(musicPlayer.EndSong(false));
-        SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
-        sFXPlayer.PlayClip("fail");
+        StartCoroutine(MusicPlayer.Instance.EndSong(false));
+        SFXPlayer.Instance.PlayClip("fail");
         yield return new WaitForSecondsRealtime(3);
-        MenuManager menuManager = FindAnyObjectByType<MenuManager>();
         SceneManager.UnloadSceneAsync("Gameplay");
-        menuManager.ShowMenu("main");
+        MenuManager.Instance.ShowMenu("main");
     }
 
     public void ResetAllValues()
@@ -1694,14 +1679,4 @@ public class GameManager : MonoBehaviour
         RenderTexture.ReleaseTemporary(rt);
         return flipped;
     }
-
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        //ddst = PlayerPrefs.GetString("SelectedDifficulty");
-        //currentPart = PlayerPrefs.GetString("SelectedPart");
-    }
-    
 }

@@ -50,7 +50,7 @@ public class MusicPlayer : MonoBehaviour
     public double pausedElapsedDsp = 0.0;
     private Coroutine bassScheduledCoroutine = null;
     string videoURL;
-    NoteSpawner noteSpawner;
+    //NoteSpawner noteSpawner;
     bool bassInitialized = false;
     // ManagedBass stream handles
     private int songStreamHandle = 0;
@@ -321,7 +321,7 @@ public class MusicPlayer : MonoBehaviour
                 if (clip == null) return;
                 if (unitySongSource != null) Destroy(unitySongSource.gameObject);
                 unitySongSource = CreateUnityAudioSource(clip, "Unity Song Audio", (float)musicVolume);
-                NSSonglength = noteSpawner != null ? noteSpawner.songLengthInTicks : NSSonglength;
+                NSSonglength = NoteSpawner.Instance != null ? NoteSpawner.Instance.songLengthInTicks : NSSonglength;
             }
             else
             {
@@ -329,7 +329,7 @@ public class MusicPlayer : MonoBehaviour
                 if (bassInitialized)
                 {
                     Debug.Log("Loading song audio (ManagedBass) from path: " + audioClipPath);
-                    NSSonglength = noteSpawner != null ? noteSpawner.songLengthInTicks : NSSonglength;
+                    NSSonglength = NoteSpawner.Instance != null ? NoteSpawner.Instance.songLengthInTicks : NSSonglength;
                     try
                     {
                         await Task.Yield();
@@ -357,7 +357,7 @@ public class MusicPlayer : MonoBehaviour
             return;
         }
 
-        NSSonglength = noteSpawner != null ? noteSpawner.songLengthInTicks : NSSonglength;
+        NSSonglength = NoteSpawner.Instance != null ? NoteSpawner.Instance.songLengthInTicks : NSSonglength;
 
         await Task.Yield();
         LoadMidiStemAudio("song", audioClipPath);
@@ -859,63 +859,40 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    float musicPollInterval = 0.5f;
-    float lastMusicCheckTime = 0f;
-    
     // Update is called once per frame
     void Update()
     {
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        if (Time.time - lastMusicCheckTime > musicPollInterval)
-        {
-            lastMusicCheckTime = Time.time;
-            if (gameManager.inSong && GetElapsedTimeDsp() != noteSpawner.GetTimeInSecondsAtTick(noteSpawner.currentTick) && !isPaused && !seamlessMode)
-            {
-                //RestartAt(GetElapsedTimeDsp());
-            }
-        }
-
-        //SetMusicVolume(musicVolume);
         SetAllStemVolume((float)musicVolume);
-        if (noteSpawner == null)
-        {
-            noteSpawner = FindFirstObjectByType<NoteSpawner>();
-        }
-        if (noteSpawner != null)
+        if (NoteSpawner.Instance != null)
         {
             // Provide DSP-derived elapsed seconds (may be negative before scheduled start)
             double dspElapsed = GetElapsedTimeDsp();
-            if (gameManager.inSong) 
+            if (GameManager.Instance.inSong) 
             {
-                noteSpawner.UpdateCurrentTick((float)dspElapsed);
+                NoteSpawner.Instance.UpdateCurrentTick((float)dspElapsed);
             }
             else
             {
-                noteSpawner.UpdateCurrentTick(-0.01f);
+                NoteSpawner.Instance.UpdateCurrentTick(-0.01f);
             }
             currentTimeDSP = dspElapsed;
-            //currentTime = GetElapsedTime();
-            songLength = noteSpawner.songLengthInTicks / 1000;
-            
-            if (gameManager.inSong && currentTimeDSP >= songLength + graceEndSeconds)
+            songLength = NoteSpawner.Instance.songLengthInTicks / 1000;
+            if (GameManager.Instance.inSong && currentTimeDSP >= songLength + graceEndSeconds)
             {
                 StartCoroutine(EndSong());
             }
-            LaneInputManager laneInput = FindAnyObjectByType<LaneInputManager>();
-            if (gameManager.inSong && laneInput.autoPlayEnabled)
+            if (GameManager.Instance.inSong && LaneInputManager.Instance.autoPlayEnabled)
             {
                 OldInputManager inputManager = FindAnyObjectByType<OldInputManager>();
                 inputManager.denyInput = true;
             }
-            else if (!gameManager.inSong)
+            else if (!GameManager.Instance.inSong)
             {
                 OldInputManager inputManager = FindAnyObjectByType<OldInputManager>();
                 inputManager.denyInput = false;
             }
         }
-
         videoPlayer = FindFirstObjectByType<VideoPlayer>();
-
         // Start video playback exactly when the DSP start time is reached
         if (videoPlayer != null && !videoPlayer.isPlaying && dspSongStart > 0.0 && AudioSettings.dspTime >= dspSongStart && !isPaused)
         {
@@ -928,7 +905,7 @@ public class MusicPlayer : MonoBehaviour
             }
             catch { }
         }
-        if (videoPlayer != null && !videoPlayer.isPlaying && videoPlayer.isPrepared && currentTime > previousTime && !isPaused && gameManager.inSong)
+        if (videoPlayer != null && !videoPlayer.isPlaying && videoPlayer.isPrepared && currentTime > previousTime && !isPaused && GameManager.Instance.inSong)
         {
             Debug.Log("Syncing video to audio at time: " + currentTime);
             videoPlayer.time = currentTime;
@@ -945,19 +922,10 @@ public class MusicPlayer : MonoBehaviour
     public IEnumerator EndSong(bool songCleared = true)
     {
         Debug.Log("[MusicPlayer.EndSong] Unloading song...");
-        UIUpdater ui = FindAnyObjectByType<UIUpdater>();
-        if (ui != null)
-        {
-            ui.ScoreVisibility(false);
-        }
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        gameManager.inSong = false;
-        gameManager.currentSongLengthInTicks = 0;
-        if (noteSpawner != null)
-        {
-            noteSpawner.songLengthInTicks = 0;
-        }
-        //stopAudio(false);
+        UIUpdater.Instance.ScoreVisibility(false);
+        GameManager.Instance.inSong = false;
+        GameManager.Instance.currentSongLengthInTicks = 0;
+        NoteSpawner.Instance.songLengthInTicks = 0;
         StopAllStems(true);
         if (videoPlayer != null)
         {
@@ -967,22 +935,14 @@ public class MusicPlayer : MonoBehaviour
         if (scoring != null && !songCleared)
         {
             scoring.playerTag = PlayerPrefs.GetString("Username") != string.Empty ? PlayerPrefs.GetString("Username") : System.Environment.UserName;
-            scoring.Save(gameManager.savePath);
+            scoring.Save(GameManager.Instance.savePath);
         }
-        if (gameManager != null)
-        {
-            gameManager.ResetAllValues();
-        }
-        ImprovedStrikeline strikeline = FindAnyObjectByType<ImprovedStrikeline>();
-        if (strikeline != null)
-        {
-            strikeline.ResetAnims();
-        }
-        
+        GameManager.Instance.ResetAllValues();
+        ImprovedStrikeline.Instance.ResetAnims();
         VenueAnimationPlayer.Instance.Unload();
         VenueAnimationPlayer.Instance.TryToggleHighwayCam(false);
         Debug.Log("[MusicPlayer.EndSong] Song unloaded.");
-        if (songCleared) StartCoroutine(gameManager.PlayerRocksAnim());
+        if (songCleared) StartCoroutine(GameManager.Instance.PlayerRocksAnim());
         yield return null;
     }
     // returns non-DSP elapsed time

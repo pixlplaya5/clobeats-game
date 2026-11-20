@@ -12,7 +12,7 @@ using System.Net.Http;
 public class SongFolderLoader : MonoBehaviour
 {
     public static SongFolderLoader Instance { get; private set; }
-    public string songFolderPath;
+    //public string songFolderPath;
     public string songName = "Unset";
     public string songArtist = "Unset";
     public string songAlbum = "Unset";
@@ -33,44 +33,24 @@ public class SongFolderLoader : MonoBehaviour
     void Awake()
     {
         if (Instance == null) Instance = this; else if (Instance != this) Destroy(gameObject); // Instance support
-        string savedPath = PlayerPrefs.GetString("SelectedFolderPath", null);
-        if (!string.IsNullOrEmpty(savedPath))
-        {
-            songFolderPath = savedPath;
-            //Load();
-        }
-        else
-        {
-            Debug.Log("No saved song folder path found, using path set in editor.");
-            if (string.IsNullOrEmpty(songFolderPath))
-            {
-                Debug.LogWarning("Song folder path is not set.");
-            }
-            else
-            {
-                //Load();
-            }
-        }
     }
 
     
 
-    public async Task Load()
+    public async Task Load(string path)
     {
-        if (string.IsNullOrEmpty(songFolderPath) || !Directory.Exists(songFolderPath))
+        if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
         {
-            Debug.LogError("Invalid song folder path: " + songFolderPath);
+            Debug.LogError("Invalid song folder path: " + path);
             return;
         }
         else
         {
             try
             {
-                Debug.Log("Loading song folder: " + songFolderPath);
-                songFolderFiles = await Task.Run(() => Directory.GetFiles(songFolderPath));
-                
-
-                SongLoader songLoader = FindFirstObjectByType<SongLoader>();
+                Debug.Log("Loading song folder: " + path);
+                songFolderFiles = await Task.Run(() => Directory.GetFiles(path));
+                //SongLoader songLoader = FindFirstObjectByType<SongLoader>();
 
                 // Find a file named "song" with a supported extension and set the audio path
                 var songMatch = songFolderFiles
@@ -88,18 +68,18 @@ public class SongFolderLoader : MonoBehaviour
                     .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
                     .FirstOrDefault(x => supportedMidis.Contains(x.ext));
 
-                if (File.Exists(songFolderPath + Path.DirectorySeparatorChar + "notes.chart"))
+                if (File.Exists(path + Path.DirectorySeparatorChar + "notes.chart"))
                 {
-                    chartFilePath = songFolderPath + Path.DirectorySeparatorChar + "notes.chart";
+                    chartFilePath = path + Path.DirectorySeparatorChar + "notes.chart";
                 }
                 else if (midiMatch != null)
                 {
                     // use MIDI as chart source
                     chartFilePath = midiMatch.path;
                 }
-                if (File.Exists(songFolderPath + Path.DirectorySeparatorChar + "scripts.json"))
+                if (File.Exists(path + Path.DirectorySeparatorChar + "scripts.json"))
                 {
-                    VenueAnimationPlayer.Instance.cameraAnimationFile = songFolderPath + Path.DirectorySeparatorChar + "scripts.json";
+                    VenueAnimationPlayer.Instance.cameraAnimationFile = path + Path.DirectorySeparatorChar + "scripts.json";
                 }
 
                 var videoMatch = songFolderFiles
@@ -116,7 +96,7 @@ public class SongFolderLoader : MonoBehaviour
                     songVideoClipPath = string.Empty;
                     songVideoClipPathSet = false;
                 }
-                await songLoader.SetSongData(chartFilePath);
+                await SongLoader.Instance.SetSongData(chartFilePath);
                 await Task.Yield();
             }
             catch (Exception ex)
@@ -132,11 +112,7 @@ public class SongFolderLoader : MonoBehaviour
         try
         {
             Debug.Log("Download started: " + url);
-            await DownloadFileAsync(Path.Combine(url, "song.ogg"), outputFolder);
-            await DownloadFileAsync(Path.Combine(url, "notes.mid"), outputFolder);
-            await DownloadFileAsync(Path.Combine(url, "album.jpg"), outputFolder);
-            await DownloadFileAsync(Path.Combine(url, "song.ini"), outputFolder);
-            await DownloadFileAsync(Path.Combine(url, "scripts.json"), outputFolder);
+            await DownloadFileAsync(url, outputFolder);
         }
         catch (Exception ex)
         {
@@ -171,7 +147,6 @@ public class SongFolderLoader : MonoBehaviour
     }
     public void ClearValues()
     {
-        songFolderPath = string.Empty;
         songName = string.Empty;
         songArtist = string.Empty;
         songAlbum = string.Empty;

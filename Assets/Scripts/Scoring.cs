@@ -38,9 +38,9 @@ public class Scoring : MonoBehaviour
 
     public void Save(string savePath)
     {
-        using (StreamWriter writer = new StreamWriter(savePath + @"\save" + currentSongID + ".txt"))
+        using (StreamWriter writer = new StreamWriter(savePath + @"\pjcbsave_" + currentSongID + ".txt"))
         {
-            writer.WriteLine("[save]");
+            writer.WriteLine("[pjcbsave]");
             writer.WriteLine($"songid = {currentSongID}");
             writer.WriteLine($"songpath = {currentSongPath}");
             writer.WriteLine($"playertag = {playerTag}");
