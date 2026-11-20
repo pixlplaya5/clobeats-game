@@ -114,10 +114,10 @@ public class ButtonHandler : MonoBehaviour
             GameManager gameManager = FindAnyObjectByType<GameManager>();
             if (gameManager != null)
             {
-                gameManager.ResetAllValues();
+                //gameManager.ResetAllValues();
                 gameManager.inSong = false;
                 SongFolderLoader songFolderLoader = FindAnyObjectByType<SongFolderLoader>();
-                await gameManager.EnableLoadUnCachedSongVisual(gameManager.unDestructibleLoadingPhraseScreen, Path.Combine(songFolderLoader.songFolderPath, "song.ini"));
+                await gameManager.EnableLoadSongVisual(gameManager.unDestructibleLoadingPhraseScreen, string.Empty); // use local loading phrases or online ones
             }
             Time.timeScale = 1f; // Ensure time scale is reset
             LoadingManager loader = FindAnyObjectByType<LoadingManager>();

@@ -1518,6 +1518,36 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public async Task EnableLoadSongVisual(GameObject loadingCanvas, string loadingText)
+    {
+        if (loadingCanvas != null)
+        {
+            loadingCanvas.SetActive(true);
+            TextMeshProUGUI textObj = loadingCanvas.transform.Find("SongLoadingOverlay/LoadingPhraseText").GetComponent<TextMeshProUGUI>();
+            string ldgphr = loadingText;
+            if (ldgphr != string.Empty)
+            {
+                textObj.text = ldgphr;
+            }
+            else
+            {
+                string preLoadedServerString = await GetStringFromAddr($"http://{serverIPAddr}/api/lpRand");
+                string serverLoad = string.Empty;
+                if (preLoadedServerString == string.Empty)
+                {
+                    string ldgphrPath = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "loadingphrases.txt";
+                    serverLoad = GetValueFromTxt(ldgphrPath, UnityEngine.Random.Range(1, GetLineAmountFromTxt(ldgphrPath)));
+                }
+                else
+                {
+                    serverLoad = preLoadedServerString;
+                }
+                
+                string serverLoadReplaced = serverLoad.Replace("%SERVERNAME%", serverIPAddr, StringComparison.OrdinalIgnoreCase);
+                textObj.text = serverLoadReplaced;
+            }
+        }
+    }
     public string GetUnCachedSongLoadingPhrase(string iniPath)
     {
         INIParser ini = new INIParser();
