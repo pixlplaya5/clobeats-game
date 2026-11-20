@@ -228,8 +228,8 @@ public class GameManager : MonoBehaviour
 
         if (NoteSpawner.Instance)
         {
-            await NoteSpawner.Instance.Load();
-            await NoteSpawner.Instance.InitGameplay();
+            await NoteSpawner.Instance.Load(path);
+            await NoteSpawner.Instance.InitGameplay(path);
         }
     }
 

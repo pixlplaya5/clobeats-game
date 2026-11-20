@@ -18,10 +18,6 @@ public class NoteSpawner : MonoBehaviour
     [Header("Note Objects")]
     // strum
     public GameObject coloredNotePrefab;
-    //public GameObject redNotePrefab;
-    //public GameObject yellowNotePrefab;
-    //public GameObject blueNotePrefab;
-    //public GameObject orangeNotePrefab;
     // open
     public GameObject openNotePrefab; 
     // beginner open
@@ -212,16 +208,12 @@ public class NoteSpawner : MonoBehaviour
     private SongLoader songLoader;
     [SerializeField]
     private SongFolderLoader songFolderLoader;
-    //private string audioClipPath = "";
     public float noteSpawningXOffset = 0;
     public float noteSpawningZOffset = 0;
-    //public float desiredHyperspeedSingleThreaded = 5f;
     public Transform highwayTransform;
     public RenderTexture venueDisplayImage; // venue display/jumbotron
     public bool allowNotePooling = false;
     public bool allowReleaseNotes = true;
-
-    
 
     void Start()
     {
@@ -240,10 +232,7 @@ public class NoteSpawner : MonoBehaviour
         //desiredHyperspeedSingleThreaded = GameManager.Instance.GetNoteSpeed();
     }
 
-
-    
-    
-    public async Task Load()
+    public async Task Load(string path)
     {
         if (songLoader == null)
         {
@@ -258,19 +247,8 @@ public class NoteSpawner : MonoBehaviour
                 uiUpdater.ScoreVisibility(false);
             }
             await songLoader.LoadSongData();
-            await songFolderLoader.LoadIniFile(songFolderLoader.songFolderPath + Path.DirectorySeparatorChar + "song.ini");
-            //audioClipPath = songFolderLoader.songAudioClipPath;
-
-            //Debug.Log("[NoteSpawner.Load] audioClipPath: '" + audioClipPath + "'");
-            /*if (audioClipPath.EndsWith("mid"))
-            {
-                await musicPlayer.loadSongMidi(audioClipPath);
-            }
-            else
-            {
-                await musicPlayer.loadSongAudio(audioClipPath);
-            }*/
-            await musicPlayer.LoadAvailableStemsInPath(songFolderLoader.songFolderPath);
+            await songFolderLoader.LoadIniFile(path + Path.DirectorySeparatorChar + "song.ini");
+            await musicPlayer.LoadAvailableStemsInPath(path);
             videoClipPath = songFolderLoader.songVideoClipPath;
             if (PlayerPrefs.GetInt("EnableVideo", 1) == 1)
             {
@@ -306,11 +284,11 @@ public class NoteSpawner : MonoBehaviour
         }
     }
 
-    public async Task InitGameplay()
+    public async Task InitGameplay(string path)
     {
         Debug.Log("Song data loaded successfully.");
         INIParser parser = new INIParser();
-        parser.Open(songFolderLoader.songFolderPath + @"\song.ini");
+        parser.Open(path + @"\song.ini");
         bool checkSectionCase = parser.IsSectionExists("song");
         int preLoadedNumber = checkSectionCase ? parser.ReadValue("song", "countdown_bar_number", 0) : parser.ReadValue("Song", "countdown_bar_number", 0);
         int enableDefaultCount = checkSectionCase ? parser.ReadValue("song", "count", 0) : parser.ReadValue("Song", "count", 0);

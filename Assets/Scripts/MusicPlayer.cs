@@ -387,7 +387,6 @@ public class MusicPlayer : MonoBehaviour
         if (midiOutput == null)
         {
             Debug.LogError("No MIDI output devices available on system.");
-            MessageBox.Instance.Show("No MIDI output devices available.", "Error", null);
         }
 
         return midiOutput;
@@ -484,21 +483,6 @@ public class MusicPlayer : MonoBehaviour
         {
             yield return null;
         }
-        // start BASS streams synchronized
-        /*if (bassInitialized)
-        {
-            try
-            {
-                if (songStreamHandle != 0)
-                {
-                    Bass.ChannelPlay(songStreamHandle);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Failed to start BASS streams at scheduled time: " + ex.Message);
-            }
-        }*/
         PlayAllStems();
         bassScheduledCoroutine = null;
         yield break;
