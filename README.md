@@ -2,6 +2,13 @@
 
 **Project CloBeats** is a modern, customizable, and brand-new Guitar Hero clone game built from the ground up for simplicity and user-friendliness.
 
+The main premise of the game is to be a mixture of several existing rhythm games, such as the following:
+- _Clone Hero_ (main engine)
+- _YARG (Rock Band)_ (main engine)
+- _Hatsune Miku: Project DIVA_ (custom venue animations, **custom** characters)
+- _Grease: The Official Video Game_ (motion-controlled engine)
+- _roBeats! (Roblox)_ (inspiration)
+
 ## ❗ Disclaimers
 
 > [!WARNING]
@@ -18,7 +25,7 @@
 | RAM: 4 GB | RAM: 8 GB |
 | GPU: Intel HD Graphics | GPU: NVIDIA GeForce GTX1660 |
 | GFX Backend: DirectX 11 | GFX Backend: DirectX 11 |
-| Storage: 600MB available space | Storage: Depends on online downloads |
+| Storage: 150MB available space | Storage: Depends on online downloads |
 
 
 ## 🚀 Planned Features
@@ -29,6 +36,7 @@
 - **MMD2Unity** – MMD2Unity is a planned feature/tool that can convert MMD (MikuMikuDance) avatar motion into Unity's Humanoid animation format for avatar models, and can convert MMD-curated camera motion into a regular animation that Unity can understand. This feature will be useful for animation memes that were originally animated in MMD to be easily importable into a venue animation.
 - **Rapid/Tremolo Sustains** – When sustains show up as squiggly lines, the player can rapidly strum until the note ends.
 - **Sliding Sustains** – When sliding sustains show up, keep holding the first fret of the sustain, then press the fret at the end of the sustain. (similar to a HOPO, but a sustain is connected linearly to the end of the ending note.)
+- **Motion Controls** – Use a smartphone, Wii Remote, or any accel+gyro-integrated device (i.e. OpenMote) to control a new motion-controlled rhythm engine coming soon!
 - **and more coming soon!**
 
 ## 📦 Installation
