@@ -17,7 +17,7 @@
 | CPU: Intel Core i5 (4th Gen) | CPU: Intel Core i7 (6th Gen) |
 | RAM: 4 GB | RAM: 8 GB |
 | GPU: Intel HD Graphics | GPU: NVIDIA GeForce GTX1660 |
-| GFX Backend: DirectX 9.0c | GFX Backend: DirectX 11 |
+| GFX Backend: DirectX 11 | GFX Backend: DirectX 11 |
 | Storage: 600MB available space | Storage: Depends on online downloads |
 
 
