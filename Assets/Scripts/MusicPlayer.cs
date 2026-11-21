@@ -13,6 +13,7 @@ using Melanchall.DryWetMidi.Interaction;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using UnityEngine.Audio;
 
 public class MusicPlayer : MonoBehaviour
 {
@@ -56,6 +57,7 @@ public class MusicPlayer : MonoBehaviour
     private int songStreamHandle = 0;
     private AudioSource unitySongSource;
     public AudioSource previewAudioStream;
+    public AudioMixer unityAudioMixer;
     public double currentTimeDSP = 0;
     public double currentTime = 0;
     public float previousTime = 0f;
@@ -231,7 +233,18 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    private AudioSource CreateUnityAudioSource(AudioClip clip, string sourceName, float volume)
+    private AudioMixerGroup GetAudioMixerGroupByName(string name)
+    {
+        AudioMixerGroup[] groups = unityAudioMixer.FindMatchingGroups(name);
+        if (groups.Length > 0)
+        {
+            AudioMixerGroup sfxGroup = groups[0];
+            return sfxGroup;
+        }
+        return null;
+    }
+
+    private AudioSource CreateUnityAudioSource(AudioClip clip, AudioMixerGroup amg, string sourceName, float volume)
     {
         GameObject sourceObject = new GameObject(sourceName);
         sourceObject.transform.SetParent(transform, false);
@@ -240,6 +253,7 @@ public class MusicPlayer : MonoBehaviour
         source.spatialBlend = 0f;
         source.loop = false;
         source.clip = clip;
+        source.outputAudioMixerGroup = amg;
         source.volume = Mathf.Clamp01(volume);
         return source;
     }
@@ -320,7 +334,7 @@ public class MusicPlayer : MonoBehaviour
                 AudioClip clip = await LoadUnityAudioFile(audioClipPath);
                 if (clip == null) return;
                 if (unitySongSource != null) Destroy(unitySongSource.gameObject);
-                unitySongSource = CreateUnityAudioSource(clip, "Unity Song Audio", (float)musicVolume);
+                unitySongSource = CreateUnityAudioSource(clip, GetAudioMixerGroupByName("Legacy Song Audio"), "Unity Song Audio", (float)musicVolume);
                 NSSonglength = NoteSpawner.Instance != null ? NoteSpawner.Instance.songLengthInTicks : NSSonglength;
             }
             else
@@ -1177,7 +1191,7 @@ public class MusicPlayer : MonoBehaviour
                     Debug.LogWarning("LoadSplitStemAudio: failed to load split drums clip '" + drumFiles[i] + "'.");
                     continue;
                 }
-                AudioSource childSource = CreateUnityAudioSource(childClip, stemName + " Split " + i, primaryStem.volume);
+                AudioSource childSource = CreateUnityAudioSource(childClip, GetAudioMixerGroupByName(stemName + " Split " + i), stemName + " Split " + i, primaryStem.volume);
                 primaryStem.childAudioSources.Add(childSource);
                 continue;
             }
@@ -1233,7 +1247,7 @@ public class MusicPlayer : MonoBehaviour
                 return null;
             }
 
-            AudioSource source = CreateUnityAudioSource(clip, stemName + " Audio", volume);
+            AudioSource source = CreateUnityAudioSource(clip, GetAudioMixerGroupByName(stemName + " Audio"), stemName + " Audio", volume);
             var unityStem = new AudioStem
             {
                 name = stemName,

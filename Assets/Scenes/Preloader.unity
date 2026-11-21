@@ -1418,7 +1418,7 @@ AudioSource:
   m_GameObject: {fileID: 1162526148}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 4005446951636368991, guid: 60e2ca80585101f4ab713701b5fdedb4, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -1512,6 +1512,46 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1162526148}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1231624543
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1231624545}
+  - component: {fileID: 1231624544}
+  m_Layer: 0
+  m_Name: MasterAudioListener
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!81 &1231624544
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231624543}
+  m_Enabled: 1
+--- !u!4 &1231624545
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231624543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1738,6 +1778,7 @@ MonoBehaviour:
   isPaused: 0
   pausedElapsedDsp: 0
   previewAudioStream: {fileID: 1162526150}
+  unityAudioMixer: {fileID: 24100000, guid: 60e2ca80585101f4ab713701b5fdedb4, type: 2}
   currentTimeDSP: 0
   currentTime: 0
   previousTime: 0
@@ -2593,7 +2634,7 @@ AudioSource:
   m_GameObject: {fileID: 1993260950}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7757551549221153642, guid: 60e2ca80585101f4ab713701b5fdedb4, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -2980,3 +3021,4 @@ SceneRoots:
   - {fileID: 114922363}
   - {fileID: 143050771}
   - {fileID: 304963985}
+  - {fileID: 1231624545}
