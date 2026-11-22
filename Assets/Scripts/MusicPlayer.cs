@@ -1166,15 +1166,6 @@ public class MusicPlayer : MonoBehaviour
             {
                 Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded " + stemName + " audio from " + Path.GetFileName(stemPath) + ".");
             }
-            
-            var oggMatch = SongFolderLoader.Instance.songFolderFiles
-                .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
-                .FirstOrDefault(x => SongFolderLoader.Instance.supportedFormats.Contains(x.ext));
-            if (await LoadNonStemmedAudio(oggMatch.path) != null)
-            {
-                Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded unstemmed audio from " + Path.GetFileName(oggMatch.path) + ".");
-            }
-            
         }
     }
 
