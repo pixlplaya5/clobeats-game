@@ -274,6 +274,7 @@ public class MusicPlayer : MonoBehaviour
     private void SetUnityEcho(AudioSource source, bool enabled)
     {
         if (source == null) return;
+        // Echo
         AudioEchoFilter echo = source.GetComponent<AudioEchoFilter>();
         if (enabled && echo == null) echo = source.gameObject.AddComponent<AudioEchoFilter>();
         if (echo == null) return;
@@ -282,6 +283,13 @@ public class MusicPlayer : MonoBehaviour
         echo.dryMix = 1f;
         echo.wetMix = reverbFallbackMix;
         echo.enabled = enabled;
+
+        // Reverb
+        AudioReverbFilter reverb = source.GetComponent<AudioReverbFilter>();
+        if (enabled && reverb == null) reverb = source.gameObject.AddComponent<AudioReverbFilter>();
+        if (reverb == null) return;
+        // using default values for now
+        reverb.enabled = enabled;
     }
 
     public async Task<int> LoadRegularAudio(string audioClipPath)
