@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 public class SongLoader : MonoBehaviour
 {
     public static SongLoader Instance { get; private set; }
-
     public string chartFolderPath;
-
     public bool songDataSet = false;
 
     void Awake()
@@ -44,20 +42,11 @@ public class SongLoader : MonoBehaviour
             string ext = string.IsNullOrEmpty(path) ? string.Empty : System.IO.Path.GetExtension(path).TrimStart('.').ToLowerInvariant();
             if (ext == "mid" || ext == "midi")
             {
-                // Ensure GameManager exists and parse the MIDI into the game's caches
-                var gm = FindAnyObjectByType<GameManager>();
-                if (gm != null)
-                {
-                    await gm.ReadMidiFile(path);
-                }
+                await GameManager.Instance.ReadMidiFile(path);
             }
             else
             {
-                var gm = FindAnyObjectByType<GameManager>();
-                if (gm != null)
-                {
-                    await gm.ReadChartFile(path);
-                }
+                await GameManager.Instance.ReadChartFile(path);
             }
         }
         catch

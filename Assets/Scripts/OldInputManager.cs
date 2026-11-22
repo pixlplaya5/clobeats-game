@@ -85,8 +85,7 @@ public class OldInputManager : MonoBehaviour
     {
         if (laneInputManager != null)
         {
-            GameManager gameManager = FindAnyObjectByType<GameManager>();
-            if (gameManager && gameManager.inSong)
+            if (GameManager.Instance.inSong)
                 laneInputManager.OnStrum();
             
             await Task.Yield();
@@ -271,14 +270,12 @@ public class OldInputManager : MonoBehaviour
         // automatically handled by just releasing whenever star power hits 100% just like in regular roBeats
         if (SceneManager.GetSceneByName("Gameplay").isLoaded)
         {
-            GameManager gameManager = FindAnyObjectByType<GameManager>();
             StarMeter spmeter = FindAnyObjectByType<StarMeter>();
-            UIUpdater uIUpdater = FindAnyObjectByType<UIUpdater>();
-            if (spmeter != null && uIUpdater != null)
+            if (spmeter != null)
             {
-                if (spmeter.value >= 50 && !uIUpdater.inStar)
+                if (spmeter.value >= 50 && !UIUpdater.Instance.inStar)
                 {
-                    uIUpdater.StarPowerToggle(gameManager.currentPart.ToLower(), true);
+                    UIUpdater.Instance.StarPowerToggle(GameManager.Instance.currentPart.ToLower(), true);
                 }
                 else
                 {

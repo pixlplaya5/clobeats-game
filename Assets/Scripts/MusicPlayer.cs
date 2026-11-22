@@ -1132,12 +1132,12 @@ public class MusicPlayer : MonoBehaviour
         return stem != null && (stem.handle != 0 || stem.audioSource != null || stem.midiPlayback != null);
     }
 
-    public async Task LoadAvailableStemsInPath(string songFolderPath)
+    public IEnumerator LoadAvailableStemsInPath(string songFolderPath)
     {
         if (string.IsNullOrEmpty(songFolderPath) || !Directory.Exists(songFolderPath))
         {
             Debug.LogError("[MusicPlayer.LoadAvailableStemsInPath] Invalid song folder path: " + songFolderPath);
-            return;
+            yield return null;
         }
 
         string[] stemNames = { "song", "guitar", "rhythm", "bass", "keys", "drums", "vocals" };
@@ -1148,7 +1148,7 @@ public class MusicPlayer : MonoBehaviour
                 var drumFiles = GetStemFilesByName(songFolderPath, stemName);
                 if (drumFiles.Count > 1)
                 {
-                    if (await LoadSplitStemAudio(stemName, drumFiles) != null)
+                    if (_ = LoadSplitStemAudio(stemName, drumFiles) != null)
                     {
                         Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded mixed-down drums audio from " + drumFiles.Count + " split files.");
                     }
@@ -1162,17 +1162,19 @@ public class MusicPlayer : MonoBehaviour
                 continue;
             }
 
-            if (await LoadStemAudio(stemName, stemPath) != null)
+            if (_ = LoadStemAudio(stemName, stemPath) != null)
             {
                 Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded " + stemName + " audio from " + Path.GetFileName(stemPath) + ".");
+                yield return null;
             }
         }
         var oggMatch = SongFolderLoader.Instance.songFolderFiles
             .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
             .FirstOrDefault(x => SongFolderLoader.Instance.supportedFormats.Contains(x.ext));
-        if (await LoadNonStemmedAudio(oggMatch.path) != null)
+        if (_ = LoadNonStemmedAudio(oggMatch.path) != null)
         {
             Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded unstemmed audio from " + Path.GetFileName(oggMatch.path) + ".");
+            yield return null;
         }
     }
 

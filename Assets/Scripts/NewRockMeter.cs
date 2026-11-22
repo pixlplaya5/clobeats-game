@@ -50,10 +50,9 @@ public class NewRockMeter : MonoBehaviour
         {
             healthController.SetPlayerHealthInstantly(currentValue / maxValue);
         }
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        if (currentValue <= 0f && gameManager.allowFail)
+        if (currentValue <= 0f && GameManager.Instance.allowFail)
         {
-            StartCoroutine(gameManager.FailSong());
+            StartCoroutine(GameManager.Instance.FailSong());
         }
     }
     private void UpdateIndicators()

@@ -43,7 +43,11 @@ public class MenuManager : MonoBehaviour
         ToggleAnyFretMod,
         SwapDifficulty,
         ToggleVSync,
-        AdjustNoteSpeed
+        AdjustNoteSpeed,
+        ResumeSong,
+        RestartSong,
+        ExitMainMenu,
+        ExitDesktop,
     }
 
     [Serializable]
@@ -316,112 +320,15 @@ public class MenuManager : MonoBehaviour
         isLaunchingSong = true;
         try
         {
-            LoadingManager loadingManager = FindAnyObjectByType<LoadingManager>();
-            SongFolderLoader songFolderLoader = FindFirstObjectByType<SongFolderLoader>();
-            GameManager gameManager = FindAnyObjectByType<GameManager>();
-
-            if (loadingManager == null)
-            {
-                Debug.LogError("LoadingManager not found in scene.");
-                return;
-            }
-
-            if (songFolderLoader == null)
-            {
-                Debug.LogError("SongFolderLoader not found in scene.");
-                return;
-            }
-
-            if (gameManager == null)
-            {
-                Debug.LogError("GameManager not found in scene.");
-                return;
-            }
-
-            //PlayerPrefs.SetString("SelectedFolderPath", currentPreviewingSongPath);
-            //PlayerPrefs.Save();
-
-            gameManager.currentSongID = currentPreviewingID;
+            GameManager.Instance.currentSongID = currentPreviewingID;
             Debug.Log("[MenuManager] Loading selected song. (Include loading visual)");
             StopPreviewAudio();
             ShowMenu("songentry");
-
-            //await gameManager.PlaySongGlobal(currentPreviewingSongPath);
-            //ShowMenu("null");
         }
         finally
         {
             isLaunchingSong = false;
         }
-    }
-
-    
-
-    private void BuildDefaultConfiguration()
-    {
-        if (!useDefaultSceneLayout)
-        {
-            return;
-        }
-
-        /*AddScreenIfMissing(StartMenuId, startPanel, true);
-        AddScreenIfMissing(MainMenuId, mainMenuPanel, true);
-        AddScreenIfMissing(QuickPlayMenuId, quickplayPanel, false);
-        AddScreenIfMissing(OptionsMenuId, optionsPanel, false);
-        AddScreenIfMissing(ExitMenuId, exitgamePanel, true);
-
-        if (menuButtons.Count == 0)
-        {
-            AddButtonBinding(FindButton(mainMenuPanel, "quickplay"), MenuAction.ShowMenu, QuickPlayMenuId, 1);
-            AddButtonBinding(FindButton(mainMenuPanel, "options"), MenuAction.ShowMenu, OptionsMenuId, 4);
-        }*/
-    }
-
-    private void AddScreenIfMissing(string id, GameObject panel, bool showLogo, bool enableBG)
-    {
-        if (panel == null || string.IsNullOrWhiteSpace(id))
-        {
-            return;
-        }
-
-        for (int i = 0; i < menuScreens.Count; i++)
-        {
-            if (string.Equals(menuScreens[i].id, id, StringComparison.OrdinalIgnoreCase))
-            {
-                if (menuScreens[i].panel == null)
-                {
-                    menuScreens[i].panel = panel;
-                }
-
-                return;
-            }
-        }
-
-        menuScreens.Add(new MenuScreen
-        {
-            id = id,
-            panel = panel,
-            showLogo = showLogo,
-            enableBG = enableBG,
-            firstSelected = panel.GetComponentInChildren<Selectable>(true)
-        });
-    }
-
-    private void AddButtonBinding(Button button, MenuAction action, string targetMenuId, int legacySubmitIndex, string tooltip)
-    {
-        if (button == null)
-        {
-            return;
-        }
-
-        menuButtons.Add(new MenuButtonBinding
-        {
-            button = button,
-            action = action,
-            targetMenuId = targetMenuId,
-            legacySubmitIndex = legacySubmitIndex,
-            toolTip = tooltip
-        });
     }
 
     private void RebuildLookups()
@@ -559,6 +466,18 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.AdjustNoteSpeed:
                     GameManager.Instance.SetNoteSpeed(GameManager.Instance.GetNoteSpeed() + float.Parse(actionArgs[0]));
                     break;
+                case MenuAction.ResumeSong:
+                    OldInputManager.Instance.PauseGame();
+                    break;
+                case MenuAction.RestartSong:
+                    break;
+                case MenuAction.ExitMainMenu:
+                    MusicPlayer.Instance.EndSong(false);
+                    SceneManager.UnloadSceneAsync("Gameplay");
+                    ShowMenu("main");
+                    break;
+                case MenuAction.ExitDesktop:
+                    break;
             }
         }
         catch (Exception ex)
@@ -694,8 +613,7 @@ public class MenuManager : MonoBehaviour
 
     private void QuitGame()
     {
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        gameManager.ExitGame(true);
+        GameManager.Instance.ExitGame(true);
     }
 
     private static Button FindButton(GameObject root, string objectName)

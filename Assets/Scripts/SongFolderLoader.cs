@@ -166,7 +166,7 @@ public class SongFolderLoader : MonoBehaviour
         previewStartTime = 0;
         songLength = 0;
     }
-    public async Task LoadIniFile(string filePath)
+    public IEnumerator LoadIniFile(string filePath)
     {
         INIParser parser = new INIParser();
         parser.Open(filePath);
@@ -211,6 +211,6 @@ public class SongFolderLoader : MonoBehaviour
         UIUpdater uiUpdater = FindAnyObjectByType<UIUpdater>();
         if (uiUpdater != null)
         uiUpdater.UpdateSongInfo(songName, songArtist, songYear);
-        await Task.Yield();
+        yield return null;
     }
 }

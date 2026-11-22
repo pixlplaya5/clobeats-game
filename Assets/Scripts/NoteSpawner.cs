@@ -41,8 +41,7 @@ public class NoteSpawner : MonoBehaviour
     [Header("Tempo Map Objects")]
     public GameObject barPrefab; // Prefab for bars
     public GameObject beatPrefab; // Prefab for beats
-    [Header("Others")]
-    public GameManager gameManager;
+    //[Header("Others")]
     public class NoteInfo
     {
         public float spawnTime; // legacy: ticks
@@ -82,9 +81,9 @@ public class NoteSpawner : MonoBehaviour
             int colored = 0, open = 0;
             int logColored = 0, logOpen = 0;
 
-            for (int i = 0; i < gameManager.currentSongNotes.ToArray().Length; i++)
+            for (int i = 0; i < GameManager.Instance.currentSongNotes.ToArray().Length; i++)
             {
-                var n = gameManager.currentSongNotes.ElementAt(i);
+                var n = GameManager.Instance.currentSongNotes.ElementAt(i);
                 if (n == null) continue;
                 switch (n.fret)
                 {
@@ -169,7 +168,7 @@ public class NoteSpawner : MonoBehaviour
     float currentBpm = 120f; // Default BPM
     public float songLengthInTicks = 0;
     public float currentTick = 0;
-    private UIUpdater uiUpdater;
+    //private UIUpdater uiUpdater;
     public float startingYPosition = 16f; // Configurable starting Y position for notes and bars/beats
     public float spawnLeadSeconds = 2f; // Extra seconds added to spacing so notes spawn further away from the strikeline
     public float preSpawnAheadSeconds = 10f; // How far ahead (in seconds) to spawn bars/beats
@@ -193,7 +192,7 @@ public class NoteSpawner : MonoBehaviour
     // Track scheduled song seconds for pooled objects to avoid relying on transform.z
     private Dictionary<GameObject, float> scheduledTimeByObject = new Dictionary<GameObject, float>();
     private Coroutine barBeatSpawnerCoroutine = null;
-    private MusicPlayer musicPlayer;
+    //private MusicPlayer musicPlayer;
     // how many seconds visuals lead before audio starts (audio scheduled at dspTime + visualLeadSeconds)
     public float visualLeadSeconds = 4f;
     // Progressive spawning controls: small initial pre-spawn, then spawn as song plays
@@ -204,10 +203,10 @@ public class NoteSpawner : MonoBehaviour
     private Coroutine runtimeSpawnCoroutine = null;
     string videoClipPath;
     bool videoPrepared = false;
-    [SerializeField]
-    private SongLoader songLoader;
-    [SerializeField]
-    private SongFolderLoader songFolderLoader;
+    //[SerializeField]
+    //private SongLoader songLoader;
+    //[SerializeField]
+    //private SongFolderLoader songFolderLoader;
     public float noteSpawningXOffset = 0;
     public float noteSpawningZOffset = 0;
     public Transform highwayTransform;
@@ -217,58 +216,43 @@ public class NoteSpawner : MonoBehaviour
 
     void Start()
     {
-        uiUpdater = FindFirstObjectByType<UIUpdater>(); // Initialize UIUpdater
-        musicPlayer = FindFirstObjectByType<MusicPlayer>();
-        songLoader = FindFirstObjectByType<SongLoader>();
-        songFolderLoader = FindFirstObjectByType<SongFolderLoader>();
-        gameManager =  FindAnyObjectByType<GameManager>();
         DontDestroyOnLoad(gameObject);
     }
     void Awake()
     {
         if (Instance == null) Instance = this; else if (Instance != this) Destroy(gameObject);
-        songLoader = FindFirstObjectByType<SongLoader>();
-        songFolderLoader = FindFirstObjectByType<SongFolderLoader>();
-        //desiredHyperspeedSingleThreaded = GameManager.Instance.GetNoteSpeed();
     }
 
-    public async Task Load(string path)
+    public IEnumerator Load(string path)
     {
-        if (songLoader == null)
+        while (!UIUpdater.Instance)
         {
-            songLoader = FindAnyObjectByType<SongLoader>();
+            yield return null;
         }
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        if (songLoader != null && songLoader.songDataSet)
+        if (SongLoader.Instance.songDataSet)
         {
-            if (uiUpdater != null)
-            {
-                uiUpdater.SetSongInfoOpacity(0);
-                uiUpdater.ScoreVisibility(false);
-            }
-            await songLoader.LoadSongData();
-            var songFolderFiles = await Task.Run(() => Directory.GetFiles(path));
+            UIUpdater.Instance.SetSongInfoOpacity(0);
+            UIUpdater.Instance.ScoreVisibility(false);
+            _ = SongLoader.Instance.LoadSongData();
+            string[] songFolderFiles = Directory.GetFiles(path);
             List<string> supportedInis = new List<string> { "ini" };
                 var iniMatch = songFolderFiles
                     .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
                     .FirstOrDefault(x => supportedInis.Contains(x.ext));
             if (iniMatch != null)
             {
-                await songFolderLoader.LoadIniFile(iniMatch.path);
+                yield return StartCoroutine(SongFolderLoader.Instance.LoadIniFile(iniMatch.path));
             }
-            
-            await musicPlayer.LoadAvailableStemsInPath(path);
-            videoClipPath = songFolderLoader.songVideoClipPath;
+            yield return StartCoroutine(MusicPlayer.Instance.LoadAvailableStemsInPath(path));
+            videoClipPath = SongFolderLoader.Instance.songVideoClipPath;
             if (PlayerPrefs.GetInt("EnableVideo", 1) == 1)
             {
-                musicPlayer.loadVideo(videoClipPath);
+                MusicPlayer.Instance.loadVideo(videoClipPath);
             }
             else
             {
                 Debug.Log("[NoteSpawner.Load] Video playback is disabled.");
             }
-            //songLengthInTicks = gameManager.currentSongLengthInTicks;
-            
             if (!string.IsNullOrEmpty(videoClipPath))
             {
                 Debug.Log("Loading video clip: " + videoClipPath);
@@ -282,18 +266,11 @@ public class NoteSpawner : MonoBehaviour
                     videoViewer.SetActive(false);
                 }
             }
-        }
-        else if (songLoader != null && !songLoader.songDataSet)
-        {
-            Debug.LogError("Song data not set in SongLoader.");
-        }
-        else
-        {
-            Debug.LogError("SongLoader instance not found.");
+            yield return null;
         }
     }
 
-    public async Task InitGameplay(string path)
+    public IEnumerator InitGameplay(string path)
     {
         Debug.Log("Song data loaded successfully.");
         INIParser parser = new INIParser();
@@ -321,7 +298,7 @@ public class NoteSpawner : MonoBehaviour
         sustainManager.Prewarm(8);
         if (allowNotePooling)
         {
-            await PrewarmNotePools();
+            yield return PrewarmNotePools();
         }
         else
         {
@@ -334,6 +311,7 @@ public class NoteSpawner : MonoBehaviour
         {
             StartCoroutine(gm.PlaySong());     
         }
+        yield return null;
     }
     private void LoadVideoVenue()
     {
@@ -356,23 +334,16 @@ public class NoteSpawner : MonoBehaviour
     public void Play()
     {
         // Schedule audio to start after a visual lead so notes/bars can move before audio starts
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        if (musicPlayer != null)
+        double dspStart = AudioSettings.dspTime + visualLeadSeconds;
+        // schedule countdown clips for the configured bar number
+        if (enableCountdown && !countdownScheduled)
         {
-            double dspStart = AudioSettings.dspTime + visualLeadSeconds;
-            // schedule countdown clips for the configured bar number
-            if (enableCountdown && !countdownScheduled)
-            {
-                try { ScheduleCountdownForBar(dspStart, countdownBarNumber); } catch (Exception ex) { Debug.LogWarning("ScheduleCountdownForSecondBar failed: " + ex.Message); }
-                countdownScheduled = true;
-            }
-
-            musicPlayer.PlayScheduled(dspStart);
+            try { ScheduleCountdownForBar(dspStart, countdownBarNumber); } catch (Exception ex) { Debug.LogWarning("ScheduleCountdownForSecondBar failed: " + ex.Message); }
+            countdownScheduled = true;
         }
-
+        MusicPlayer.Instance.PlayScheduled(dspStart);
         // Start progressive runtime spawning of notes (small initial window + streaming spawn) (has to be on same thread w/o Task.Run)
         StartProgressiveSpawning();
-        
         // Start managed spawning of bars/beats (pooled, ahead-window)
         if (GameManager.Instance.GetTempoMapToggle())
         {
@@ -403,11 +374,10 @@ public class NoteSpawner : MonoBehaviour
         catch (Exception) { }
 
         int firstBarTick = 0;
-        if (gameManager.currentSongSyncTrack != null && gameManager.currentSongSyncTrack.Count > 0) firstBarTick = (int)gameManager.currentSongSyncTrack.ElementAt(0).time;
+        if (GameManager.Instance.currentSongSyncTrack != null && GameManager.Instance.currentSongSyncTrack.Count > 0) firstBarTick = (int)GameManager.Instance.currentSongSyncTrack.ElementAt(0).time;
         float barTime = GetTimeInSecondsAtTick(firstBarTick);
         float currentSongSeconds = 0f;
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        if (musicPlayer != null) currentSongSeconds = (float)musicPlayer.GetElapsedTimeDsp();
+        currentSongSeconds = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
 
         float spacingFactor = GameManager.Instance.GetNoteSpeed();
         float strikeY = GetStrikeLineY();
@@ -627,7 +597,7 @@ public class NoteSpawner : MonoBehaviour
     {
         try
         {
-            if (gameManager.currentSongEvents != null && gameManager.currentSongEvents.TryGetValue(tick, out var val)) return val.value;
+            if (GameManager.Instance.currentSongEvents != null && GameManager.Instance.currentSongEvents.TryGetValue(tick, out var val)) return val.value;
             return string.Empty;
         }
         catch
@@ -698,7 +668,7 @@ public class NoteSpawner : MonoBehaviour
             var noteSchedule = note.GetComponent<ScheduledTime>();
             float startTime = noteSchedule != null
                 ? noteSchedule.scheduledSeconds
-                : (musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f);
+                : ((float)MusicPlayer.Instance.GetElapsedTimeDsp());
 
             sustain.color = Color.gray;
             sustain.transform.SetParent(null, true);
@@ -717,14 +687,8 @@ public class NoteSpawner : MonoBehaviour
     private IEnumerator RemoveDummyAfterTime(GameObject go, float destroyAtSeconds)
     {
         if (go == null) yield break;
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        while (musicPlayer == null)
-        {
-            yield return null;
-            musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        }
         // Wait until song time passes the destroyAtSeconds
-        while ((float)musicPlayer.GetElapsedTimeDsp() < destroyAtSeconds)
+        while ((float)MusicPlayer.Instance.GetElapsedTimeDsp() < destroyAtSeconds)
         {
             yield return null;
         }
@@ -742,17 +706,15 @@ public class NoteSpawner : MonoBehaviour
             try { PreSpawnWindow(0f, preSpawnAheadSeconds); } catch { }
             return;
         }
-
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        float current = musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f;
+        float current = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
         // Prepopulate a small initial window so the immediate view isn't empty
         PreSpawnWindow(current, initialPreSpawnSeconds);
 
         // Find the first not-yet-spawned note index
         nextRuntimeSpawnIndex = 0;
-        while (nextRuntimeSpawnIndex < gameManager.currentSongNotes.Count)
+        while (nextRuntimeSpawnIndex < GameManager.Instance.currentSongNotes.Count)
         {
-            var nextNote = gameManager.currentSongNotes.ElementAt(nextRuntimeSpawnIndex);
+            var nextNote = GameManager.Instance.currentSongNotes.ElementAt(nextRuntimeSpawnIndex);
             float t = (nextNote.spawnTimeMs > 0f) ? nextNote.spawnTimeMs / 1000f : GetTimeInSecondsAtTick(nextNote.spawnTime);
             if (t - current > initialPreSpawnSeconds) break;
             nextRuntimeSpawnIndex++;
@@ -765,9 +727,9 @@ public class NoteSpawner : MonoBehaviour
     private void PreSpawnWindow(float currentSeconds, float windowSeconds)
     {
         float spacingFactor = GameManager.Instance.GetNoteSpeed();
-        for (int i = 0; i < gameManager.currentSongNotes.Count; i++)
+        for (int i = 0; i < GameManager.Instance.currentSongNotes.Count; i++)
         {
-            var n = gameManager.currentSongNotes.ElementAt(i);
+            var n = GameManager.Instance.currentSongNotes.ElementAt(i);
             if (n == null) continue;
             float t = (n.spawnTimeMs > 0f) ? n.spawnTimeMs / 1000f : GetTimeInSecondsAtTick(n.spawnTime);
             if (t < currentSeconds - 1f) continue; // skip past notes
@@ -780,15 +742,14 @@ public class NoteSpawner : MonoBehaviour
 
     private IEnumerator RuntimeSpawnLoop()
     {
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        while (nextRuntimeSpawnIndex < gameManager.currentSongNotes.Count)
+        while (nextRuntimeSpawnIndex < GameManager.Instance.currentSongNotes.Count)
         {
-            float current = musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f;
+            float current = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
             float lead = runtimeSpawnLeadSeconds;
             // spawn all notes that have entered the lead window
-            while (nextRuntimeSpawnIndex < gameManager.currentSongNotes.Count)
+            while (nextRuntimeSpawnIndex < GameManager.Instance.currentSongNotes.Count)
             {
-                var n = gameManager.currentSongNotes.ElementAt(nextRuntimeSpawnIndex);
+                var n = GameManager.Instance.currentSongNotes.ElementAt(nextRuntimeSpawnIndex);
                 if (n == null) { nextRuntimeSpawnIndex++; continue; }
                 float noteTime = (n.spawnTimeMs > 0f) ? n.spawnTimeMs / 1000f : GetTimeInSecondsAtTick(n.spawnTime);
                 if (noteTime - current <= lead)
@@ -809,40 +770,24 @@ public class NoteSpawner : MonoBehaviour
     // barNumber is 1-based (1 = first bar, 2 = second bar, ...)
     private void ScheduleCountdownForBar(double dspStart, int barNumber = 2)
     {
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
-        if (gameManager == null) gameManager = FindAnyObjectByType<GameManager>();
-        //if (gameManager == null || gameManager.currentSongSyncTrack == null || gameManager.currentSongSyncTrack.Count == 0) return;
-
         // Determine first bar tick (same logic as ManageBarBeatSpawning)
-        int firstBarTick = (int)gameManager.currentSongBeatEvents.ElementAt(0).spawnTime;
-        // Get sync info for that tick
-        //SyncInfo sync = FindSyncForTick(firstBarTick);
-
+        int firstBarTick = (int)GameManager.Instance.currentSongBeatEvents.ElementAt(0).spawnTime;
         int numerator = 4;
         int denomExp = 2; // denominator = 2^denomExp
-        //if (sync != null && !string.IsNullOrWhiteSpace(sync.timeSignature))
-        //{
-        //    string ts = sync.timeSignature.Trim();
-        //    var parts = ts.Split(new[] { ' ', '/', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-        //    if (parts.Length >= 1) int.TryParse(parts[0], out numerator);
-        //    if (parts.Length >= 2) int.TryParse(parts[1], out denomExp);
-        //}
-
         int denominator = 1 << Math.Max(0, denomExp);
         int ticksPerBeat = Math.Max(1, resolution * 4 / denominator);
         int beatsPerBar = Math.Max(1, numerator);
         int ticksPerBar = ticksPerBeat * beatsPerBar;
-
         int barIndex = Math.Max(1, barNumber);
         int targetBarStartTick = firstBarTick + ticksPerBar * (barIndex - 1);
 
         // Prefer explicit BEAT track events if they exist (note 12 = bar, 13 = regular beat)
         try
         {
-            if (gameManager != null && gameManager.currentSongBeatEvents != null && gameManager.currentSongBeatEvents.Count > 0)
+            if (GameManager.Instance.currentSongBeatEvents != null && GameManager.Instance.currentSongBeatEvents.Count > 0)
             {
                 int endTick = targetBarStartTick + ticksPerBar;
-                var beatsInBar = gameManager.currentSongBeatEvents.Where(e => e.spawnTime >= targetBarStartTick && e.spawnTime < endTick).OrderBy(e => e.spawnTimeMs > 0f ? e.spawnTimeMs : e.spawnTime).ToList();
+                var beatsInBar = GameManager.Instance.currentSongBeatEvents.Where(e => e.spawnTime >= targetBarStartTick && e.spawnTime < endTick).OrderBy(e => e.spawnTimeMs > 0f ? e.spawnTimeMs : e.spawnTime).ToList();
                 if (beatsInBar != null && beatsInBar.Count > 0)
                 {
                     // Try to include the measure/bar marker first (note 12), then the regular beats (note 13)
@@ -900,7 +845,7 @@ public class NoteSpawner : MonoBehaviour
         src.volume = Mathf.Clamp01(volume);
         try
         {
-            src.PlayScheduled(dspTime - Mathf.Abs(gameManager.audioOffsetSeconds));
+            src.PlayScheduled(dspTime + GameManager.Instance.audioOffsetSeconds);
         }
         catch (Exception ex)
         {
@@ -941,10 +886,10 @@ public class NoteSpawner : MonoBehaviour
     // Spawn a single note with sustain handling and lane registration
     private void SpawnNoteInstance(int noteIndex, float timeSeconds, float spacingFactor)
     {
-        if (noteIndex < 0 || noteIndex >= gameManager.currentSongNotes.Count) return;
-        NoteInfo n = gameManager.currentSongNotes.ElementAt(noteIndex);
+        if (noteIndex < 0 || noteIndex >= GameManager.Instance.currentSongNotes.Count) return;
+        NoteInfo n = GameManager.Instance.currentSongNotes.ElementAt(noteIndex);
         NoteInfo lastN = null;
-        try { lastN = gameManager.currentSongNotes.ElementAt(noteIndex - 1); } catch { lastN = null; }
+        try { lastN = GameManager.Instance.currentSongNotes.ElementAt(noteIndex - 1); } catch { lastN = null; }
         if (n == null) return;
         // Allow the first note (index 0) to spawn even when there is no previous note.
         // HOPO detection below will handle a null lastN safely.
@@ -1000,7 +945,7 @@ public class NoteSpawner : MonoBehaviour
             }
             return;
         }
-        if (n.belongingPart != gameManager.currentPart.ToLower())
+        if (n.belongingPart != GameManager.Instance.currentPart.ToLower())
         {
             return;
         }
@@ -1008,7 +953,7 @@ public class NoteSpawner : MonoBehaviour
         Debug.Log($"Spawning note [spawnTime={n.spawnTime}, spawnTimeMs={n.spawnTimeMs}, fret={n.fret}, length={n.length}, lengthMs={n.lengthMs}, belongingPart={n.belongingPart}] at index " + noteIndex + " at timeSeconds " + timeSeconds + " with hyperspeed " + spacingFactor);
         int fret = n.fret;
         float strikeY = GetStrikeLineY();
-        float currentSongSeconds = musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f;
+        float currentSongSeconds = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
         float yPosition = preSpawnLongPlane
             ? strikeY + startingYPosition + startingYOffset + (timeSeconds + spawnLeadSeconds) * spacingFactor
             : strikeY + startingYPosition + startingYOffset + ((timeSeconds - currentSongSeconds) + spawnLeadSeconds) * spacingFactor;
@@ -1076,7 +1021,7 @@ public class NoteSpawner : MonoBehaviour
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
             }
-            else if (gameManager.gamepadMode)
+            else if (GameManager.Instance.gamepadMode)
             {
                 // force all notes for keyboard / gamepad mode
                 if (visual != null)
@@ -1125,7 +1070,7 @@ public class NoteSpawner : MonoBehaviour
                 lengthMs = 0,
                 fret = n.fret,
                 isfretRelease = true,
-                belongingPart = gameManager.currentPart
+                belongingPart = GameManager.Instance.currentPart
             }, GetTimeInSecondsAtTick(n.spawnTime + n.length), spacingFactor);
         }
     }
@@ -1160,7 +1105,7 @@ public class NoteSpawner : MonoBehaviour
         //Debug.Log($"Spawning note [spawnTime={n.spawnTime}, spawnTimeMs={n.spawnTimeMs}, fret={n.fret}, length={n.length}, lengthMs={n.lengthMs}] at index " + noteIndex + " at timeSeconds " + timeSeconds + " with hyperspeed " + spacingFactor);
         int fret = noteEntry.fret;
         float strikeY = GetStrikeLineY();
-        float currentSongSeconds = musicPlayer != null ? (float)musicPlayer.GetElapsedTimeDsp() : 0f;
+        float currentSongSeconds = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
         float yPosition = preSpawnLongPlane
             ? strikeY + startingYPosition + startingYOffset + (timeSeconds + spawnLeadSeconds) * spacingFactor
             : strikeY + startingYPosition + startingYOffset + ((timeSeconds - currentSongSeconds) + spawnLeadSeconds) * spacingFactor;
@@ -1249,7 +1194,7 @@ public class NoteSpawner : MonoBehaviour
                 lengthMs = 0,
                 fret = noteEntry.fret,
                 isfretRelease = true,
-                belongingPart = gameManager.currentPart
+                belongingPart = GameManager.Instance.currentPart
             }, GetTimeInSecondsAtTick(noteEntry.spawnTime + noteEntry.length), spacingFactor);
         }
     }
@@ -1262,7 +1207,7 @@ public class NoteSpawner : MonoBehaviour
     // Returns cumulative time in seconds from tick 0 up to the given tick, honoring tempo changes in syncTrack
     public float GetTimeInSecondsAtTick(float tick)
     {
-        if (gameManager.currentSongSyncTrack == null || gameManager.currentSongSyncTrack.Count == 0)
+        if (GameManager.Instance.currentSongSyncTrack == null || GameManager.Instance.currentSongSyncTrack.Count == 0)
         {
             float defaultSecondsPerTick = 60f / (currentBpm * resolution);
             return tick * defaultSecondsPerTick;
@@ -1270,10 +1215,10 @@ public class NoteSpawner : MonoBehaviour
 
         float totalSeconds = 0f;
         float prevTick = 0;
-        float prevBpm = gameManager.currentSongSyncTrack.ElementAt(0).bpm;
-        for (int i = 0; i < gameManager.currentSongSyncTrack.Count; i++)
+        float prevBpm = GameManager.Instance.currentSongSyncTrack.ElementAt(0).bpm;
+        for (int i = 0; i < GameManager.Instance.currentSongSyncTrack.Count; i++)
         {
-            var sync = gameManager.currentSongSyncTrack.ElementAt(i);
+            var sync = GameManager.Instance.currentSongSyncTrack.ElementAt(i);
             float segEnd = Math.Min(sync.time, tick);
             float delta = segEnd - prevTick;
             if (delta > 0)
@@ -1298,9 +1243,7 @@ public class NoteSpawner : MonoBehaviour
     // Convert elapsed song time (seconds) to nearest chart tick, honoring tempo changes in syncTrack.
     public float GetTickAtTimeSeconds(float seconds, bool roundToNearest = false)
     {
-        //if (seconds <= 0f) return 0; // allow below zero
-        
-        if (gameManager.currentSongSyncTrack == null || gameManager.currentSongSyncTrack.Count == 0)
+        if (GameManager.Instance.currentSongSyncTrack == null || GameManager.Instance.currentSongSyncTrack.Count == 0)
         {
             float sPerTick = 60f / (currentBpm * resolution);
             float ticksF = seconds / sPerTick;
@@ -1309,11 +1252,11 @@ public class NoteSpawner : MonoBehaviour
 
         float accumulatedSeconds = 0f;
         int prevTick = 0;
-        float prevBpm = gameManager.currentSongSyncTrack.ElementAt(0).bpm;
+        float prevBpm = GameManager.Instance.currentSongSyncTrack.ElementAt(0).bpm;
 
-        for (int i = 0; i < gameManager.currentSongSyncTrack.Count; i++)
+        for (int i = 0; i < GameManager.Instance.currentSongSyncTrack.Count; i++)
         {
-            var entry = gameManager.currentSongSyncTrack.ElementAt(i);
+            var entry = GameManager.Instance.currentSongSyncTrack.ElementAt(i);
             int segEndTick = (int)entry.time;
             int segTicks = Math.Max(0, segEndTick - prevTick);
             float secPerTick = 60f / (prevBpm * resolution);
@@ -1345,12 +1288,10 @@ public class NoteSpawner : MonoBehaviour
     // Coroutine: manages spawning bars and beats ahead of current playback time using pooling
     private IEnumerator ManageBarBeatSpawning()
     {
-        if (musicPlayer == null) musicPlayer = FindAnyObjectByType<MusicPlayer>();
         float spacingFactor = GameManager.Instance.GetNoteSpeed();
 
         // Start spawning from the first sync tick or 0
         int nextBarTick = 0;
-        //if (gameManager.currentSongSyncTrack != null && gameManager.currentSongSyncTrack.Count > 0) nextBarTick = (int)gameManager.currentSongSyncTrack.ElementAt(0).time;
 
         // Beat events caching and progress index so we don't respawn the same events each frame
         List<GlobalEventInfo> beatEvents = null;
@@ -1359,19 +1300,13 @@ public class NoteSpawner : MonoBehaviour
 
         while (true)
         {
-            if (musicPlayer == null)
-            {
-                yield return null;
-                continue;
-            }
-
-            float currentSongSeconds = (musicPlayer != null) ? (float)musicPlayer.GetElapsedTimeDsp() : GetTimeInSecondsAtTick(currentTick);
+            float currentSongSeconds = (float)MusicPlayer.Instance.GetElapsedTimeDsp();
 
             // spawn bars while their time is within the ahead window
             // Prefer explicit BEAT track events when available (note 12=bar, 13=beat)
             if (beatEvents == null)
             {
-                try { if (gameManager != null && gameManager.currentSongBeatEvents != null && gameManager.currentSongBeatEvents.Count > 0) beatEvents = gameManager.currentSongBeatEvents.OrderBy(e => e.spawnTime).ToList(); } catch { }
+                try { if (GameManager.Instance.currentSongBeatEvents != null && GameManager.Instance.currentSongBeatEvents.Count > 0) beatEvents = GameManager.Instance.currentSongBeatEvents.OrderBy(e => e.spawnTime).ToList(); } catch { }
             }
 
             if (beatEvents != null && beatEvents.Count > 0) // MIDI BEAT track (if available)
@@ -1628,11 +1563,11 @@ public class NoteSpawner : MonoBehaviour
         SyncInfo last = null;
         try
         {
-            for (int i = 0; i < gameManager.currentSongSyncTrack.Count; i++)
+            for (int i = 0; i < GameManager.Instance.currentSongSyncTrack.Count; i++)
             {
-                if (gameManager.currentSongSyncTrack.ElementAt(i).time <= tick) last = gameManager.currentSongSyncTrack.ElementAt(i); else break;
+                if (GameManager.Instance.currentSongSyncTrack.ElementAt(i).time <= tick) last = GameManager.Instance.currentSongSyncTrack.ElementAt(i); else break;
             }
-            return last ?? (gameManager.currentSongSyncTrack.Count > 0 ? gameManager.currentSongSyncTrack.ElementAt(0) : null);
+            return last ?? (GameManager.Instance.currentSongSyncTrack.Count > 0 ? GameManager.Instance.currentSongSyncTrack.ElementAt(0) : null);
         }
         catch
         {
@@ -1698,12 +1633,12 @@ public class NoteSpawner : MonoBehaviour
     {
         if (!videoPrepared)
         {
-            if (!string.IsNullOrEmpty(videoClipPath) && musicPlayer != null && musicPlayer.videoPlayer != null)
+            if (!string.IsNullOrEmpty(videoClipPath)&& MusicPlayer.Instance.videoPlayer != null)
             {
-                if (!musicPlayer.videoPlayer.isPrepared)
+                if (!MusicPlayer.Instance.videoPlayer.isPrepared)
                 {
-                    musicPlayer.videoPlayer.url = videoClipPath;
-                    musicPlayer.videoPlayer.Prepare();
+                    MusicPlayer.Instance.videoPlayer.url = videoClipPath;
+                    MusicPlayer.Instance.videoPlayer.Prepare();
                     videoPrepared = true;
                 }
             }

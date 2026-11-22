@@ -525,7 +525,6 @@ public class VenueAnimationPlayer : MonoBehaviour
     
     void Update()
     {
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
         if (SceneManager.GetSceneByName("v_PJCBPV").isLoaded)
         {
             if (!mainCamera)
@@ -573,14 +572,14 @@ public class VenueAnimationPlayer : MonoBehaviour
             lastSecondForScripts = currentRealtimeSecs;
         }
 
-        if (gameManager.currentSongVenueCueEvents != null && gameManager.currentSongVenueCueEvents.Count > 0)
+        if (GameManager.Instance.currentSongVenueCueEvents != null && GameManager.Instance.currentSongVenueCueEvents.Count > 0)
         {
             if (currentTick < lastTickForMIDICues)
             {
-                foreach (var ev in gameManager.currentSongVenueCueEvents) ev.passed = false;
+                foreach (var ev in GameManager.Instance.currentSongVenueCueEvents) ev.passed = false;
             }
 
-            foreach (var ev in gameManager.currentSongVenueCueEvents)
+            foreach (var ev in GameManager.Instance.currentSongVenueCueEvents)
             {
                 if (!ev.passed && currentTick >= ev.spawnTime)
                 {
@@ -592,13 +591,13 @@ public class VenueAnimationPlayer : MonoBehaviour
             lastTickForMIDICues = currentTick;
         }
 
-        if (gameManager.currentSongLyrics != null && gameManager.currentSongLyrics.Count > 0)
+        if (GameManager.Instance.currentSongLyrics != null && GameManager.Instance.currentSongLyrics.Count > 0)
         {
             if (currentTick < lastTickForLyrics)
             {
-                foreach (var ev in gameManager.currentSongLyrics) ev.passed = false;
+                foreach (var ev in GameManager.Instance.currentSongLyrics) ev.passed = false;
             }
-            foreach (var ev in gameManager.currentSongLyrics)
+            foreach (var ev in GameManager.Instance.currentSongLyrics)
             {
                 if (!ev.passed && currentTick >= ev.spawnTick)
                 {
@@ -609,7 +608,7 @@ public class VenueAnimationPlayer : MonoBehaviour
                     }
                     else
                     {
-                        LyricViewer.Instance.currentLyricPhrase += ev.value.Replace("-", "").Replace("#", "").Replace("^", "") + " ";
+                        LyricViewer.Instance.currentLyricPhrase += ev.value.Replace("-", "").Replace("#", "").Replace("^", "").Replace("=", "") + " ";
                     }
                     
                     //Debug.Log(ev.value + " (Freq=" + ev.sungNote + ", StartTick=" + ev.spawnTick + ", EndTick=" + (ev.spawnTick + ev.length) + ")"); // log lyrics to console for now
@@ -670,9 +669,8 @@ public class VenueAnimationPlayer : MonoBehaviour
             if (args.Count > 0) return;
             MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
             StartCoroutine(musicPlayer.EndSong(false));
-            GameManager gameManager = FindAnyObjectByType<GameManager>();
-            gameManager.ResetAllValues();
-            gameManager.ExitGame(false);
+            GameManager.Instance.ResetAllValues();
+            GameManager.Instance.ExitGame(false);
         };
     }
 

@@ -81,13 +81,11 @@ public class StarMeter : MonoBehaviour
 
     private void OnValueChanged()
     {
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        UIUpdater updater = FindAnyObjectByType<UIUpdater>();
         if (value == 0)
         {
-            updater.StarPowerToggle(gameManager.currentPart.ToLower(), false);
+            UIUpdater.Instance.StarPowerToggle(GameManager.Instance.currentPart.ToLower(), false);
         }
-        else if (value == 50 && !updater.inStar)
+        else if (value == 50 && !UIUpdater.Instance.inStar)
         {
             // alert star power ready
             Debug.Log("[StarMeter] Star Power is ready to deploy.");

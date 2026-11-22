@@ -40,10 +40,14 @@ public class UIUpdater : MonoBehaviour
         ScoreAdd,
         ScoreMinus,
     }
-
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
     public void InitializeUI()

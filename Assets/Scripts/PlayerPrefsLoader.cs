@@ -66,18 +66,17 @@ public class PlayerPrefsLoader : MonoBehaviour
 
     public void InitLoadingScreen()
     {
-        GameManager gameManager = FindAnyObjectByType<GameManager>();
-        if (!gameManager.initialized)
+        if (!GameManager.Instance.initialized)
         {
-            GameObject loadscreen = Instantiate(gameManager.unDestructibleLoadingPhraseScreen);
+            GameObject loadscreen = Instantiate(GameManager.Instance.unDestructibleLoadingPhraseScreen);
             DontDestroyOnLoad(loadscreen);
-            gameManager.unDestructibleLoadingPhraseScreen = loadscreen;
-            gameManager.DisableLoadSongVisual(gameManager.unDestructibleLoadingPhraseScreen);
+            GameManager.Instance.unDestructibleLoadingPhraseScreen = loadscreen;
+            GameManager.Instance.DisableLoadSongVisual(GameManager.Instance.unDestructibleLoadingPhraseScreen);
             string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            gameManager.savePath = documentsPath + Path.DirectorySeparatorChar + "CloBeats" + Path.DirectorySeparatorChar + "save";
-            if (!Directory.Exists(gameManager.savePath))
+            GameManager.Instance.savePath = documentsPath + Path.DirectorySeparatorChar + "CloBeats" + Path.DirectorySeparatorChar + "save";
+            if (!Directory.Exists(GameManager.Instance.savePath))
             {
-                Directory.CreateDirectory(gameManager.savePath);
+                Directory.CreateDirectory(GameManager.Instance.savePath);
             }
         }
     }
@@ -208,7 +207,5 @@ public class PlayerPrefsLoader : MonoBehaviour
     {
         Debug.Log("Warming shaders");
         Shader.WarmupAllShaders();
-        ShaderOven shaderOven = FindFirstObjectByType<ShaderOven>();
-        shaderOven.shaders.WarmUp();
     }
 }

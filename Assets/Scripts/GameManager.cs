@@ -228,8 +228,8 @@ public class GameManager : MonoBehaviour
 
         if (NoteSpawner.Instance)
         {
-            await NoteSpawner.Instance.Load(path);
-            await NoteSpawner.Instance.InitGameplay(path);
+            StartCoroutine(NoteSpawner.Instance.Load(path));
+            StartCoroutine(NoteSpawner.Instance.InitGameplay(path));
         }
     }
 
@@ -919,6 +919,7 @@ public class GameManager : MonoBehaviour
 
         if (chosenTrackMatch != null)
         {
+            Debug.Log("[GameManager.CacheChartFile] Parsed Track entry: " + desiredTrack);
             var trackBody = chosenTrackMatch.Groups[2].Value;
             var noteRe = new Regex("^\\s*(\\d+)\\s*=\\s*N\\s+(\\d+)\\s+(\\d+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             foreach (Match nm in noteRe.Matches(trackBody))
@@ -992,7 +993,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            //PruneFastTempoBeatSubdivisions(info);
+            PruneFastTempoBeatSubdivisions(info);
         }
         catch (Exception ex)
         {
@@ -1109,7 +1110,7 @@ public class GameManager : MonoBehaviour
                 int beatsPerBar = Math.Max(1, numerator);
                 int ticksPerBar = ticksPerBeat * beatsPerBar;
                 int eighthNoteStep = Math.Max(1, ticksPerBeat / 2);
-                bool allowEighthsInSection = includeEighthNotes && sync.bpm <= 180f;
+                //bool allowEighthsInSection = includeEighthNotes;
 
                 // start bars at the segment start; if you want alignment to zero-based bars, adjust here
                 for (int barTick = segStart; barTick < segEnd; barTick += ticksPerBar)
@@ -1137,7 +1138,7 @@ public class GameManager : MonoBehaviour
                         });
                     }
 
-                    if (allowEighthsInSection)
+                    if (includeEighthNotes)
                     {
                         for (int step = 1; step < beatsPerBar * 2; step++)
                         {
@@ -1564,6 +1565,10 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlaySong()
     {
+        while (!UIUpdater.Instance)
+        {
+            yield return null;
+        }
         StartCoroutine(UIUpdater.Instance.SongInfoAnim());
         UIUpdater.Instance.InitializeUI();
         VenueAnimationPlayer.Instance.TryToggleHighwayCam(false);

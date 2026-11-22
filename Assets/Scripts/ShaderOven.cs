@@ -10,7 +10,7 @@ public class ShaderOven : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        button.onClick.AddListener(Button_Click);
+        //button.onClick.AddListener(Button_Click);
     }
 
     private void Button_Click()
