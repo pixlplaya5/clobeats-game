@@ -992,7 +992,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            PruneFastTempoBeatSubdivisions(info);
+            //PruneFastTempoBeatSubdivisions(info);
         }
         catch (Exception ex)
         {
