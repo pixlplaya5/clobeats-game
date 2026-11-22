@@ -247,7 +247,16 @@ public class NoteSpawner : MonoBehaviour
                 uiUpdater.ScoreVisibility(false);
             }
             await songLoader.LoadSongData();
-            await songFolderLoader.LoadIniFile(path + Path.DirectorySeparatorChar + "song.ini");
+            var songFolderFiles = await Task.Run(() => Directory.GetFiles(path));
+            List<string> supportedInis = new List<string> { "ini" };
+                var iniMatch = songFolderFiles
+                    .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
+                    .FirstOrDefault(x => supportedInis.Contains(x.ext));
+            if (iniMatch != null)
+            {
+                await songFolderLoader.LoadIniFile(iniMatch.path);
+            }
+            
             await musicPlayer.LoadAvailableStemsInPath(path);
             videoClipPath = songFolderLoader.songVideoClipPath;
             if (PlayerPrefs.GetInt("EnableVideo", 1) == 1)

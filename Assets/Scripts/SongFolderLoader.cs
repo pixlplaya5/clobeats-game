@@ -68,18 +68,28 @@ public class SongFolderLoader : MonoBehaviour
                     .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
                     .FirstOrDefault(x => supportedMidis.Contains(x.ext));
 
-                if (File.Exists(path + Path.DirectorySeparatorChar + "notes.chart"))
+                List<string> supportedCharts = new List<string> { "chart" };
+                var chartMatch = songFolderFiles
+                    .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
+                    .FirstOrDefault(x => supportedCharts.Contains(x.ext));
+
+                if (chartMatch != null)
                 {
-                    chartFilePath = path + Path.DirectorySeparatorChar + "notes.chart";
+                    chartFilePath = chartMatch.path;
                 }
                 else if (midiMatch != null)
                 {
                     // use MIDI as chart source
                     chartFilePath = midiMatch.path;
                 }
-                if (File.Exists(path + Path.DirectorySeparatorChar + "scripts.json"))
+
+                List<string> supportedScripts = new List<string> { "json", "pjcbpv" };
+                var scriptMatch = songFolderFiles
+                    .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
+                    .FirstOrDefault(x => supportedScripts.Contains(x.ext));
+                if (scriptMatch != null)
                 {
-                    VenueAnimationPlayer.Instance.cameraAnimationFile = path + Path.DirectorySeparatorChar + "scripts.json";
+                    VenueAnimationPlayer.Instance.cameraAnimationFile = scriptMatch.path;
                 }
 
                 var videoMatch = songFolderFiles
@@ -168,8 +178,7 @@ public class SongFolderLoader : MonoBehaviour
         loadingPhrase = checkSectionCase ? parser.ReadValue("song", "loading_phrase", string.Empty) : parser.ReadValue("Song", "loading_phrase", string.Empty);
         authorName = checkSectionCase ? parser.ReadValue("song", "charter", string.Empty) : parser.ReadValue("Song", "charter", string.Empty);
         songLength = checkSectionCase ? parser.ReadValue("song", "song_length", 0) : parser.ReadValue("Song", "song_length", 0);
-        NoteSpawner noteSpawner = FindAnyObjectByType<NoteSpawner>();
-        noteSpawner.songLengthInTicks = songLength;
+        NoteSpawner.Instance.songLengthInTicks = songLength;
         previewStartTime = checkSectionCase ? parser.ReadValue("song", "preview_start_time", 0) : parser.ReadValue("Song", "preview_start_time", 0);
         string hex = checkSectionCase ? parser.ReadValue("song", "back_color", "#000000") : parser.ReadValue("Song", "back_color", "#000000");
         // Remove the '#' if it exists
