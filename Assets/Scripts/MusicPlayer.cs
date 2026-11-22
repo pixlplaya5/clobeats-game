@@ -1166,6 +1166,16 @@ public class MusicPlayer : MonoBehaviour
             {
                 Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded " + stemName + " audio from " + Path.GetFileName(stemPath) + ".");
             }
+            else
+            {
+                var oggMatch = SongFolderLoader.Instance.songFolderFiles
+                    .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
+                    .FirstOrDefault(x => SongFolderLoader.Instance.supportedFormats.Contains(x.ext));
+                if (await LoadNonStemmedAudio(oggMatch.path) != null)
+                {
+                    Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded unstemmed audio from " + Path.GetFileName(oggMatch.path) + ".");
+                }
+            }
         }
     }
 
@@ -1300,6 +1310,93 @@ public class MusicPlayer : MonoBehaviour
         };
 
         stemChannels[stemName] = stem;
+
+        if (autoplay)
+        {
+            Bass.ChannelPlay(stemHandle);
+        }
+
+        return stem;
+    }
+
+    public async Task<AudioStem> LoadNonStemmedAudio(string audioClipPath, float volume = 1f, bool autoplay = false)
+    {
+        string unStemmedName = "song";
+        if (string.IsNullOrEmpty(audioClipPath))
+        {
+            Debug.LogError("LoadStemAudio: audioClipPath is required.");
+            return null;
+        }
+
+        if (IsMidiPath(audioClipPath))
+        {
+            AudioStem midiStem = LoadMidiStemAudio(unStemmedName, audioClipPath, volume);
+            if (midiStem != null && autoplay)
+            {
+                PlayStem(unStemmedName);
+            }
+            return midiStem;
+        }
+
+        if (stemChannels.TryGetValue(unStemmedName, out var existingStem) && IsLoadedStem(existingStem))
+        {
+            StopStem(unStemmedName, true);
+        }
+
+        if (audioSubsystemType == AudioSubsystemType.Unity)
+        {
+            AudioClip clip = await LoadUnityAudioFile(audioClipPath);
+            if (clip == null)
+            {
+                Debug.LogError("LoadStemAudio: failed to load Unity audio clip for stem '" + unStemmedName + "'.");
+                return null;
+            }
+
+            AudioSource source = CreateUnityAudioSource(clip, GetAudioMixerGroupByName(unStemmedName + " Audio"), unStemmedName + " Audio", volume);
+            var unityStem = new AudioStem
+            {
+                name = unStemmedName,
+                audioSource = source,
+                volume = Mathf.Clamp01(volume),
+                isPlaying = false,
+                reverbEnabled = false
+            };
+            stemChannels[unStemmedName] = unityStem;
+            if (autoplay) PlayStem(unStemmedName);
+            return unityStem;
+        }
+
+        if (!bassInitialized) InitBASS();
+        if (!bassInitialized) return null;
+
+#if UNITY_STANDALONE_WIN && UNITY_64
+        if (Path.GetExtension(audioClipPath) == "opus")
+        {
+            Bass.PluginLoad(Application.streamingAssetsPath + Path.DirectorySeparatorChar + "bassopus_x64.dll"); // try to load manually
+        }
+#endif
+
+        int stemHandle = Bass.CreateStream(audioClipPath, 0, 0, BassFlags.Prescan);
+        if (stemHandle == 0)
+        {
+            Debug.LogError("LoadStemAudio: failed to create stem handle for '" + unStemmedName + "': " + Bass.LastError);
+            return null;
+        }
+
+        Bass.ChannelSetAttribute(stemHandle, ChannelAttribute.Volume, Mathf.Clamp01(volume));
+
+        var stem = new AudioStem
+        {
+            name = unStemmedName,
+            handle = stemHandle,
+            volume = Mathf.Clamp01(volume),
+            isPlaying = autoplay,
+            reverbEnabled = false,
+            reverbFxHandle = 0,
+            reverbDspHandle = 0
+        };
+
+        stemChannels[unStemmedName] = stem;
 
         if (autoplay)
         {
