@@ -321,6 +321,7 @@ public class MenuManager : MonoBehaviour
         try
         {
             GameManager.Instance.currentSongID = currentPreviewingID;
+            GameManager.Instance.currentSongPath = currentPreviewingSongPath;
             Debug.Log("[MenuManager] Loading selected song. (Include loading visual)");
             StopPreviewAudio();
             ShowMenu("songentry");
@@ -391,7 +392,7 @@ public class MenuManager : MonoBehaviour
                     PlaySelectedSong();
                     break;
                 case MenuAction.PlayCachedSong:
-                    await GameManager.Instance.PlaySongGlobal(currentPreviewingSongPath);
+                    StartCoroutine(GameManager.Instance.PlaySongGlobal(currentPreviewingSongPath));
                     break;
                 case MenuAction.PlaySongFromPath:
                     MouseInputCheck mouseInputCheck1 = FindAnyObjectByType<MouseInputCheck>();

@@ -925,7 +925,7 @@ public class MusicPlayer : MonoBehaviour
         }
     }
     // Unloads song resources and plays "You Rock" animation if player successfully cleared the song
-    public IEnumerator EndSong(bool songCleared = true)
+    public IEnumerator EndSong(bool saveData = true, bool songCleared = true)
     {
         Debug.Log("[MusicPlayer.EndSong] Unloading song...");
         UIUpdater.Instance.ScoreVisibility(false);
@@ -937,12 +937,24 @@ public class MusicPlayer : MonoBehaviour
         {
             videoPlayer.Stop();
         }
-        Scoring scoring = FindAnyObjectByType<Scoring>();
-        if (scoring != null && !songCleared)
+        List<string> savedData = new List<string>
         {
-            scoring.playerTag = PlayerPrefs.GetString("Username") != string.Empty ? PlayerPrefs.GetString("Username") : System.Environment.UserName;
-            scoring.Save(GameManager.Instance.savePath);
-        }
+            $"songId = {GameManager.Instance.currentSongID}",
+            $"songPath = {GameManager.Instance.currentSongPath}",
+            $"username = {GameManager.Instance.currentSignedInUser}",
+            $"playerType = {GameManager.Instance.currentPart}",
+            $"playerDiff = {GameManager.Instance.ddst}",
+            $"score = {UIUpdater.Instance.savedScore}",
+            $"nAll = {UIUpdater.Instance.savedGeneralNotesHit}",
+            $"nPerfect = {UIUpdater.Instance.savedPerfectNotesHit}",
+            $"nGood = {UIUpdater.Instance.savedGoodNotesHit}",
+            $"nOkay = {UIUpdater.Instance.savedOkayNotesHit}",
+            $"nBad = {UIUpdater.Instance.savedBadNotesHit}",
+            $"nMissed = {UIUpdater.Instance.savedMissedNotes}",
+            $"nSustain = {UIUpdater.Instance.savedSustainScore}",
+            $"nMaxStreak = {UIUpdater.Instance.maxCombo}",
+        };
+        if (saveData) Scoring.Save(savedData);
         GameManager.Instance.ResetAllValues();
         ImprovedStrikeline.Instance.ResetAnims();
         VenueAnimationPlayer.Instance.Unload();
@@ -1167,14 +1179,6 @@ public class MusicPlayer : MonoBehaviour
                 Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded " + stemName + " audio from " + Path.GetFileName(stemPath) + ".");
                 yield return null;
             }
-        }
-        var oggMatch = SongFolderLoader.Instance.songFolderFiles
-            .Select(f => new { path = f, name = Path.GetFileNameWithoutExtension(f).ToLowerInvariant(), ext = Path.GetExtension(f).TrimStart('.').ToLowerInvariant() })
-            .FirstOrDefault(x => SongFolderLoader.Instance.supportedFormats.Contains(x.ext));
-        if (_ = LoadNonStemmedAudio(oggMatch.path) != null)
-        {
-            Debug.Log("[MusicPlayer.LoadAvailableStemsInPath] Loaded unstemmed audio from " + Path.GetFileName(oggMatch.path) + ".");
-            yield return null;
         }
     }
 

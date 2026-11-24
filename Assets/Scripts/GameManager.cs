@@ -101,6 +101,8 @@ public class GameManager : MonoBehaviour
     public string currentSongAccentColor;
     public int currentSongPreviewStartTime;
     public int currentSongID = 0;
+    public string currentSongPath;
+    public string currentSignedInUser;
     public bool inSong = false;
     public string savePath = null;
     public GameObject unDestructibleLoadingPhraseScreen;
@@ -108,6 +110,7 @@ public class GameManager : MonoBehaviour
     public bool liteMode = false;
     public bool gamepadMode = false;
     public bool isLoading;
+    
 
     // note mappings (RBN2)
     Dictionary<string, Dictionary<int, int>> partGuitarDifficultyMappings = new Dictionary<string, Dictionary<int,int>>
@@ -210,14 +213,14 @@ public class GameManager : MonoBehaviour
         StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Lite Mode toggled to " + yes.ToString(), 5f));
     }
 
-    public async Task PlaySongGlobal(string path)
+    public IEnumerator PlaySongGlobal(string path)
     {
-        await EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
+        yield return EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
         SetIsLoading(true);
         MenuManager.Instance.ShowMenu("null");
         if (SongFolderLoader.Instance != null)
         {
-            await SongFolderLoader.Instance.Load(path);
+            yield return SongFolderLoader.Instance.Load(path);
         }
         else
         {
@@ -228,9 +231,10 @@ public class GameManager : MonoBehaviour
 
         if (NoteSpawner.Instance)
         {
-            StartCoroutine(NoteSpawner.Instance.Load(path));
-            StartCoroutine(NoteSpawner.Instance.InitGameplay(path));
+            yield return StartCoroutine(NoteSpawner.Instance.Load(path));
+            yield return StartCoroutine(NoteSpawner.Instance.InitGameplay(path));
         }
+        yield return null;
     }
 
     public void ExitGame(bool ask)
@@ -612,34 +616,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("CacheMidiFile: failed to parse BEAT track: " + ex.Message);
         }
-        try
-        {
-            // choose difficulty key (string) from player settings or UI
-            string chosenDiff = ddst;
-            string chosenPart = currentPart.ToUpper();
         
-            if (string.IsNullOrEmpty(chosenDiff)) chosenDiff = "Expert";
-            if (chosenPart == "DRUMS")
-            {
-                if (partDrumsDifficultyMappings.TryGetValue(chosenDiff, out var map))
-                {
-                    var trackNotes = GetNotesFromTrackByName(midi, "PART " + chosenPart, map, scale);
-                    foreach (var ni in trackNotes) info.noteInfos.Enqueue(ni);
-                }
-            }
-            else
-            {
-                if (partGuitarDifficultyMappings.TryGetValue(chosenDiff, out var map))
-                {
-                    var trackNotes = GetNotesFromTrackByName(midi, "PART " + chosenPart, map, scale);
-                    foreach (var ni in trackNotes) info.noteInfos.Enqueue(ni);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("[GameManager.CacheMidiFile] Failed to parse notes: " + ex.Message);
-        }
 
         try
         {
@@ -708,6 +685,35 @@ public class GameManager : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogWarning("[GameManager.CacheMidiFile] failed to parse Venue/Scripting track: " + ex.Message);
+        }
+        
+        try
+        {
+            // choose difficulty key (string) from player settings or UI
+            string chosenDiff = ddst;
+            string chosenPart = currentPart.ToUpper();
+        
+            if (string.IsNullOrEmpty(chosenDiff)) chosenDiff = "Expert";
+            if (chosenPart == "DRUMS")
+            {
+                if (partDrumsDifficultyMappings.TryGetValue(chosenDiff, out var map))
+                {
+                    var trackNotes = GetNotesFromTrackByName(midi, "PART " + chosenPart, map, scale);
+                    foreach (var ni in trackNotes) info.noteInfos.Enqueue(ni);
+                }
+            }
+            else
+            {
+                if (partGuitarDifficultyMappings.TryGetValue(chosenDiff, out var map))
+                {
+                    var trackNotes = GetNotesFromTrackByName(midi, "PART " + chosenPart, map, scale);
+                    foreach (var ni in trackNotes) info.noteInfos.Enqueue(ni);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[GameManager.CacheMidiFile] Failed to parse notes: " + ex.Message);
         }
 
         // Compute max tick from collected noteInfos (already scaled)

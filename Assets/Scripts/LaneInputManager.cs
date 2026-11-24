@@ -59,6 +59,7 @@ public class LaneInputManager : MonoBehaviour
 
     //MusicPlayer mp;
     public float secondsUntil;
+    public int lastHitLane;
 
 
     void Start()
@@ -386,6 +387,7 @@ public class LaneInputManager : MonoBehaviour
         if (Mathf.Abs(secondsUntil) <= hitWindowSeconds && !autoHit)
         {
             Debug.Log("PlayerHit lane " + laneIndex + " note with " + secondsUntil + " seconds until strike line. (threshold: " + hitWindowSeconds + ")");
+            lastHitLane = laneIndex;
             var sustainComp = note.GetComponent<SustainedNote>();
             if (visual != null)
             {
@@ -463,7 +465,7 @@ public class LaneInputManager : MonoBehaviour
         else if (secondsUntil <= autoHitWindowSeconds && autoHit)
         {
             Debug.Log("AutoHit lane " + laneIndex + " note with " + secondsUntil + " seconds until strike line. (threshold: " + autoHitWindowSeconds + ")");
-
+            lastHitLane = laneIndex;
             var sustainComp = note.GetComponent<SustainedNote>();
             LaneManager.Instance.UnregisterNote(note);
             Color sustainColor = Color.white;

@@ -22,10 +22,18 @@ public class UIUpdater : MonoBehaviour
     private NoteSpawner noteSpawner;
     private LaneInputManager lim;
 
-    float savesscore = 0f;
-    int savedcombo = 1;
+    public float savedScore = 0f;
+    public int savedCombo = 1;
+    public int maxCombo;
     int comboDotsCount = 0;
-    public int savednotesHit = 0;
+    public int savedNotesHit = 0;
+    public int savedGeneralNotesHit = 0;
+    public int savedPerfectNotesHit;
+    public int savedGoodNotesHit;
+    public int savedOkayNotesHit;
+    public int savedBadNotesHit;
+    public int savedMissedNotes;
+    public float savedSustainScore = 0f;
     int rockMeter = 50;
     float spMeterRead = 0;
     public float tempo = 120.000f;
@@ -66,7 +74,7 @@ public class UIUpdater : MonoBehaviour
         {
             UpdateScore();
             UpdateCombo(UpdateType.ScoreAdd);
-            UpdateNotesHit();
+            UpdateNotesHit(lim.lastHitLane, lim.secondsUntil);
             UpdateRockMeter();
             if (!inStar)
             {
@@ -91,7 +99,7 @@ public class UIUpdater : MonoBehaviour
         if (toggle)
         {
             combolimit = 8;
-            savedcombo = savedcombo * 2;
+            savedCombo = savedCombo * 2;
             highway.TrySetSpriteColor(0, 1, 1);
             sFX.PlayClip("Woosh");
             //sFX.PlayClip("FeverCheer1");
@@ -127,60 +135,51 @@ public class UIUpdater : MonoBehaviour
     }
     public void UpdateScore()
     {
-        savesscore += 50f * savedcombo;
-        Scoring scoring = FindAnyObjectByType<Scoring>();
-        if (scoring != null)
-        {
-            scoring.currentScore += 50 * savedcombo;
-        }
-        scoreText.text = savesscore.ToString("N0");
+        savedScore += 50f * savedCombo;
+        scoreText.text = savedScore.ToString("N0");
     }
     public void UpdateScoreSustain(float amount)
     {
-        savesscore += amount;
-        Scoring scoring = FindAnyObjectByType<Scoring>();
-        if (scoring != null)
-        {
-            scoring.currentScore += (int)amount;
-        }
-        scoreText.text = savesscore.ToString("N0");
+        savedScore += amount;
+        savedSustainScore += amount;
+        scoreText.text = savedScore.ToString("N0");
     }
     public void UpdateCombo(UpdateType type = UpdateType.ScoreAdd)
     {
         if (type == UpdateType.ScoreAdd)
         {
-            if (savednotesHit % 10 == 0 && savednotesHit != 0)
+            if (savedNotesHit % 10 == 0 && savedNotesHit != 0)
             {
-                savedcombo += 1; // Increase combo every 10 notes hit
+                savedCombo += 1; // Increase combo every 10 notes hit
                 comboDotsCount = 0;
             }
             comboDotsCount += 1;
         }
         else if (type == UpdateType.ScoreMinus)
         {
-            if (savednotesHit % 10 == 0 && savednotesHit != 0)
+            if (savedNotesHit % 10 == 0 && savedNotesHit != 0)
             {
-                savedcombo -= 1; // decrease combo every 10 notes hit
+                savedCombo -= 1; // decrease combo every 10 notes hit
                 comboDotsCount = 0;
             }
             comboDotsCount -= 1;
         }
         else if (type == UpdateType.Visuals)
         {
-            comboText.text = savedcombo.ToString() + "x";
+            comboText.text = savedCombo.ToString() + "x";
             comboDotsText.text = new string('.', comboDotsCount);
 
-            if (savedcombo == 2)
+            if (savedCombo == 2)
             {
                 comboText.color = new Color(1f, 0.5f, 0f);
                 comboDotsText.color = new Color(1f, 0.5f, 0f);
             }
-            else if (savedcombo == 3)
+            else if (savedCombo == 3)
             {
                 comboText.color = Color.green;
                 comboDotsText.color = Color.green;
             }
-            else if (savedcombo == 4)
+            else if (savedCombo == 4)
             {
                 comboText.color = new Color(1f, 0f, 1f);
                 comboDotsText.color = new Color(1f, 0f, 1f);
@@ -202,32 +201,44 @@ public class UIUpdater : MonoBehaviour
         }
         
         
-        if (savedcombo >= combolimit)
+        if (savedCombo >= combolimit)
         {
-            savedcombo = combolimit; // Limit combo to 4x
+            savedCombo = combolimit; // Limit combo to 4x
             comboDotsCount = 10;
         }
         
         
     }
-    public void UpdateNotesHit()
+    public void UpdateNotesHit(int lane, float timingSeconds)
     {
-        savednotesHit += 1;
-        Scoring scoring = FindAnyObjectByType<Scoring>();
-        if (scoring != null)
+        savedNotesHit += 1;
+        savedGeneralNotesHit += 1;
+        if (Mathf.Abs(timingSeconds) <= 0.15f)
         {
-            scoring.currentNotesHit += 1;
+            savedBadNotesHit += 1;
         }
-        notesHitText.text = savednotesHit.ToString();
+        if (Mathf.Abs(timingSeconds) <= 0.08f)
+        {
+            savedOkayNotesHit += 1;
+        }
+        if (Mathf.Abs(timingSeconds) <= 0.04f)
+        {
+            savedGoodNotesHit += 1;
+        }
+        if (Mathf.Abs(timingSeconds) <= 0.02f)
+        {
+            savedPerfectNotesHit += 1;
+        }
+        if (maxCombo != savedNotesHit)
+        {
+            maxCombo += 1;
+        }
+        notesHitText.text = savedNotesHit.ToString();
     }
     public void ResetCombo()
     {
-        Scoring scoring = FindAnyObjectByType<Scoring>();
-        if (scoring != null)
-        {
-            scoring.currentNotesMissed += 1;
-        }
-        if (savednotesHit == 0)
+        savedMissedNotes += 1;
+        if (savedNotesHit == 0)
         {
             return;
         }
@@ -235,11 +246,11 @@ public class UIUpdater : MonoBehaviour
         {
             SFXPlayer sFXPlayer = FindAnyObjectByType<SFXPlayer>();
             sFXPlayer.PlayClip("multilost");
-            savedcombo = 1;
-            savednotesHit = 0;
+            savedCombo = 1;
+            savedNotesHit = 0;
             comboDotsCount = 0;
-            comboText.text = savedcombo.ToString() + "x";
-            notesHitText.text = savednotesHit.ToString();
+            comboText.text = savedCombo.ToString() + "x";
+            notesHitText.text = savedNotesHit.ToString();
         }
     }
     public void DecreaseRockMeter()
