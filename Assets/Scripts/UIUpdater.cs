@@ -213,22 +213,24 @@ public class UIUpdater : MonoBehaviour
     {
         savedNotesHit += 1;
         savedGeneralNotesHit += 1;
-        if (Mathf.Abs(timingSeconds) <= 0.15f)
-        {
-            savedBadNotesHit += 1;
-        }
-        if (Mathf.Abs(timingSeconds) <= 0.08f)
-        {
-            savedOkayNotesHit += 1;
-        }
-        if (Mathf.Abs(timingSeconds) <= 0.04f)
-        {
-            savedGoodNotesHit += 1;
-        }
+        
         if (Mathf.Abs(timingSeconds) <= 0.02f)
         {
             savedPerfectNotesHit += 1;
         }
+        else if (Mathf.Abs(timingSeconds) <= 0.04f)
+        {
+            savedGoodNotesHit += 1;
+        }
+        else if (Mathf.Abs(timingSeconds) <= 0.08f)
+        {
+            savedOkayNotesHit += 1;
+        }
+        else if (Mathf.Abs(timingSeconds) <= 0.15f)
+        {
+            savedBadNotesHit += 1;
+        }
+
         if (maxCombo != savedNotesHit)
         {
             maxCombo += 1;
