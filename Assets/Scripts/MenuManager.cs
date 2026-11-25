@@ -48,6 +48,7 @@ public class MenuManager : MonoBehaviour
         RestartSong,
         ExitMainMenu,
         ExitDesktop,
+        PlayAllSongs
     }
 
     [Serializable]
@@ -473,11 +474,16 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.RestartSong:
                     break;
                 case MenuAction.ExitMainMenu:
-                    MusicPlayer.Instance.EndSong(false);
+                    var states = new List<GameManager.GameStates>{GameManager.GameStates.None};
+                    StartCoroutine(MusicPlayer.Instance.EndSong(states));
                     SceneManager.UnloadSceneAsync("Gameplay");
                     ShowMenu("main");
                     break;
                 case MenuAction.ExitDesktop:
+                    QuitGame();
+                    break;
+                case MenuAction.PlayAllSongs:
+                    StartCoroutine(GameManager.Instance.PlayAllSongs());
                     break;
             }
         }

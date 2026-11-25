@@ -39,6 +39,16 @@ public class GameManager : MonoBehaviour
             return _instance;
         }
     }
+    public enum GameStates
+    {
+        None,
+        SongCleared,
+        IsLoading,
+        PlayNextSong,
+        Autosave,
+        SongFailed,
+    }
+    public bool inSetlist = false;
     public float hyperspeed = 12f;
     public bool tempoMapEnabled = true;
     public bool postProcEnabled = true;
@@ -48,7 +58,12 @@ public class GameManager : MonoBehaviour
     public bool allowFail = true;
     [Tooltip("Change this to the actual server you want to connect to.")]
     public string serverIPAddr = "pixlplaya5.xyz";
-    public List<string> songFolders;
+    public class SongFolderEntry
+    {
+        public bool isPlayable;
+        public string path;
+    }
+    public List<SongFolderEntry> songFolders = new List<SongFolderEntry>();
     public Dictionary<int, SongInfo> cachedSongs = new Dictionary<int, SongInfo>();
     public List<SongEntryInfo> cachedEntries = new List<SongEntryInfo>();
     public Dictionary<int, AudioClip> cachedAudioClips = new Dictionary<int, AudioClip>();
@@ -110,6 +125,8 @@ public class GameManager : MonoBehaviour
     public bool liteMode = false;
     public bool gamepadMode = false;
     public bool isLoading;
+    public int currentSetlistIndex = 0;
+    public List<string> currentSetlistPaths = new List<string>();
     
 
     // note mappings (RBN2)
@@ -215,6 +232,9 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlaySongGlobal(string path)
     {
+        if (GetIsLoading()) yield return null;
+        if (SceneManager.GetSceneByName("Gameplay").isLoaded) SceneManager.UnloadSceneAsync("Gameplay");
+        ResetAllValues();
         yield return EnableLoadUnCachedSongVisual(unDestructibleLoadingPhraseScreen, Path.Combine(path, "song.ini"));
         SetIsLoading(true);
         MenuManager.Instance.ShowMenu("null");
@@ -227,13 +247,30 @@ public class GameManager : MonoBehaviour
             Debug.LogError("SongFolderLoader not found in scene!");
         }
             
-        SceneManager.LoadScene("Gameplay", LoadSceneMode.Additive); // load synchronously
+        if (!SceneManager.GetSceneByName("Gameplay").isLoaded) SceneManager.LoadSceneAsync("Gameplay", LoadSceneMode.Additive);
 
         if (NoteSpawner.Instance)
         {
             yield return StartCoroutine(NoteSpawner.Instance.Load(path));
             yield return StartCoroutine(NoteSpawner.Instance.InitGameplay(path));
         }
+        yield return null;
+    }
+
+    public IEnumerator PlayAllSongs()
+    {
+        // set default parameters first
+        LaneInputManager.Instance.ToggleAutoplay(true);
+        OldInputManager.Instance.ToggleGamepadMode(true);
+        SwapInstrument("Guitar");
+        SwapDifficulty("Expert");
+        foreach (var path in songFolders)
+        {
+            currentSetlistPaths.Add(path.path);
+        }
+        currentSetlistIndex = 0;
+        yield return StartCoroutine(PlaySongGlobal(currentSetlistPaths[currentSetlistIndex]));
+        inSetlist = true;
         yield return null;
     }
 
@@ -374,6 +411,7 @@ public class GameManager : MonoBehaviour
     }
     public IEnumerator CacheAudioFile(string filePath, int songID)
     {
+        if (string.IsNullOrEmpty(filePath)) yield return null;
         string uriPath = new System.Uri(filePath).AbsoluteUri;
         using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(uriPath, AudioType.UNKNOWN))
         {
@@ -391,6 +429,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        yield return null;
     }
     public string FindSongInPath(string path)
     {
@@ -1603,7 +1642,8 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator FailSong()
     {
-        StartCoroutine(MusicPlayer.Instance.EndSong(false));
+        var states = new List<GameStates>{GameStates.SongFailed};
+        StartCoroutine(MusicPlayer.Instance.EndSong(states));
         SFXPlayer.Instance.PlayClip("fail");
         yield return new WaitForSecondsRealtime(3);
         SceneManager.UnloadSceneAsync("Gameplay");

@@ -667,8 +667,8 @@ public class VenueAnimationPlayer : MonoBehaviour
         fnRegistry["ForceExit"] = (args) =>
         {
             if (args.Count > 0) return;
-            MusicPlayer musicPlayer = FindAnyObjectByType<MusicPlayer>();
-            StartCoroutine(musicPlayer.EndSong(false));
+            var states = new List<GameManager.GameStates>{GameManager.GameStates.None};
+            StartCoroutine(MusicPlayer.Instance.EndSong(states));
             GameManager.Instance.ResetAllValues();
             GameManager.Instance.ExitGame(false);
         };

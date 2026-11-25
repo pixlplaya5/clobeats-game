@@ -885,7 +885,16 @@ public class MusicPlayer : MonoBehaviour
             songLength = NoteSpawner.Instance.songLengthInTicks / 1000;
             if (GameManager.Instance.inSong && currentTimeDSP >= songLength + graceEndSeconds)
             {
-                StartCoroutine(EndSong());
+                if (GameManager.Instance.inSetlist)
+                {
+                    var states = new List<GameManager.GameStates>{GameManager.GameStates.PlayNextSong};
+                    StartCoroutine(EndSong(states));
+                }
+                else
+                {
+                    var states = new List<GameManager.GameStates>{GameManager.GameStates.SongCleared};
+                    StartCoroutine(EndSong(states));
+                }
             }
             if (GameManager.Instance.inSong && LaneInputManager.Instance.autoPlayEnabled)
             {
@@ -925,7 +934,7 @@ public class MusicPlayer : MonoBehaviour
         }
     }
     // Unloads song resources and plays "You Rock" animation if player successfully cleared the song
-    public IEnumerator EndSong(bool saveData = true, bool songCleared = true)
+    public IEnumerator EndSong(List<GameManager.GameStates> states)
     {
         Debug.Log("[MusicPlayer.EndSong] Unloading song...");
         UIUpdater.Instance.ScoreVisibility(false);
@@ -954,13 +963,38 @@ public class MusicPlayer : MonoBehaviour
             $"nSustain = {UIUpdater.Instance.savedSustainScore}",
             $"nMaxStreak = {UIUpdater.Instance.maxCombo}",
         };
-        if (saveData) Scoring.Save(savedData);
         GameManager.Instance.ResetAllValues();
         ImprovedStrikeline.Instance.ResetAnims();
         VenueAnimationPlayer.Instance.Unload();
         VenueAnimationPlayer.Instance.TryToggleHighwayCam(false);
         Debug.Log("[MusicPlayer.EndSong] Song unloaded.");
-        if (songCleared) StartCoroutine(GameManager.Instance.PlayerRocksAnim());
+
+        foreach (var state in states)
+        {
+            if (state == GameManager.GameStates.Autosave)
+            {
+                Scoring.Save(savedData);
+            }
+            else if (state == GameManager.GameStates.SongCleared)
+            {
+                StartCoroutine(GameManager.Instance.PlayerRocksAnim());
+            }
+            else if (state == GameManager.GameStates.PlayNextSong)
+            {
+                try
+                {
+                    GameManager.Instance.currentSetlistIndex++;
+                    StartCoroutine(GameManager.Instance.PlaySongGlobal(GameManager.Instance.currentSetlistPaths[GameManager.Instance.currentSetlistIndex]));
+                }
+                catch
+                {
+                    GameManager.Instance.currentSetlistIndex = 0;
+                    GameManager.Instance.currentSetlistPaths.Clear();
+                    Debug.Log("[MusicPlayer.EndSong] Assuming end of setlist, setlist will be cleared");
+                    StartCoroutine(GameManager.Instance.PlayerRocksAnim("Setlist Cleared!"));
+                }
+            }
+        }
         yield return null;
     }
     // returns non-DSP elapsed time

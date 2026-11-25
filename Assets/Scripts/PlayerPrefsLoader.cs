@@ -1,17 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEditor;
 using System.Threading.Tasks;
 using System;
 using System.IO;
-using System.Threading;
-using System.Linq;
-using System.ComponentModel;
-using TMPro;
-using System.Drawing.Text;
 using Rewired.Integration.UnityUI;
 
 public class PlayerPrefsLoader : MonoBehaviour
@@ -19,7 +11,6 @@ public class PlayerPrefsLoader : MonoBehaviour
     public bool autoLoad = false;
     public GameObject blankImage;
     public GameObject indefiniteLoadingScreen;
-    public List<string> songItemNames = new List<string>();
 
     async void Awake()
     {
@@ -32,10 +23,6 @@ public class PlayerPrefsLoader : MonoBehaviour
             if (indefiniteLoadingScreen != null)
             {
                 indefiniteLoadingScreen.SetActive(false);
-            }
-            foreach (Transform child in transform)
-            {
-                child.gameObject.SetActive(false);
             }
             RewiredStandaloneInputModule inputModule = FindFirstObjectByType<RewiredStandaloneInputModule>();
             inputModule.allowMouseInput = false;
@@ -176,10 +163,11 @@ public class PlayerPrefsLoader : MonoBehaviour
                     foreach (string dir in directories)
                     {
                         int hash = Mathf.Abs(dir.GetHashCode());
-                        GameManager.Instance.songFolders.Add(dir);
-                        songItemNames.Add(dir);
+                        string previewPath = GameManager.Instance.FindQueryAudioInPath(dir, "preview");
+                        bool isPlayable = string.IsNullOrEmpty(previewPath);
+                        GameManager.Instance.songFolders.Add(new GameManager.SongFolderEntry{ isPlayable = isPlayable, path = dir });
                         GameManager.Instance.CacheSingleSong(dir, hash, ind);
-                        StartCoroutine(GameManager.Instance.CacheAudioFile(GameManager.Instance.FindQueryAudioInPath(dir, "preview"), hash)); // use preview version if available
+                        StartCoroutine(GameManager.Instance.CacheAudioFile(previewPath, hash)); // use preview version if available
                         Debug.Log($"Cached {ind} song dir \"" + dir + "\" with absolute hash code " + hash);
                         ind++;
                         await Task.Yield();
