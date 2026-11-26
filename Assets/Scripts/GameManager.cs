@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
     public bool enableSustains = true;
     public bool initialized = false;
     public bool allowFail = true;
+    public bool autoSave = true;
     [Tooltip("Change this to the actual server you want to connect to.")]
     public string serverIPAddr = "pixlplaya5.xyz";
     public class SongFolderEntry

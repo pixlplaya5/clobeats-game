@@ -888,11 +888,13 @@ public class MusicPlayer : MonoBehaviour
                 if (GameManager.Instance.inSetlist)
                 {
                     var states = new List<GameManager.GameStates>{GameManager.GameStates.PlayNextSong};
+                    if (GameManager.Instance.autoSave) states.Add(GameManager.GameStates.Autosave);
                     StartCoroutine(EndSong(states));
                 }
                 else
                 {
                     var states = new List<GameManager.GameStates>{GameManager.GameStates.SongCleared};
+                    if (GameManager.Instance.autoSave) states.Add(GameManager.GameStates.Autosave);
                     StartCoroutine(EndSong(states));
                 }
             }
