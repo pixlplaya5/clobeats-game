@@ -26,7 +26,7 @@ public class SongFolderLoader : MonoBehaviour
     public string songVideoClipPath;
     public bool songVideoClipPathSet = false;
     public UnityEngine.Color songAccentColor;
-    public List<string> supportedFormats = new List<string> { "wav", "ogg", "mp3", "opus", "mid", "midi" };
+    public List<string> supportedFormats = new List<string> { "wav", "ogg", "mp3", "opus", "mid", "midi", "egg" };
     public List<string> supportedVideos = new List<string> { "webm", "mp4", "avi", "ogv", "mpeg" };
     public string[] songFolderFiles;
 

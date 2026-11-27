@@ -229,6 +229,7 @@ public class MusicPlayer : MonoBehaviour
             case ".mp3": return AudioType.MPEG;
             case ".aiff":
             case ".aif": return AudioType.AIFF;
+            case ".egg": return AudioType.OGGVORBIS; // Beat Saber custom song format (same as .ogg)
             default: return AudioType.UNKNOWN;
         }
     }
