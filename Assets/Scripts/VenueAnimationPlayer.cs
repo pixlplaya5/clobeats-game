@@ -47,6 +47,7 @@ public class VenueAnimationPlayer : MonoBehaviour
     public float hapticPulseDuration = 0.05f;
     public int hapticPulseDivision = 1;
     Coroutine hapticCoroutine;
+    Coroutine hapticOneShotCoroutine;
     OldInputManager oldInputManager;
     [Header("Chromatic Aberration Beat Impact")]
     public bool chromaticAberrationOnQuarterNotes = false;
@@ -64,6 +65,32 @@ public class VenueAnimationPlayer : MonoBehaviour
     [Range(0f, 1f)] public float chromaticAberrationImpact = 1f;
     [Range(0.01f, 0.5f)] public float chromaticAberrationAttack = 0.08f;
     [Range(0.01f, 1f)] public float chromaticAberrationRelease = 0.35f;
+    Coroutine chromaticAberrationOneShotCoroutine;
+
+    public void PulseHapticOnce()
+    {
+        if (hapticOneShotCoroutine != null)
+        {
+            StopCoroutine(hapticOneShotCoroutine);
+        }
+
+        hapticOneShotCoroutine = StartCoroutine(HapticPulseOnceRoutine());
+    }
+
+    IEnumerator HapticPulseOnceRoutine()
+    {
+        while (ns == null)
+        {
+            ns = FindAnyObjectByType<NoteSpawner>();
+            if (ns == null) yield return null;
+        }
+
+        float currentTick = Mathf.Max(0f, ns.currentTick);
+        float quarterTicks = ns.GetTicksPerQuarterNoteAtTick(currentTick);
+        yield return HapticImpactRoutine(quarterTicks);
+        hapticOneShotCoroutine = null;
+    }
+
     public void StartHapticPulse()
     {
         StopHapticPulse();
@@ -76,6 +103,12 @@ public class VenueAnimationPlayer : MonoBehaviour
         {
             StopCoroutine(hapticCoroutine);
             hapticCoroutine = null;
+        }
+
+        if (hapticOneShotCoroutine != null)
+        {
+            StopCoroutine(hapticOneShotCoroutine);
+            hapticOneShotCoroutine = null;
         }
 
         SendHaptic(0f, 0f, 0f);
@@ -109,30 +142,35 @@ public class VenueAnimationPlayer : MonoBehaviour
             }
 
             quarterTicks = ns.GetTicksPerQuarterNoteAtTick(nextFourthNoteTick);
-            float attackTicks = Mathf.Max(1f, quarterTicks * hapticAttack);
-            float releaseTicks = Mathf.Max(1f, quarterTicks * hapticRelease);
-            float impactStartTick = ns.currentTick;
-
-            while (ns.currentTick < impactStartTick + attackTicks)
-            {
-                float t = Mathf.Clamp01((ns.currentTick - impactStartTick) / attackTicks);
-                float amount = Mathf.Lerp(0f, 1f, t);
-                SendHaptic(hapticLeftImpact * amount, hapticRightImpact * amount, hapticPulseDuration);
-                yield return null;
-            }
-
-            float releaseStartTick = ns.currentTick;
-            while (ns.currentTick < releaseStartTick + releaseTicks)
-            {
-                float t = Mathf.Clamp01((ns.currentTick - releaseStartTick) / releaseTicks);
-                float amount = Mathf.Lerp(1f, 0f, t);
-                SendHaptic(hapticLeftImpact * amount, hapticRightImpact * amount, hapticPulseDuration);
-                yield return null;
-            }
-
-            SendHaptic(0f, 0f, 0f);
+            yield return HapticImpactRoutine(quarterTicks);
             nextFourthNoteTick += fourthNoteLength;
         }
+    }
+
+    IEnumerator HapticImpactRoutine(float quarterTicks)
+    {
+        float attackTicks = Mathf.Max(1f, quarterTicks * hapticAttack);
+        float releaseTicks = Mathf.Max(1f, quarterTicks * hapticRelease);
+        float impactStartTick = ns.currentTick;
+
+        while (ns.currentTick < impactStartTick + attackTicks)
+        {
+            float t = Mathf.Clamp01((ns.currentTick - impactStartTick) / attackTicks);
+            float amount = Mathf.Lerp(0f, 1f, t);
+            SendHaptic(hapticLeftImpact * amount, hapticRightImpact * amount, hapticPulseDuration);
+            yield return null;
+        }
+
+        float releaseStartTick = ns.currentTick;
+        while (ns.currentTick < releaseStartTick + releaseTicks)
+        {
+            float t = Mathf.Clamp01((ns.currentTick - releaseStartTick) / releaseTicks);
+            float amount = Mathf.Lerp(1f, 0f, t);
+            SendHaptic(hapticLeftImpact * amount, hapticRightImpact * amount, hapticPulseDuration);
+            yield return null;
+        }
+
+        SendHaptic(0f, 0f, 0f);
     }
 
     void SendHaptic(float leftMotor, float rightMotor, float duration)
@@ -223,12 +261,42 @@ public class VenueAnimationPlayer : MonoBehaviour
         chromaticAberrationCoroutine = StartCoroutine(ChromaticAberrationPulseRoutine());
     }
 
+    public void PulseChromaticAberrationOnce()
+    {
+        if (chromaticAberrationOneShotCoroutine != null)
+        {
+            StopCoroutine(chromaticAberrationOneShotCoroutine);
+        }
+
+        chromaticAberrationOneShotCoroutine = StartCoroutine(ChromaticAberrationPulseOnceRoutine());
+    }
+
+    IEnumerator ChromaticAberrationPulseOnceRoutine()
+    {
+        while (ns == null)
+        {
+            ns = FindAnyObjectByType<NoteSpawner>();
+            if (ns == null) yield return null;
+        }
+
+        float currentTick = Mathf.Max(0f, ns.currentTick);
+        float beatTicks = ns.GetTicksPerQuarterNoteAtTick(currentTick);
+        yield return ChromaticAberrationImpactRoutine(beatTicks);
+        chromaticAberrationOneShotCoroutine = null;
+    }
+
     public void StopChromaticAberrationPulse()
     {
         if (chromaticAberrationCoroutine != null)
         {
             StopCoroutine(chromaticAberrationCoroutine);
             chromaticAberrationCoroutine = null;
+        }
+
+        if (chromaticAberrationOneShotCoroutine != null)
+        {
+            StopCoroutine(chromaticAberrationOneShotCoroutine);
+            chromaticAberrationOneShotCoroutine = null;
         }
 
         SetChromaticAberration(0f, false);
@@ -254,28 +322,33 @@ public class VenueAnimationPlayer : MonoBehaviour
             }
 
             beatTicks = ns.GetTicksPerQuarterNoteAtTick(nextBeatTick);
-            float attackTicks = Mathf.Max(1f, beatTicks * chromaticAberrationAttack);
-            float releaseTicks = Mathf.Max(1f, beatTicks * chromaticAberrationRelease);
-
-            SetChromaticAberration(0f, true);
-            float impactStartTick = ns.currentTick;
-            while (ns.currentTick < impactStartTick + attackTicks)
-            {
-                float t = Mathf.Clamp01((ns.currentTick - impactStartTick) / attackTicks);
-                SetChromaticAberration(Mathf.Lerp(0f, chromaticAberrationImpact, t), true);
-                yield return null;
-            }
-
-            float releaseStartTick = ns.currentTick;
-            while (ns.currentTick < releaseStartTick + releaseTicks)
-            {
-                float t = Mathf.Clamp01((ns.currentTick - releaseStartTick) / releaseTicks);
-                SetChromaticAberration(Mathf.Lerp(chromaticAberrationImpact, 0f, t), true);
-                yield return null;
-            }
-
-            SetChromaticAberration(0f, false);
+            yield return ChromaticAberrationImpactRoutine(beatTicks);
         }
+    }
+
+    IEnumerator ChromaticAberrationImpactRoutine(float beatTicks)
+    {
+        float attackTicks = Mathf.Max(1f, beatTicks * chromaticAberrationAttack);
+        float releaseTicks = Mathf.Max(1f, beatTicks * chromaticAberrationRelease);
+
+        SetChromaticAberration(0f, true);
+        float impactStartTick = ns.currentTick;
+        while (ns.currentTick < impactStartTick + attackTicks)
+        {
+            float t = Mathf.Clamp01((ns.currentTick - impactStartTick) / attackTicks);
+            SetChromaticAberration(Mathf.Lerp(0f, chromaticAberrationImpact, t), true);
+            yield return null;
+        }
+
+        float releaseStartTick = ns.currentTick;
+        while (ns.currentTick < releaseStartTick + releaseTicks)
+        {
+            float t = Mathf.Clamp01((ns.currentTick - releaseStartTick) / releaseTicks);
+            SetChromaticAberration(Mathf.Lerp(chromaticAberrationImpact, 0f, t), true);
+            yield return null;
+        }
+
+        SetChromaticAberration(0f, false);
     }
 
     void SetChromaticAberration(float intensity, bool enabled)
@@ -663,6 +736,14 @@ public class VenueAnimationPlayer : MonoBehaviour
         {
             bool tgle = bool.Parse(args[0]);
             hapticToggle = tgle;
+        };
+        fnRegistry["PVHapticHit"] = (args) =>
+        {
+            PulseHapticOnce();
+        };
+        fnRegistry["PVChrAbrHit"] = (args) =>
+        {
+            PulseChromaticAberrationOnce();
         };
         fnRegistry["ForceExit"] = (args) =>
         {

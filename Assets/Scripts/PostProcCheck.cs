@@ -15,9 +15,9 @@ public class PostProcCheck : MonoBehaviour
     void Update()
     {
         PostProcessLayer postProcLayer = GetComponent<PostProcessLayer>();
-        if (PlayerPrefs.HasKey("EnablePostProc"))
+        if (GameManager.Instance)
         {
-            if (PlayerPrefs.GetInt("EnablePostProc") == 1)
+            if (GameManager.Instance.GetPostProcSetting())
             {
                 postProcLayer.enabled = true;
             }

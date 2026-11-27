@@ -10,12 +10,16 @@ public class MMDCam : MonoBehaviour
 {
     public static MMDCam Instance;
     public GameObject targetCamera;
+    Camera cam;
     public float distance = 0f; // z distance (zoom)
     public Color backColor = Color.white;
+    public float fpsLimit = 60f;
+    float elapsedTimeForFps = 0f;
 
     void Start()
     {
         Instance = this;
+        cam = targetCamera.GetComponent<Camera>();
     }
 
     void Update()
@@ -25,8 +29,27 @@ public class MMDCam : MonoBehaviour
         targetCamera.transform.position.y,
         -distance);
 
-        targetCamera.GetComponent<Camera>().backgroundColor =
+        cam.backgroundColor =
         new Color(backColor.r, backColor.g, backColor.b);
+
+        if (fpsLimit > 0)
+        {
+            cam.enabled = false;
+            elapsedTimeForFps += Time.deltaTime;
+            if (elapsedTimeForFps > 1 / fpsLimit)
+            {
+                elapsedTimeForFps = 0;
+                cam.enabled = true;
+            }
+            else
+            {
+                cam.enabled = false;
+            }
+        }
+        else
+        {
+            cam.enabled = true;
+        }
     }
 
     public void SetEffect(string effKey)
@@ -65,10 +88,10 @@ public class MMDCam : MonoBehaviour
 
     public bool GetVisibility()
     {
-        return targetCamera.GetComponent<Camera>().enabled;
+        return gameObject.activeSelf;
     }
     public void SetVisibility(bool toggle)
     {
-        targetCamera.GetComponent<Camera>().enabled = toggle;
+        gameObject.SetActive(toggle);
     }
 }
