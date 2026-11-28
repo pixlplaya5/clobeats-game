@@ -306,7 +306,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(6);
         TMPInstanceMaker.Instance.DeleteAllTextObjects();
         SceneManager.UnloadSceneAsync("Gameplay");
-        MenuManager.Instance.ShowMenu("main");
+        MenuManager.Instance.ShowMenu("eos");
     }
 
     public float GetNoteSpeed()
@@ -1595,6 +1595,38 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public async Task EnableGenericLoadingVisual(string loadingText, string loadingReason = "Loading...")
+    {
+        if (unDestructibleLoadingPhraseScreen != null)
+        {
+            unDestructibleLoadingPhraseScreen.SetActive(true);
+            TextMeshProUGUI textObj = unDestructibleLoadingPhraseScreen.transform.Find("SongLoadingOverlay/LoadingPhraseText").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI reasonTextObj = unDestructibleLoadingPhraseScreen.transform.Find("SongLoadingOverlay/LoadingReasonText").GetComponent<TextMeshProUGUI>();
+            string ldgphr = loadingText;
+            if (ldgphr != string.Empty)
+            {
+                textObj.text = ldgphr;
+            }
+            else
+            {
+                string preLoadedServerString = await GetStringFromAddr($"http://{serverIPAddr}/api/lpRand");
+                string serverLoad = string.Empty;
+                if (preLoadedServerString == string.Empty)
+                {
+                    string ldgphrPath = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "loadingphrases.txt";
+                    serverLoad = GetValueFromTxt(ldgphrPath, UnityEngine.Random.Range(1, GetLineAmountFromTxt(ldgphrPath)));
+                }
+                else
+                {
+                    serverLoad = preLoadedServerString;
+                }
+                
+                string serverLoadReplaced = serverLoad.Replace("%SERVERNAME%", serverIPAddr, StringComparison.OrdinalIgnoreCase);
+                textObj.text = serverLoadReplaced;
+            }
+            reasonTextObj.text = loadingReason;
+        }
+    }
     public string GetUnCachedSongLoadingPhrase(string iniPath)
     {
         INIParser ini = new INIParser();
@@ -1606,6 +1638,13 @@ public class GameManager : MonoBehaviour
         if (loadingCanvas != null)
         {
             loadingCanvas.SetActive(false);
+        }
+    }
+    public void DisableGenericLoadingVisual()
+    {
+        if (unDestructibleLoadingPhraseScreen != null && unDestructibleLoadingPhraseScreen.activeSelf)
+        {
+            DisableLoadSongVisual(unDestructibleLoadingPhraseScreen);
         }
     }
 

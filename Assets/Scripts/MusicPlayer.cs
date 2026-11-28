@@ -964,7 +964,22 @@ public class MusicPlayer : MonoBehaviour
             $"nBad = {UIUpdater.Instance.savedBadNotesHit}",
             $"nMissed = {UIUpdater.Instance.savedMissedNotes}",
             $"nSustain = {UIUpdater.Instance.savedSustainScore}",
-            $"nMaxStreak = {UIUpdater.Instance.maxCombo}",
+            $"nMaxStreak = {UIUpdater.Instance.maxCombo}"
+        };
+        List<SaveData.DataEntry> dataEntries = new List<SaveData.DataEntry>
+        {
+            { new SaveData.DataEntry { key = "teir", value = SaveData.CalculateTeir(GameManager.Instance.currentSongNotes.Count / UIUpdater.Instance.savedGeneralNotesHit) } },
+            { new SaveData.DataEntry { key = "acc", value = ((GameManager.Instance.currentSongNotes.Count / UIUpdater.Instance.savedGeneralNotesHit) * 100).ToString() } },
+            { new SaveData.DataEntry { key = "name", value = GameManager.Instance.currentSongTitle } },
+            { new SaveData.DataEntry { key = "score", value = UIUpdater.Instance.savedScore.ToString() } },
+            { new SaveData.DataEntry { key = "perfect", value = UIUpdater.Instance.savedPerfectNotesHit.ToString() } },
+            { new SaveData.DataEntry { key = "good", value = UIUpdater.Instance.savedGoodNotesHit.ToString() } },
+            { new SaveData.DataEntry { key = "okay", value = UIUpdater.Instance.savedOkayNotesHit.ToString() } },
+            { new SaveData.DataEntry { key = "bad", value = UIUpdater.Instance.savedBadNotesHit.ToString() } },
+            { new SaveData.DataEntry { key = "miss", value = UIUpdater.Instance.savedMissedNotes.ToString() } },
+            { new SaveData.DataEntry { key = "mns", value = UIUpdater.Instance.maxCombo.ToString() } },
+            { new SaveData.DataEntry { key = "sb", value = UIUpdater.Instance.savedSustainScore.ToString() } },
+            { new SaveData.DataEntry { key = "cm", value = GameManager.Instance.currentPart } }
         };
         GameManager.Instance.ResetAllValues();
         ImprovedStrikeline.Instance.ResetAnims();
@@ -977,6 +992,7 @@ public class MusicPlayer : MonoBehaviour
             if (state == GameManager.GameStates.Autosave)
             {
                 Scoring.Save(savedData);
+                SaveData.Instance.UpdateInfo(dataEntries);
             }
             else if (state == GameManager.GameStates.SongCleared)
             {

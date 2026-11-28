@@ -55,6 +55,7 @@ public class LaneInputManager : MonoBehaviour
     public bool autoPlayEnabled = false;
     public bool showHitWindow = false;
     public bool anyFretMode = false;
+    public bool allowOverstrumming = false;
     GameObject note = null;
 
     //MusicPlayer mp;
@@ -83,6 +84,16 @@ public class LaneInputManager : MonoBehaviour
     {
         anyFretMode = toggle;
         StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Any Fret Hack toggled to " + toggle.ToString(), 5f));
+    }
+    public void ToggleOverstrumming(bool toggle)
+    {
+        allowOverstrumming = toggle;
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Allow Overstrum Hack toggled to " + toggle.ToString(), 5f));
+    }
+    public void ToggleHitWindow(bool toggle)
+    {
+        showHitWindow = toggle;
+        StartCoroutine(NotificationHandler.Instance.ShowNotifImmediatelyWithTimeout("Hit Window toggled to " + toggle.ToString(), 5f));
     }
 
     void Update()
@@ -339,6 +350,7 @@ public class LaneInputManager : MonoBehaviour
 
     public void OnOverstrum()
     {
+        if (allowOverstrumming) return;
         var sfx = FindAnyObjectByType<SFXPlayer>();
         sfx.PlayClip("miss");
         var ui = FindAnyObjectByType<UIUpdater>();

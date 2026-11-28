@@ -103,12 +103,6 @@ public class OldInputManager : MonoBehaviour
             player = ReInput.players.GetPlayer(rewiredPlayerId);
         }
         Time.timeScale = currentTimeScale;
-        
-        if (denyInput)
-        {
-            ReleaseSP();
-            return;
-        }
             
         if (updateType == InputUpdateType.PerFrame)
         {
@@ -250,6 +244,11 @@ public class OldInputManager : MonoBehaviour
                     {
                         ReleaseSP();
                     }
+                }
+                else if (denyInput)
+                {
+                    if (player.GetButtonUp("Start")) PauseGame();
+                    if (player.GetButtonUp("Select")) ReleaseSP();
                 }
                 else
                 {

@@ -48,7 +48,9 @@ public class MenuManager : MonoBehaviour
         RestartSong,
         ExitMainMenu,
         ExitDesktop,
-        PlayAllSongs
+        PlayAllSongs,
+        ToggleOSMod,
+        ToggleHWMod
     }
 
     [Serializable]
@@ -182,7 +184,7 @@ public class MenuManager : MonoBehaviour
     }
 
 
-    public async void Submit(int menuIndex = 0)
+    public void Submit(int menuIndex = 0)
     {
         if (isLaunchingSong)
         {
@@ -211,7 +213,7 @@ public class MenuManager : MonoBehaviour
 
         if (legacySubmitBindings.TryGetValue(menuIndex, out MenuButtonBinding binding))
         {
-            await RunMenuActionAsync(binding.action, binding.targetMenuId, binding.actionArgs);
+            RunMenuAction(binding.action, binding.targetMenuId, binding.actionArgs);
             return;
         }
 
@@ -369,14 +371,14 @@ public class MenuManager : MonoBehaviour
             }
 
             MenuButtonBinding capturedBinding = binding;
-            binding.button.onClick.AddListener(async () =>
+            binding.button.onClick.AddListener(() =>
             {
-                await RunMenuActionAsync(capturedBinding.action, capturedBinding.targetMenuId, capturedBinding.actionArgs);
+                RunMenuAction(capturedBinding.action, capturedBinding.targetMenuId, capturedBinding.actionArgs);
             });
         }
     }
 
-    private async Task RunMenuActionAsync(MenuAction action, string targetMenuId, string[] actionArgs)
+    private void RunMenuAction(MenuAction action, string targetMenuId, string[] actionArgs)
     {
         try
         {
@@ -485,6 +487,12 @@ public class MenuManager : MonoBehaviour
                 case MenuAction.PlayAllSongs:
                     StartCoroutine(GameManager.Instance.PlayAllSongs());
                     break;
+                case MenuAction.ToggleOSMod:
+                    LaneInputManager.Instance.ToggleOverstrumming(LaneInputManager.Instance.allowOverstrumming ? false : true);
+                    break;
+                case MenuAction.ToggleHWMod:
+                    LaneInputManager.Instance.ToggleHitWindow(LaneInputManager.Instance.showHitWindow ? false : true);
+                    break;
             }
         }
         catch (Exception ex)
@@ -499,8 +507,6 @@ public class MenuManager : MonoBehaviour
         {
             return;
         }
-
-        
 
         if (screensById.Count == 0)
         {

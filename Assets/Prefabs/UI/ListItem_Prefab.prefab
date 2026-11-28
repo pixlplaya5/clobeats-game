@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 780, y: 48}
+  m_SizeDelta: {x: 1000, y: 48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7195193284132258729
 CanvasRenderer:
@@ -145,8 +145,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 724, y: 32}
+  m_AnchoredPosition: {x: -0.0019836, y: 0}
+  m_SizeDelta: {x: 947.63, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &168428266511606984
 CanvasRenderer:
@@ -254,7 +254,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8935691279383217461}
-  - component: {fileID: 2504027732057429269}
   m_Layer: 5
   m_Name: Marqee1
   m_TagString: Untagged
@@ -279,24 +278,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 724, y: 32}
+  m_AnchoredPosition: {x: -1.183, y: 0}
+  m_SizeDelta: {x: 947.634, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2504027732057429269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8096956093941983880}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3db813cb0fa099e449d999ec03e7d08f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tmpObject: {fileID: 1611838746157128410}
-  scrollSpeed: 100
-  gap: 600
-  edgeFadeEnabled: 0
-  edgeWidth: 64
-  fadeColor: {r: 0.9607844, g: 0.9607844, b: 0.9607844, a: 1}

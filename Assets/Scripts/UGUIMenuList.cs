@@ -95,6 +95,7 @@ public class UGUIMenuList : MonoBehaviour
 
     public async Task RebuildAsync(string rebuildSearch = "preview")
     {
+        await GameManager.Instance.EnableGenericLoadingVisual("Listing songs...");
         int version = ++rebuildVersion;
         ResolveReferences();
         await ClearItemObjects();
@@ -105,7 +106,7 @@ public class UGUIMenuList : MonoBehaviour
             return;
         }
 
-        foreach (GameManager.SongEntryInfo entry in GameManager.Instance.cachedEntries) // attempting dont sort entries
+        foreach (GameManager.SongEntryInfo entry in GameManager.Instance.cachedEntries.OrderBy(k => k.songTitle))
         {
             if (version != rebuildVersion)
             {
@@ -130,6 +131,7 @@ public class UGUIMenuList : MonoBehaviour
         {
             SetCurrentPage(0);
         }
+        GameManager.Instance.DisableGenericLoadingVisual();
     }
 
     public void SelectNext()

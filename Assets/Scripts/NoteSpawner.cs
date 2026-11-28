@@ -1033,7 +1033,7 @@ public class NoteSpawner : MonoBehaviour
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.HOPO;
             }
-            else if (Mathf.Abs(lastN.spawnTime - n.spawnTime) == 0 || Mathf.Abs(lastN.spawnTimeMs - n.spawnTimeMs) == 0)
+            if (Mathf.Abs(lastN.spawnTime - n.spawnTime) == 0 || Mathf.Abs(lastN.spawnTimeMs - n.spawnTimeMs) == 0)
             {
                 if (visual != null)
                     visual.currentNoteType = NoteVisualChanger.NoteType.Forced;
